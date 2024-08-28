@@ -1,0 +1,59 @@
+package com.finderfeed.fdlib.util.math;
+
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
+
+public class FDMathUtil {
+
+    public static Vector3f vec3ToVector3f(Vec3 v){
+        return new Vector3f((float) v.x,(float) v.y,(float) v.z);
+    }
+
+    public static Vec3 vector3fToVec3(Vector3f v){
+        return new Vec3(v.x,v.y,v.z);
+    }
+
+    public static float lerp(float v1,float v2,float p){
+        return v1 + (v2 - v1) * p;
+    }
+
+
+    public static Vector3f interpolateVectors(Vector3f v1,Vector3f v2,float p){
+        return new Vector3f(
+                lerp(v1.x,v2.x,p),
+                lerp(v1.y,v2.y,p),
+                lerp(v1.z,v2.z,p)
+        );
+    }
+
+    //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
+    public static float catmullrom(Float previous,Float current,Float next,Float next2,float p) {
+        if (next == null){return current;}
+        if (previous == null){previous = current + (current - next);}
+        if (next2 == null){next2 = next + (next - current);}
+        float xvc = (next - previous) / 6;
+        float xvn = (current - next2) / 6;
+        return bernstein(current,current + xvc,next + xvn,next,p);
+    }
+
+    //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
+    public static Vector3f catmullrom(Vector3f previous,Vector3f current,Vector3f next,Vector3f next2,float p) {
+        if (next == null){return current;}
+        if (previous == null) {previous = current.add(current.sub(next,new Vector3f()),new Vector3f());}
+        if (next2 == null){next2 = next.add(next.sub(current,new Vector3f()),new Vector3f());}
+        return new Vector3f(
+                catmullrom(previous.x,current.x,next.x,next2.x,p),
+                catmullrom(previous.y,current.y,next.y,next2.y,p),
+                catmullrom(previous.z,current.z,next.z,next2.z,p)
+        );
+    }
+
+    private static float bernstein(float x1,float x2,float x3,float x4,float t){
+        float t3 = (float) Math.pow(t,3);
+        float t2 = (float) Math.pow(t,2);
+        return x1 * (-t3 + 3*t2 - 3*t  + 1) +
+                x2 * (3*t3 - 6*t2 + 3*t) +
+                x3 * (-3*t3 + 3*t2) +
+                x4 * t3;
+    }
+}
