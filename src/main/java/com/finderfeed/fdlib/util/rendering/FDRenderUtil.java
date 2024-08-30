@@ -13,7 +13,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -226,6 +229,31 @@ public class FDRenderUtil {
     }
 
 
+    public static Vector3f YP(){
+        return new Vector3f(0,1,0);
+    }
+    public static Vector3f YN(){
+        return new Vector3f(0,-1,0);
+    }
+    public static Vector3f XP(){
+        return new Vector3f(1,0,0);
+    }
+    public static Vector3f XN(){
+        return new Vector3f(-1,0,0);
+    }
+    public static Vector3f ZP(){
+        return new Vector3f(0,0,1);
+    }
+    public static Vector3f ZN(){
+        return new Vector3f(0,0,-1);
+    }
+
+    public static Quaternionf rotationDegrees(Vector3f rotation, float angle){
+        return new Quaternionf(new AxisAngle4f((float)Math.toRadians(angle),rotation));
+    }
+
+
+
     public record Scissor(float x, float y, float x2, float y2){
 
         private static Stack<Scissor> activeScissors = new Stack<>();
@@ -272,4 +300,6 @@ public class FDRenderUtil {
         }
 
     }
+
+
 }

@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.init.FDAnimations;
 import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
 import com.finderfeed.fdlib.init.FDEntities;
 import com.finderfeed.fdlib.init.FDModels;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -20,6 +21,10 @@ public class FDLib {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
+
+    public static ResourceLocation location(String loc){
+        return ResourceLocation.tryBuild(MOD_ID,loc);
+    }
 
     public FDLib(IEventBus modEventBus, ModContainer modContainer) {
         FDModels.INFOS.register(modEventBus);

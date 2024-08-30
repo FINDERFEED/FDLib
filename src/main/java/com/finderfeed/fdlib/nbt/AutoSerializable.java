@@ -3,6 +3,8 @@ package com.finderfeed.fdlib.nbt;
 import net.minecraft.nbt.CompoundTag;
 
 /**
+ * Untested. Idk if it works or not.
+
  * If an annotated field is implementing
  * that interface you SHOULD have it initialized,
  * it will be loaded upon "load" call.

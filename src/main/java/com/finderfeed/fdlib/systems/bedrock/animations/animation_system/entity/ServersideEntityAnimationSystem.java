@@ -2,7 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.EntityAnimationsSyncPacket;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.SyncEntityAnimationsPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.EntityStartAnimationPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.EntityStopAnimationPacket;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +16,7 @@ public class ServersideEntityAnimationSystem<T extends Entity & AnimatedObject> 
 
     public void syncAnimations(){
         PacketDistributor.sendToPlayersTrackingEntity(this.getEntity(),
-                new EntityAnimationsSyncPacket(this.getEntity().getId(),this.getTickers())
+                new SyncEntityAnimationsPacket(this.getEntity().getId(),this.getTickers())
         );
     }
 

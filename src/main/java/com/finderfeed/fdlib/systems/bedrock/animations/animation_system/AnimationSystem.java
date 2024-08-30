@@ -10,7 +10,9 @@ import java.util.HashMap;
 public abstract class AnimationSystem {
 
     private HashMap<String,AnimationTicker> tickers = new HashMap<>();
+
     private HashMap<String,Float> variables = new HashMap<>();
+
     private boolean isFrozen;
 
     public void tick(){
@@ -56,7 +58,6 @@ public abstract class AnimationSystem {
             ticker.tick();
         }
     }
-
 
 
 

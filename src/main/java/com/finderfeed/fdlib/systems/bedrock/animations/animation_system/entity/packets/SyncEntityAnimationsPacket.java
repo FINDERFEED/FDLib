@@ -12,12 +12,12 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.Map;
 
 @RegisterFDPacket("fdlib:sync_entity_animations")
-public class EntityAnimationsSyncPacket extends FDPacket {
+public class SyncEntityAnimationsPacket extends FDPacket {
 
     private int entityId;
     private TickerSyncInstance[] tickers;
 
-    public EntityAnimationsSyncPacket(int entityId, Map<String, AnimationTicker> tickers){
+    public SyncEntityAnimationsPacket(int entityId, Map<String, AnimationTicker> tickers){
         this.entityId = entityId;
         this.tickers = new TickerSyncInstance[tickers.size()];
         int i = 0;
@@ -27,7 +27,7 @@ public class EntityAnimationsSyncPacket extends FDPacket {
         }
     }
 
-    public EntityAnimationsSyncPacket(FriendlyByteBuf buf){
+    public SyncEntityAnimationsPacket(FriendlyByteBuf buf){
         this.entityId = buf.readInt();
         this.tickers = new TickerSyncInstance[buf.readInt()];
         for (int i = 0; i < tickers.length;i++){

@@ -4,5 +4,7 @@ public interface AnimatedObject {
 
     AnimationSystem getSystem();
 
-    void tickAnimationSystem();
+    default void tickAnimationSystem(){
+        this.getSystem().tick();
+    }
 }

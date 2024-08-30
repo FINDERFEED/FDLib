@@ -5,7 +5,9 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import net.minecraft.world.entity.Entity;
 
 public abstract class EntityAnimationSystem<T extends Entity & AnimatedObject> extends AnimationSystem {
+
     private T entity;
+
     protected EntityAnimationSystem(T entity){
         this.entity = entity;
     }
