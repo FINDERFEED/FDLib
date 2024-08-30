@@ -21,9 +21,6 @@ public class AttackChain {
         this.source = source;
     }
 
-
-
-
     public AttackChain addAttack(int priority,AttackOptions options){
         this.addToList(priority,options);
         return this;
@@ -34,21 +31,21 @@ public class AttackChain {
         if (this.chain.isEmpty() && currentAttack == null){
             this.buildQueue();
         }
-
         if (currentAttack != null){
             if (currentAttack.attack.getExecutor().execute(currentAttack)){
                 AttackOptions options = currentAttack.options;
-                if (options != null){
-
+                if (options.nextAttack != null){
+                    this.currentAttack = new AttackInstance(options.nextAttack,options.getAttack(source));
+                }else{
+                    this.currentAttack = null;
                 }
-
             }else{
                 currentAttack.tick++;
             }
         }else{
-
+            AttackInstance attack = this.chain.poll();
+            this.currentAttack = attack;
         }
-
     }
 
     private void buildQueue(){
