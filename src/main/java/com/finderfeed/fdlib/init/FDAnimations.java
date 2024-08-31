@@ -21,6 +21,12 @@ public class FDAnimations {
     public static DeferredHolder<Animation,Animation> TEST4 = ANIMATIONS.register("uld_test", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"uldera_crystal_animations"));
     });
+    public static DeferredHolder<Animation,Animation> CHESED_IDLE = ANIMATIONS.register("chesed_idle", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
+    public static DeferredHolder<Animation,Animation> CHESED_ATTACK = ANIMATIONS.register("chesed_basic_attack", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
 
 
 

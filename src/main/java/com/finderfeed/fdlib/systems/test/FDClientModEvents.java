@@ -5,7 +5,6 @@ import com.finderfeed.fdlib.init.FDEntities;
 import com.finderfeed.fdlib.init.FDModels;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDEntityRendererBuilder;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDRenderLayerOptions;
-import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,21 +16,16 @@ public class FDClientModEvents {
 
     @SubscribeEvent
     public static void addRenderers(EntityRenderersEvent.RegisterRenderers event){
-        event.registerEntityRenderer(FDEntities.TEST.get(),
+        event.registerEntityRenderer(FDEntities.CHESED.get(),
                 FDEntityRendererBuilder.builder()
                         .addLayer(FDRenderLayerOptions.builder()
-                                .model(FDModels.TEST)
-                                .renderType(RenderType.entityCutout(FDLib.location("textures/entities/uldera_crystal_inner.png")))
+                                .model(FDModels.CHESED)
+                                .renderType(RenderType.entityCutout(FDLib.location("textures/entities/chesed.png")))
                                 .renderCondition((entity)->{
-                                    return entity.tickCount % 20 > 10;
+                                    return true;
                                 })
-                                .build()
-                        )
-                        .addLayer(FDRenderLayerOptions.builder()
-                                .model(FDModels.TEST)
-                                .renderType(RenderType.eyes(FDLib.location("textures/entities/uldera_crystal_glow.png")))
-                                .transformation((entity,stack,pticks)->{
-                                    stack.mulPose(FDRenderUtil.rotationDegrees(FDRenderUtil.YP(),(entity.tickCount + pticks)));
+                                .transformation((entity,matrices,pticks)->{
+
                                 })
                                 .build()
                         )

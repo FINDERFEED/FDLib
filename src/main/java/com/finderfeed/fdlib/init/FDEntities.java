@@ -1,7 +1,7 @@
 package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.test.FDTestEntity;
+import com.finderfeed.fdlib.systems.test.ChesedEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,9 +20,8 @@ public class FDEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, FDLib.MOD_ID);
 
-
-    public static final Supplier<EntityType<FDTestEntity>> TEST = ENTITIES.register("test",()->EntityType.Builder.<FDTestEntity>of(
-            FDTestEntity::new, MobCategory.CREATURE
+    public static final Supplier<EntityType<ChesedEntity>> CHESED = ENTITIES.register("chesed",()->EntityType.Builder.<ChesedEntity>of(
+            ChesedEntity::new, MobCategory.CREATURE
     )
             .sized(1f,1f)
             .build("test"));
@@ -30,7 +29,7 @@ public class FDEntities {
 
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event){
-        event.put(TEST.get(), LivingEntity.createLivingAttributes().build());
+        event.put(CHESED.get(), LivingEntity.createLivingAttributes().build());
     }
 
 

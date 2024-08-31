@@ -15,4 +15,5 @@ public class FDModels {
 
     public static final Supplier<FDModelInfo> TEST = INFOS.register("test",()->new FDModelInfo(ResourceLocation.tryBuild(FDLib.MOD_ID,"uldera_crystal"),1));
     public static final Supplier<FDModelInfo> TEST2 = INFOS.register("test2",()->new FDModelInfo(ResourceLocation.tryBuild(FDLib.MOD_ID,"uldera_crystal"),2f));
+    public static final Supplier<FDModelInfo> CHESED = INFOS.register("chesed",()->new FDModelInfo(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"),1f));
 }
