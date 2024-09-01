@@ -144,14 +144,6 @@
 					]
 				},
 				{
-					"name": "r17",
-					"parent": "base",
-					"pivot": [0, 21, 19],
-					"cubes": [
-						{"origin": [-5, 19, 14], "size": [10, 4, 10], "pivot": [0, 21, 19], "rotation": [90, 180, 0], "uv": [0, 70]}
-					]
-				},
-				{
 					"name": "r18",
 					"parent": "base",
 					"pivot": [0, 21, -19],
