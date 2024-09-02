@@ -12,7 +12,12 @@
 			},
 			"bones": [
 				{
+					"name": "bone",
+					"pivot": [0, 0, 0]
+				},
+				{
 					"name": "base",
+					"parent": "bone",
 					"pivot": [0, 21, 0]
 				},
 				{
