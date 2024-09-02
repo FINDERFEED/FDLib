@@ -208,7 +208,7 @@ public class ShuntingYard {
         char c;
         StringBuilder val = new StringBuilder();
         int i = 0;
-        while (i < builder.length() && (Character.isLetter(c = builder.charAt(i)) || c == '.' || c == '_')){
+        while (i < builder.length() && (Character.isLetter(c = builder.charAt(i)) || c == '.' || c == '_' || Character.isDigit(c))){
             val.append(c);
             i++;
         }

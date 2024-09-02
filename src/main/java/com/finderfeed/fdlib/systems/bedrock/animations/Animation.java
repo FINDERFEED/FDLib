@@ -201,7 +201,21 @@ public class Animation {
                 return new KeyFrame(new RPNVector3f(v1,v2,v3),timestamp,InterpolationMode.LINEAR);
             }else if (element.isJsonObject()){
                 JsonObject object = element.getAsJsonObject();
-                if (object.has("pre")) throw new RuntimeException("Currently doesn't support keyframes with \"pre\"'s");
+
+                RPNVector3f pre = null;
+                if (object.has("pre")) {
+                    JsonArray array = object.getAsJsonArray("pre");
+                    String v1 = array.get(0).getAsString();
+                    String v2 = array.get(1).getAsString();
+                    String v3 = array.get(2).getAsString();
+                    if (type == KeyFrameLoadType.POSITION){
+                        v1 = "-(" + v1 + ")";
+                    }else if (type == KeyFrameLoadType.ROTATION){
+                        v1 = "-(" + v1 + ")";
+                        v2 = "-(" + v2 + ")";
+                    }
+                    pre = new RPNVector3f(v1,v2,v3);
+                }
                 JsonArray array = object.getAsJsonArray("post");
                 String v1 = array.get(0).getAsString();
                 String v2 = array.get(1).getAsString();
@@ -213,7 +227,7 @@ public class Animation {
                     v2 = "-(" + v2 + ")";
                 }
                 InterpolationMode mode = parseMode(object);
-                return new KeyFrame(new RPNVector3f(v1,v2,v3),timestamp,mode);
+                return new KeyFrame(pre,new RPNVector3f(v1,v2,v3),timestamp,mode);
             }else{
                 throw new RuntimeException("Unknown keyframe format.");
             }

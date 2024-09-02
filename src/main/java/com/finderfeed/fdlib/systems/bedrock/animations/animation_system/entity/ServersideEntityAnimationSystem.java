@@ -39,4 +39,9 @@ public class ServersideEntityAnimationSystem<T extends Entity & AnimatedObject> 
     public void onFreeze(boolean state) {
 
     }
+
+    @Override
+    public void onVariableAdded(String name, float variable) {
+
+    }
 }

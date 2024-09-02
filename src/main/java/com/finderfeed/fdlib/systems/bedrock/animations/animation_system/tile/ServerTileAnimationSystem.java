@@ -42,4 +42,9 @@ public class ServerTileAnimationSystem extends TileAnimationSystem {
                 new FreezeTileAnimationsPacket(this.getTile().getBlockPos(),state)
         );
     }
+
+    @Override
+    public void onVariableAdded(String name, float variable) {
+
+    }
 }

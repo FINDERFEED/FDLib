@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.test;
 
 import com.finderfeed.fdlib.init.FDAnimations;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDLivingEntity;
 import net.minecraft.world.entity.EntityType;
@@ -17,8 +18,12 @@ public class ChesedEntity extends FDLivingEntity {
     @Override
     public void tick() {
         super.tick();
+        AnimationSystem system = this.getSystem();
+
+        system.setVariable("variable.radius",600);
+        system.setVariable("variable.angle",180);
         if (!this.level().isClientSide){
-            this.getSystem().startAnimation("IDLE", new AnimationTicker(FDAnimations.CHESED_IDLE.get()));
+            system.startAnimation("IDLE", new AnimationTicker(FDAnimations.CHESED_IDLE.get()));
         }
     }
 }

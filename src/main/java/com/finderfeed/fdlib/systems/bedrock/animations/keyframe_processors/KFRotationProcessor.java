@@ -31,9 +31,21 @@ public class KFRotationProcessor extends KeyFrameProcessor{
         KeyFrame current = currentAndNext.get(0);
         KeyFrame next = currentAndNext.get(1);
         if (current.interpolationMode == InterpolationMode.LINEAR && (next == null || next.interpolationMode == InterpolationMode.LINEAR)){
-            Vector3f v1 = current.getValue(context);
+            float actualTime = time + partialTick;
+            Vector3f v1 = null;
+            if (actualTime < current.time){
+                v1 = current.getPreValue(context);
+                if (v1 == null){
+                    v1 = current.getPostValue(context);
+                }
+            }else{
+                v1 = current.getPostValue(context);
+            }
             if (next != null) {
-                Vector3f v2 = next.getValue(context);
+                Vector3f v2 = next.getPreValue(context);
+                if (v2 == null){
+                    v2 = next.getPostValue(context);
+                }
                 float p = ((time + partialTick) - current.time) / (float) (next.time - current.time); p = Mth.clamp(p,0,1);
                 Vector3f i = FDMathUtil.interpolateVectors(v1, v2, p);
                 return i;

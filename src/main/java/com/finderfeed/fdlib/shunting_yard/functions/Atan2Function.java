@@ -12,6 +12,6 @@ public class Atan2Function extends SYFunction {
 
     @Override
     public float compute(List<Float> args) {
-        return (float) Math.atan2(Math.toRadians(args.get(0)),Math.toRadians(args.get(1)));
+        return (float) Math.toDegrees(Math.atan2(args.get(0),args.get(1)));
     }
 }

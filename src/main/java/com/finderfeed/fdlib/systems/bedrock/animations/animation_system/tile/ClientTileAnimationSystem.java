@@ -23,4 +23,9 @@ public class ClientTileAnimationSystem extends TileAnimationSystem{
     public void onFreeze(boolean state) {
 
     }
+
+    @Override
+    public void onVariableAdded(String name, float variable) {
+
+    }
 }

@@ -129,6 +129,10 @@ public abstract class AnimationSystem {
     }
 
 
+    public void setVariable(String name,float variable){
+        this.variables.put(name,variable);
+    }
+
     public AnimationTicker getTicker(String name){
         return tickers.get(name);
     }
@@ -143,4 +147,6 @@ public abstract class AnimationSystem {
     public abstract void onAnimationStart(String name, AnimationTicker ticker);
     public abstract void onAnimationStop(String name);
     public abstract void onFreeze(boolean state);
+    public abstract void onVariableAdded(String name,float variable);
+
 }

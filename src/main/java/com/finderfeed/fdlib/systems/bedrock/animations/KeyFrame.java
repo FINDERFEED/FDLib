@@ -6,19 +6,32 @@ import org.joml.Vector3f;
 
 public class KeyFrame {
 
-    public RPNVector3f data;
+    public RPNVector3f post;
+    public RPNVector3f pre;
     public int time;
     public InterpolationMode interpolationMode;
 
-    public KeyFrame(RPNVector3f data,int time,InterpolationMode mode) {
-        this.data = data;
+    public KeyFrame(RPNVector3f post,int time,InterpolationMode mode) {
+        this.post = post;
         this.time = time;
         this.interpolationMode = mode;
     }
 
-    public Vector3f getValue(ExpressionContext context){
-        if (data == null) return null;
-        return data.get(context);
+    public KeyFrame(RPNVector3f pre,RPNVector3f post,int time,InterpolationMode mode) {
+        this.pre = pre;
+        this.post = post;
+        this.time = time;
+        this.interpolationMode = mode;
+    }
+
+    public Vector3f getPreValue(ExpressionContext context){
+        if (pre == null) return null;
+        return pre.get(context);
+    }
+
+    public Vector3f getPostValue(ExpressionContext context){
+        if (post == null) return null;
+        return post.get(context);
     }
 
 }
