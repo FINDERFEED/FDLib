@@ -1,7 +1,6 @@
-package com.finderfeed.fdlib.systems.test;
+package com.finderfeed.fdlib.to_other_mod;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.screen.test.ComponentTestScreen;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,7 +15,7 @@ public class FDClientEvents {
     @SubscribeEvent
     public static void inputEvent(InputEvent.Key event){
         if (event.getKey() == GLFW.GLFW_KEY_I && Minecraft.getInstance().screen == null){
-            Minecraft.getInstance().setScreen(new ComponentTestScreen());
+//            Minecraft.getInstance().setScreen(new ComponentTestScreen());
 //            System.out.println(Minecraft.getInstance().font.getSplitter().splitLines("Test string to\nsplit",300, Style.EMPTY)
 //                    .stream().map(FormattedText::getString).toList());
         }

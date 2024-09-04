@@ -1,7 +1,7 @@
-package com.finderfeed.fdlib.init;
+package com.finderfeed.fdlib.to_other_mod;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.test.ChesedEntity;
+import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +24,13 @@ public class FDEntities {
             ChesedEntity::new, MobCategory.CREATURE
     )
             .sized(1f,1f)
-            .build("test"));
+            .build("chesed"));
+
+    public static final Supplier<EntityType<EarthShatterEntity>> EARTH_SHATTER = ENTITIES.register("earth_shatter",()->EntityType.Builder.<EarthShatterEntity>of(
+            EarthShatterEntity::new, MobCategory.MISC
+    )
+            .sized(1f,1f)
+            .build("earth_shatter"));
 
 
     @SubscribeEvent

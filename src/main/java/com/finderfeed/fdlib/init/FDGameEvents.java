@@ -17,45 +17,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME)
 public class FDGameEvents {
 
-    //        if (level instanceof ServerLevel s && s.getGameTime() % 200 == 0){
-//            ModList modList = ModList.get();
-//            var modFiles = modList.getModFiles();
-//
-//            for (var info : modFiles){
-//                for (var eee : info.getMods()){
-//                    String namespace = eee.getNamespace();
-//                    Path path = info.getFile().findResource("assets",namespace,"shaders","program");
-//                    if (Files.exists(path)){
-//                        try {
-//                            List<Path> paths = recursivelyCollectFilePaths(path);
-//                            for (Path p : paths){
-//                                System.out.println(readFile(p));
-//                            }
-//                        }catch (Exception e){
-//                            System.out.println("error");
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        }else{
-//
-//        }
-
-    @SubscribeEvent
-    public static void registerReloadListeners(AddReloadListenerEvent event){
-//        event.addListener(new ModelReloadableResourceListener());
-//        event.addListener(new AnimationReloadableResourceListener());
-    }
-
-    @SubscribeEvent
-    public static void onDatapackSync(OnDatapackSyncEvent event){
-//        for (ServerPlayer player : event.getRelevantPlayers().toList()){
-//            PacketDistributor.sendToPlayer(player, new SyncModelsPacket());
-//            PacketDistributor.sendToPlayer(player, new AnimationsSyncPacket());
-//        }
-    }
-
     @SubscribeEvent
     public static void serverStartedEvent(ServerStartedEvent event){
         FDLib.LOGGER.info("Loading FD configs...");

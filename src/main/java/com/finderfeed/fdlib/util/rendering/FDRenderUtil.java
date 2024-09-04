@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -43,6 +44,13 @@ public class FDRenderUtil {
         }
     }
 
+
+    public static void applyMovementMatrixRotations(PoseStack matrices, Vec3 vec){
+        double angleY = Math.toDegrees(Math.atan2(vec.x,vec.z));
+        double angleX = Math.toDegrees(Math.atan2(Math.sqrt(vec.x*vec.x + vec.z*vec.z),vec.y));
+        matrices.mulPose(rotationDegrees(YP(),(float)angleY));
+        matrices.mulPose(rotationDegrees(XP(),(float)angleX));
+    }
 
 
     public static void scissor(float x,float y, float width,float boxY){

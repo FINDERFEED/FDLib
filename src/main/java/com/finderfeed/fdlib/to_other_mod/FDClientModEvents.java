@@ -1,10 +1,9 @@
-package com.finderfeed.fdlib.systems.test;
+package com.finderfeed.fdlib.to_other_mod;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.init.FDEntities;
-import com.finderfeed.fdlib.init.FDModels;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDEntityRendererBuilder;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDRenderLayerOptions;
+import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,5 +30,6 @@ public class FDClientModEvents {
                         )
                         .build()
         );
+        event.registerEntityRenderer(FDEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);
     }
 }
