@@ -22,6 +22,10 @@ public class DebugStick extends Item {
         if (!level.isClientSide){
             EarthShatterEntity.summon(level,player.getOnPos(),
                     EarthShatterSettings.builder()
+                            .upTime(4)
+                            .stayTime(2)
+                            .downTime(4)
+                            .upDistance(0.5f)
                             .direction(1,1,0)
                             .build()
             );

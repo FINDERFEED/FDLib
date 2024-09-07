@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.to_other_mod.earthshatter_entity;
 
 import com.finderfeed.fdlib.init.FDEDataSerializers;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -34,7 +35,7 @@ public class EarthShatterEntity extends Entity {
         if (state.isAir()) return null;
         EarthShatterEntity entity = new EarthShatterEntity(FDEntities.EARTH_SHATTER.get(),level);
 
-        entity.setPos(pos.getX(),pos.getY(),pos.getZ());
+        entity.setPos(pos.getX() + 0.5,pos.getY(),pos.getZ() + 0.5);
         entity.settings = settings;
         entity.setBlockState(state);
 
@@ -85,8 +86,5 @@ public class EarthShatterEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         this.settings.save("settings",tag);
-
-        EarthShatterSettings test = new EarthShatterSettings();
-        test.load("settings",tag);
     }
 }

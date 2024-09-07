@@ -89,6 +89,12 @@ public class EarthShatterSettings implements AutoSerializable {
             this.shatterSettings.direction = direction.normalize();
             return this;
         }
+
+        public Builder upDistance(float upDistance){
+            this.shatterSettings.upDistance = upDistance;
+            return this;
+        }
+
         public Builder direction(double x,double y,double z){
             return this.direction(new Vec3(x,y,z));
         }

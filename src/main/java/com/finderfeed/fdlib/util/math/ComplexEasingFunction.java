@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.util.math;
 
+import net.minecraft.util.Mth;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -13,12 +15,18 @@ public class ComplexEasingFunction implements Function<Float,Float> {
 
     @Override
     public Float apply(Float value){
+        value = Mth.clamp(value,0,length);
         EasingArea lastArea = areas.getFirst();
         float accumulatedLength = 0;
-        int idx = 0;
-        while (value < accumulatedLength){
-            accumulatedLength += lastArea.length;
-            lastArea = areas.get(++idx);
+        int idx = 1;
+        while (true){
+            float len = accumulatedLength + lastArea.length;
+            if (len > value || idx >= areas.size()){
+                break;
+            }else{
+                accumulatedLength = len;
+                lastArea = areas.get(idx++);
+            }
         }
 
         float localLength = value - accumulatedLength;
@@ -50,7 +58,7 @@ public class ComplexEasingFunction implements Function<Float,Float> {
 
     public static class Builder{
 
-        public ComplexEasingFunction easingFunction = new ComplexEasingFunction();
+        private ComplexEasingFunction easingFunction = new ComplexEasingFunction();
 
         public Builder(){
         }

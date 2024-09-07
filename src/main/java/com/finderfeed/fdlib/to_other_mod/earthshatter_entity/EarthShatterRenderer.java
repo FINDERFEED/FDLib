@@ -1,5 +1,8 @@
 package com.finderfeed.fdlib.to_other_mod.earthshatter_entity;
 
+import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
+import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -12,6 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -29,12 +33,34 @@ public class EarthShatterRenderer extends EntityRenderer<EarthShatterEntity> {
 
         matrices.pushPose();
 
+        EarthShatterSettings settings = entity.settings;
+
+        ComplexEasingFunction function = ComplexEasingFunction.builder()
+                .addArea(settings.upTime, FDEasings::easeOut)
+                .addArea(settings.stayTime,f->1f)
+                .addArea(settings.downTime,FDEasings::reversedEaseOut)
+                .build();
+
+        float p = function.apply(entity.tickCount + pticks);
+
         Vec3 dir = entity.getShatterDirection();
+
+        Vec3 init = new Vec3(0,1,0);
+
+        dir = new Vec3(
+                FDMathUtil.lerp((float) init.x,(float) dir.x,p),
+                FDMathUtil.lerp((float) init.y,(float) dir.y,p),
+                FDMathUtil.lerp((float) init.z,(float) dir.z,p)
+        );
+
+        matrices.translate(-0.5,p * settings.upDistance,-0.5);
 
         matrices.translate(0.5,0.5,0.5);
         matrices.scale(1.1f,1.1f,1.1f);
         FDRenderUtil.applyMovementMatrixRotations(matrices,dir);
         matrices.translate(-0.5,-0.5,-0.5);
+
+
 
 
         BlockPos pos = entity.getOnPos().above(2);
