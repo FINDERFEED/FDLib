@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.FDHelpers;
+import com.finderfeed.fdlib.nbt.FDTagDeserializers;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
@@ -12,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -33,6 +35,7 @@ public class FDModEvents {
         event.enqueueWork(()->{
             loadAnimations();
             loadModels();
+            FDTagDeserializers.registerDeserializer(Vec3.class,FDDefaultTagDeserializers.VEC3);
         });
     }
 

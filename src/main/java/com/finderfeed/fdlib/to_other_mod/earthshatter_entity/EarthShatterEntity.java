@@ -4,36 +4,39 @@ import com.finderfeed.fdlib.init.FDEDataSerializers;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.function.Consumer;
 
 public class EarthShatterEntity extends Entity {
 
-    public static final EntityDataAccessor<Vec3> DIRECTION = SynchedEntityData.defineId(EarthShatterEntity.class, FDEDataSerializers.VEC3.get());
     public static final EntityDataAccessor<BlockState> STATE = SynchedEntityData.defineId(EarthShatterEntity.class, EntityDataSerializers.BLOCK_STATE);
 
-    private int lifetime = 0;
+    public EarthShatterSettings settings;
 
     public EarthShatterEntity(EntityType<?> type, Level level) {
         super(type, level);
     }
 
-    public static EarthShatterEntity summon(Level level, BlockPos pos,Vec3 shatterDirection,int lifetime){
+    public static EarthShatterEntity summon(Level level, BlockPos pos,EarthShatterSettings settings){
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return null;
         EarthShatterEntity entity = new EarthShatterEntity(FDEntities.EARTH_SHATTER.get(),level);
 
         entity.setPos(pos.getX(),pos.getY(),pos.getZ());
-        entity.setDirection(shatterDirection);
+        entity.settings = settings;
         entity.setBlockState(state);
-        entity.lifetime = lifetime;
 
         level.addFreshEntity(entity);
 
@@ -44,7 +47,7 @@ public class EarthShatterEntity extends Entity {
     public void tick() {
         super.tick();
         if (!level().isClientSide){
-            if (this.tickCount > lifetime){
+            if (this.tickCount > settings.getLifetime()){
                 this.remove(RemovalReason.DISCARDED);
             }
         }
@@ -59,27 +62,31 @@ public class EarthShatterEntity extends Entity {
     }
 
     public Vec3 getShatterDirection(){
-        return this.entityData.get(DIRECTION);
-    }
-
-    public void setDirection(Vec3 v){
-        this.entityData.set(DIRECTION,v);
+        return this.settings.direction;
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DIRECTION,new Vec3(0,1,0))
-                .define(STATE, Blocks.STONE.defaultBlockState());
+        builder.define(STATE, Blocks.STONE.defaultBlockState());
     }
 
+    @Override
+    public void sendPairingData(ServerPlayer player, Consumer<CustomPacketPayload> bundleBuilder) {
+        super.sendPairingData(player, bundleBuilder);
+        bundleBuilder.accept(new EarthShatterEntitySpawnPacket(this,this.settings));
+    }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
-
+        this.settings = new EarthShatterSettings();
+        this.settings.load("settings",tag);
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
+        this.settings.save("settings",tag);
 
+        EarthShatterSettings test = new EarthShatterSettings();
+        test.load("settings",tag);
     }
 }

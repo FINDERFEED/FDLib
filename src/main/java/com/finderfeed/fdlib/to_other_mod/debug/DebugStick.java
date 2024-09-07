@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.debug;
 
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -20,8 +21,9 @@ public class DebugStick extends Item {
 
         if (!level.isClientSide){
             EarthShatterEntity.summon(level,player.getOnPos(),
-                    new Vec3(1,1,0),
-                    60
+                    EarthShatterSettings.builder()
+                            .direction(1,1,0)
+                            .build()
             );
         }
 
