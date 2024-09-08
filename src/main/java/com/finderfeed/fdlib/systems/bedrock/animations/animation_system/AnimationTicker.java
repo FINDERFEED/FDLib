@@ -50,7 +50,7 @@ public class AnimationTicker {
 
     public AnimationTicker(Animation animation){
         this.animation = animation;
-        this.toNullTransitionTime = animation.getAnimTime();
+        this.toNullTransitionTime = 0;
         this.loopMode = animation.getDefaultLoopMode();
     }
 
@@ -107,6 +107,9 @@ public class AnimationTicker {
         this.toNullTransitionTime = toNullTransitionTime;
     }
 
+    public static Builder builder(Animation animation){
+        return new Builder(animation);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -149,6 +152,11 @@ public class AnimationTicker {
 
         public Builder setSpeed(float modifier){
             this.ticker.speedModifier = modifier;
+            return this;
+        }
+
+        public Builder startTime(float startTime){
+            this.ticker.elapsedTime = startTime;
             return this;
         }
 

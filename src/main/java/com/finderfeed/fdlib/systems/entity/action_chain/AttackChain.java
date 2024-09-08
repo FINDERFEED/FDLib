@@ -53,30 +53,35 @@ public class AttackChain {
             if (pair.getFirst() != num){
                 num = pair.getFirst();
                 i--;
-                while (!attacksToAdd.isEmpty()){
-                    int rnd = source.nextInt(attacksToAdd.size());
-
-                    var p = attacksToAdd.get(rnd);
-                    AttackInstance attack = p.getSecond();
-                    AttackOptions options = p.getFirst();
-                    queue.offer(attack);
-
-                    AttackOptions next = options.nextAttack;
-                    while (next != null){
-                        AttackInstance instance = new AttackInstance(next.getAttack(source));
-                        queue.offer(instance);
-                        next = next.nextAttack;
-                    }
-
-                    attacksToAdd.remove(rnd);
-                }
+                this.addAttacks(queue,attacksToAdd);
                 continue;
             }else{
                 AttackOptions options = pair.getSecond();
                 attacksToAdd.add(new Pair<>(options,new AttackInstance(options.getAttack(this.source))));
             }
         }
+        this.addAttacks(queue,attacksToAdd);
         this.chain = queue;
+    }
+
+    private void addAttacks(Queue<AttackInstance> queue,List<Pair<AttackOptions,AttackInstance>> attacksToAdd){
+        while (!attacksToAdd.isEmpty()){
+            int rnd = source.nextInt(attacksToAdd.size());
+
+            var p = attacksToAdd.get(rnd);
+            AttackInstance attack = p.getSecond();
+            AttackOptions options = p.getFirst();
+            queue.offer(attack);
+
+            AttackOptions next = options.nextAttack;
+            while (next != null){
+                AttackInstance instance = new AttackInstance(next.getAttack(source));
+                queue.offer(instance);
+                next = next.nextAttack;
+            }
+
+            attacksToAdd.remove(rnd);
+        }
     }
 
 

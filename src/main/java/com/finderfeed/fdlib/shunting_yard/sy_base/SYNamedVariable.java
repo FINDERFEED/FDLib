@@ -10,7 +10,11 @@ public class SYNamedVariable extends SYVariable {
 
     @Override
     public float getValue(ExpressionContext context) {
-        return context.variables.get(name);
+        if (context.variables.containsKey(name)){
+            return context.variables.get(name);
+        }else{
+            return 0;
+        }
     }
 
     @Override
