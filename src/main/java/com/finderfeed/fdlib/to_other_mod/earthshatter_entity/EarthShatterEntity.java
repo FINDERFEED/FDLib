@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -33,6 +34,17 @@ public class EarthShatterEntity extends Entity {
     public static EarthShatterEntity summon(Level level, BlockPos pos,EarthShatterSettings settings){
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return null;
+        if (!level.getEntitiesOfClass(EarthShatterEntity.class,new AABB(
+                pos.getX() + 0.1,
+                pos.getY(),
+                pos.getZ() + 0.1,
+                pos.getX() + 0.9,
+                pos.getY() + 0.9,
+                pos.getZ() + 0.9
+        )).isEmpty()){
+            return null;
+        }
+
         EarthShatterEntity entity = new EarthShatterEntity(FDEntities.EARTH_SHATTER.get(),level);
 
         entity.setPos(pos.getX() + 0.5,pos.getY(),pos.getZ() + 0.5);

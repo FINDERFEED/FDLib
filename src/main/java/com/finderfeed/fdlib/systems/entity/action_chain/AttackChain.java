@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.entity.action_chain;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 
 import java.util.*;
@@ -33,12 +34,7 @@ public class AttackChain {
         }
         if (currentAttack != null){
             if (currentAttack.attack.getExecutor().execute(currentAttack)){
-                AttackOptions options = currentAttack.options;
-                if (options.nextAttack != null){
-                    this.currentAttack = new AttackInstance(options.nextAttack,options.getAttack(source));
-                }else{
-                    this.currentAttack = null;
-                }
+                this.currentAttack = null;
             }else{
                 currentAttack.tick++;
             }
@@ -51,7 +47,7 @@ public class AttackChain {
     private void buildQueue(){
         int num = attacks.get(0).getFirst();
         Queue<AttackInstance> queue = new ArrayDeque<>();
-        List<AttackInstance> attacksToAdd = new ArrayList<>();
+        List<Pair<AttackOptions,AttackInstance>> attacksToAdd = new ArrayList<>();
         for (int i = 0; i < attacks.size();i++){
             var pair = this.attacks.get(i);
             if (pair.getFirst() != num){
@@ -59,13 +55,25 @@ public class AttackChain {
                 i--;
                 while (!attacksToAdd.isEmpty()){
                     int rnd = source.nextInt(attacksToAdd.size());
-                    queue.offer(attacksToAdd.get(rnd));
+
+                    var p = attacksToAdd.get(rnd);
+                    AttackInstance attack = p.getSecond();
+                    AttackOptions options = p.getFirst();
+                    queue.offer(attack);
+
+                    AttackOptions next = options.nextAttack;
+                    while (next != null){
+                        AttackInstance instance = new AttackInstance(next.getAttack(source));
+                        queue.offer(instance);
+                        next = next.nextAttack;
+                    }
+
                     attacksToAdd.remove(rnd);
                 }
                 continue;
             }else{
                 AttackOptions options = pair.getSecond();
-                attacksToAdd.add(new AttackInstance(options,options.getAttack(this.source)));
+                attacksToAdd.add(new Pair<>(options,new AttackInstance(options.getAttack(this.source))));
             }
         }
         this.chain = queue;
@@ -86,5 +94,37 @@ public class AttackChain {
 
     public AttackInstance getCurrentAttack() {
         return currentAttack;
+    }
+
+    public void load(CompoundTag tag){
+        this.chain = new ArrayDeque<>();
+        try {
+            int idx = 0;
+            while (tag.contains("attack_" + idx)) {
+                AttackInstance instance = new AttackInstance(this.registeredAttacks.get(tag.getString("attack_" + idx++)));
+                this.chain.offer(instance);
+            }
+            if (tag.contains("currentAttack")) {
+                this.currentAttack = new AttackInstance(
+                        this.registeredAttacks.get(tag.getString("currentAttack"))
+                );
+                this.currentAttack.tick = tag.getInt("currentAttackTick");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            this.chain = new ArrayDeque<>();
+            this.currentAttack = null;
+        }
+    }
+
+    public void save(CompoundTag tag){
+        int idx = 0;
+        for (AttackInstance instance : this.chain){
+            tag.putString("attack_"+idx,instance.attack.getName());
+        }
+        if (currentAttack != null){
+            tag.putString("currentAttack",currentAttack.attack.getName());
+            tag.putInt("currentAttackTick",currentAttack.tick);
+        }
     }
 }
