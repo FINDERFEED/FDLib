@@ -18,7 +18,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class ChesedEntity extends FDLivingEntity {
 
@@ -28,7 +31,9 @@ public class ChesedEntity extends FDLivingEntity {
 
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
         super(type, level);
-        model = new FDModel(FDModels.CHESED.get());
+        if (model == null) {
+            model = new FDModel(FDModels.CHESED.get());
+        }
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
                     .addAttack(0, AttackOptions.builder()
@@ -80,10 +85,15 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 200;
+        return instance.tick >= 10;
     }
 
+    private Vec3 oldRollPos;
+
     public boolean roll(AttackInstance instance){
+        if (instance.tick == 0){
+            this.oldRollPos = this.position();
+        }
         var system = this.getSystem();
         AnimationTicker ticker = system.getTicker("ROLL");
         if (ticker == null){
@@ -94,30 +104,112 @@ public class ChesedEntity extends FDLivingEntity {
                     );
         }
         Vector3f p = this.getModelPartPosition("base",model);
-        Vector3f p1 = this.transformPoint(new Vector3f(0,0,1),"base",model);
-        Vec3 b = new Vec3(
-                p1.x - p.x,
-                p1.y - p.y,
-                p1.z - p.z
-        );
         Vec3 pos = this.position().add(
                 p.x,p.y,p.z
         );
-        if (level() instanceof ServerLevel level){
-            BlockPos blockPos = new BlockPos(
-                    (int) pos.x,
-                    (int) pos.y - 2,
-                    (int) pos.z
-            );
-            EarthShatterEntity.summon(level,blockPos, EarthShatterSettings.builder()
-                            .direction(b.reverse().add(0,1,0))
-                            .upTime(4)
-                            .upDistance(0.5f)
-                            .downTime(4)
-                            .stayTime(2)
-                    .build());
-        }
+        this.summonRollEarthShatters(oldRollPos.add(0,-2,0),pos.add(0,-2,0));
+        oldRollPos = pos;
         return instance.tick >= FDAnimations.CHESED_ROLL.get().getAnimTime();
+    }
+
+
+    private void summonRollEarthShatters(Vec3 oldPos, Vec3 pos){
+
+        Vec3 b = pos.subtract(oldPos);
+        Vec3 nb = b.normalize();
+        Vec3 r = nb.yRot((float)Math.PI / 2);
+        Vec3 l = nb.yRot(-(float)Math.PI / 2);
+
+
+        Matrix4fStack mat = new Matrix4fStack(3);
+        float angle = (float) Math.atan2(nb.x,nb.z);
+        mat.rotateY(angle);
+
+        mat.pushMatrix();
+        mat.rotateX((float)Math.toRadians(-65));
+        Vector4f direction = mat.transform(0,0,1,1,new Vector4f());
+        mat.popMatrix();
+
+        mat.pushMatrix();
+        mat.rotateY((float)Math.toRadians(45));
+        mat.rotateX((float)Math.toRadians(-45));
+        Vector4f directionLeft = mat.transform(0,0,1,1,new Vector4f());
+        mat.popMatrix();
+
+        mat.pushMatrix();
+        mat.rotateY((float)Math.toRadians(-45));
+        mat.rotateX((float)Math.toRadians(-45));
+        Vector4f directionRight = mat.transform(0,0,1,1,new Vector4f());
+        mat.popMatrix();
+
+        EarthShatterSettings settingsMain = EarthShatterSettings.builder()
+                .direction(
+                        direction.x,
+                        direction.y,
+                        direction.z
+                )
+                .upTime(4)
+                .upDistance(0.25f)
+                .downTime(8)
+                .stayTime(2)
+                .build();
+
+        EarthShatterSettings settingsLeft = EarthShatterSettings.builder()
+                .direction(
+                        directionLeft.x,
+                        directionLeft.y,
+                        directionLeft.z
+                )
+                .upTime(4)
+                .upDistance(0.5f)
+                .downTime(8)
+                .stayTime(2)
+                .build();
+
+        EarthShatterSettings settingsRight = EarthShatterSettings.builder()
+                .direction(
+                        directionRight.x,
+                        directionRight.y,
+                        directionRight.z
+                )
+                .upTime(4)
+                .upDistance(0.5f)
+                .downTime(8)
+                .stayTime(2)
+                .build();
+
+        for (float i = 0; i < b.length();i++){
+            Vec3 v = oldPos.add(nb.multiply(i,i,i));
+
+            Vec3 r1 = v.add(r);
+            Vec3 l1 = v.add(l);
+
+            BlockPos mainpos = new BlockPos(
+                    (int)v.x,
+                    (int)v.y,
+                    (int)v.z
+            );
+
+            BlockPos rpos = new BlockPos(
+                    (int)r1.x,
+                    (int)r1.y,
+                    (int)r1.z
+            );
+
+            BlockPos lpos = new BlockPos(
+                    (int)l1.x,
+                    (int)l1.y,
+                    (int)l1.z
+            );
+
+            EarthShatterEntity.summon(level(),mainpos, settingsMain);
+
+            EarthShatterEntity.summon(level(),lpos, settingsLeft);
+
+            EarthShatterEntity.summon(level(),rpos, settingsRight);
+
+        }
+
     }
 
 }
