@@ -10,6 +10,7 @@ import java.util.List;
 public class FDEntityRendererBuilder<T extends Entity & AnimatedObject> {
 
     private List<FDRenderLayerOptions<T>> layers = new ArrayList<>();
+    private IShouldRender<T> shouldRender = null;
 
     public static <E extends Entity & AnimatedObject> FDEntityRendererBuilder<E> builder(){
         return new FDEntityRendererBuilder<E>();
@@ -20,10 +21,14 @@ public class FDEntityRendererBuilder<T extends Entity & AnimatedObject> {
         return this;
     }
 
+    public FDEntityRendererBuilder<T> shouldRender(IShouldRender<T> shouldRender){
+        this.shouldRender = shouldRender;
+        return this;
+    }
 
     public EntityRendererProvider<T> build(){
         return (context -> {
-            return new FDEntityRenderer<>(context,layers);
+            return new FDEntityRenderer<>(context,shouldRender,layers);
         });
     }
 

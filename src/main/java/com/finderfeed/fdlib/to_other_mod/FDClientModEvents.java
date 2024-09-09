@@ -17,6 +17,9 @@ public class FDClientModEvents {
     public static void addRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(FDEntities.CHESED.get(),
                 FDEntityRendererBuilder.builder()
+                        .shouldRender(((entity, frustum, x, y, z) -> {
+                            return true;
+                        }))
                         .addLayer(FDRenderLayerOptions.builder()
                                 .model(FDModels.CHESED)
                                 .renderType(RenderType.entityCutout(FDLib.location("textures/entities/chesed.png")))

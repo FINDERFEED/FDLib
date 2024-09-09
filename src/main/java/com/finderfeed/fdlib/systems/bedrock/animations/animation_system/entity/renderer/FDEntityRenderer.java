@@ -23,10 +23,12 @@ import java.util.List;
 public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityRenderer<T> {
 
     public List<ReadyLayer<T>> layers;
+    public IShouldRender<T> shouldRender;
 
 
-    public FDEntityRenderer(EntityRendererProvider.Context ctx, List<FDRenderLayerOptions<T>> layerDefinitions) {
+    public FDEntityRenderer(EntityRendererProvider.Context ctx,IShouldRender<T> shouldRender, List<FDRenderLayerOptions<T>> layerDefinitions) {
         super(ctx);
+        this.shouldRender = shouldRender;
         this.layers = new ArrayList<>();
         for (FDRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
@@ -46,7 +48,9 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
     public void applyAnimations(T entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
         AnimationSystem system = entity.getSystem();
         for (var layer : this.layers){
-            system.applyAnimations(layer.model(),partialTicks);
+            FDModel model = layer.model();
+            system.applyAnimations(model,partialTicks);
+            model.main.yRot -= idk;
         }
     }
 
@@ -81,7 +85,10 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
     }
 
     @Override
-    public boolean shouldRender(T p_114491_, Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {
-        return super.shouldRender(p_114491_, p_114492_, p_114493_, p_114494_, p_114495_);
+    public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
+        if (shouldRender != null){
+            return shouldRender.shouldRender(entity,frustum,x,y,z);
+        }
+        return super.shouldRender(entity, frustum, x, y, z);
     }
 }

@@ -10,6 +10,7 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -64,6 +65,7 @@ public class ChesedEntity extends FDLivingEntity {
     public void tick() {
         super.tick();
         AnimationSystem system = this.getSystem();
+        this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(0,0,0));
 
         system.setVariable("variable.radius",400);
         system.setVariable("variable.angle",180);
