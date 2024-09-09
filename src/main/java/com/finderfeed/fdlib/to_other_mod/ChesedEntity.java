@@ -11,12 +11,18 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
@@ -25,9 +31,13 @@ import org.joml.Vector4f;
 
 public class ChesedEntity extends FDLivingEntity {
 
+    public static EntityDataAccessor<Boolean> IS_ROLLING = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
+
 
     public AttackChain chain;
     private static FDModel model;
+    private Vec3 oldRollPos;
+
 
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
         super(type, level);
@@ -55,30 +65,23 @@ public class ChesedEntity extends FDLivingEntity {
         super.tick();
         AnimationSystem system = this.getSystem();
 
-        system.setVariable("variable.radius",200);
+        system.setVariable("variable.radius",400);
         system.setVariable("variable.angle",180);
         if (!this.level().isClientSide){
             this.chain.tick();
             system.startAnimation("IDLE", new AnimationTicker(FDAnimations.CHESED_IDLE.get()));
+        }else{
+            if (this.isRolling()){
+                this.handleClientRolling();
+            }
         }
     }
 
 
-    @Override
-    public boolean save(CompoundTag tag) {
-        if (chain != null){
-            chain.save(tag);
-        }
-        return super.save(tag);
-    }
 
-    @Override
-    public void load(CompoundTag tag) {
-        if (chain != null){
-            this.chain.load(tag);
-        }
-        super.load(tag);
-    }
+
+
+
 
     public boolean doNothing(AttackInstance instance){
 
@@ -88,28 +91,44 @@ public class ChesedEntity extends FDLivingEntity {
         return instance.tick >= 10;
     }
 
-    private Vec3 oldRollPos;
 
     public boolean roll(AttackInstance instance){
         if (instance.tick == 0){
             this.oldRollPos = this.position();
         }
+
+        float speed = 0.75f;
+
+        float animTime = FDAnimations.CHESED_ROLL.get().getAnimTime() / speed;
+
         var system = this.getSystem();
         AnimationTicker ticker = system.getTicker("ROLL");
-        if (ticker == null){
+        if (ticker == null && instance.tick < animTime){
             system.startAnimation("ROLL",
                     AnimationTicker.builder(FDAnimations.CHESED_ROLL.get())
                             .startTime(instance.tick)
+                            .setSpeed(speed)
                             .build()
                     );
         }
+
         Vector3f p = this.getModelPartPosition("base",model);
         Vec3 pos = this.position().add(
                 p.x,p.y,p.z
         );
+        if (oldRollPos == null){
+            oldRollPos = pos;
+        }
         this.summonRollEarthShatters(oldRollPos.add(0,-2,0),pos.add(0,-2,0));
         oldRollPos = pos;
-        return instance.tick >= FDAnimations.CHESED_ROLL.get().getAnimTime();
+
+        if (instance.tick >= animTime){
+            this.setRolling(false);
+            return true;
+        }else{
+            this.setRolling(true);
+        }
+        return false;
     }
 
 
@@ -179,7 +198,7 @@ public class ChesedEntity extends FDLivingEntity {
                 .build();
 
         for (float i = 0; i < b.length();i++){
-            Vec3 v = oldPos.add(nb.multiply(i,i,i));
+            Vec3 v = pos.add(nb.multiply(i,i,i).reverse());
 
             Vec3 r1 = v.add(r);
             Vec3 l1 = v.add(l);
@@ -212,4 +231,123 @@ public class ChesedEntity extends FDLivingEntity {
 
     }
 
+    private void handleClientRolling(){
+        Vector3f p = this.getModelPartPosition("base",model);
+        Vec3 pos = this.position().add(
+                p.x,p.y - 2,p.z
+        );
+        if (oldRollPos == null){
+            oldRollPos = pos;
+        }
+
+        Vec3 b = pos.subtract(oldRollPos);
+        Vec3 nb = b.normalize();
+        Vec3 r = nb.yRot((float)Math.PI / 2);
+        Vec3 l = nb.yRot(-(float)Math.PI / 2);
+
+        for (float i = 0; i < b.length();i++){
+            Vec3 v = pos.add(nb.multiply(i,i,i).reverse());
+
+            Vec3 r1 = v.add(r);
+            Vec3 l1 = v.add(l);
+
+            BlockPos mainpos = new BlockPos(
+                    (int)v.x,
+                    (int)v.y,
+                    (int)v.z
+            );
+
+            BlockPos rpos = new BlockPos(
+                    (int)r1.x,
+                    (int)r1.y,
+                    (int)r1.z
+            );
+
+            BlockPos lpos = new BlockPos(
+                    (int)l1.x,
+                    (int)l1.y,
+                    (int)l1.z
+            );
+            BlockState mainState = level().getBlockState(mainpos);
+            BlockState leftState = level().getBlockState(lpos);
+            BlockState rightState = level().getBlockState(rpos);
+
+            float randomRadius = 1;
+
+            if (!mainState.isAir()){
+                for (int g = 0; g < 5;g++) {
+                    level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, mainState),true,
+                            v.x + level().random.nextFloat() * randomRadius - randomRadius/2,
+                            v.y + 1,
+                            v.z + level().random.nextFloat() * randomRadius - randomRadius/2,
+                            0, 0, 0
+                    );
+                }
+            }
+            if (!leftState.isAir()){
+                for (int g = 0; g < 5;g++) {
+                    level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, leftState),true,
+                            l1.x + level().random.nextFloat() * randomRadius - randomRadius / 2,
+                            l1.y + 1.25,
+                            l1.z + level().random.nextFloat() * randomRadius - randomRadius / 2,
+                            0, 0, 0
+                    );
+                }
+            }
+            if (!rightState.isAir()){
+                for (int g = 0; g < 5;g++) {
+                    level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, rightState),true,
+                            r1.x + level().random.nextFloat() * randomRadius - randomRadius / 2,
+                            r1.y + 1.25,
+                            r1.z + level().random.nextFloat() * randomRadius - randomRadius / 2,
+                            0, 0, 0
+                    );
+                }
+            }
+
+
+        }
+        oldRollPos = pos;
+    }
+
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_ROLLING,false);
+    }
+
+    @Override
+    public boolean save(CompoundTag tag) {
+        if (chain != null){
+            chain.save(tag);
+        }
+        return super.save(tag);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        if (chain != null){
+            this.chain.load(tag);
+        }
+        super.load(tag);
+    }
+
+    public void setRolling(boolean state){
+        this.entityData.set(IS_ROLLING,state);
+    }
+
+    public boolean isRolling(){
+        return this.entityData.get(IS_ROLLING);
+    }
+
+    @Override
+    public boolean shouldRender(double p_20296_, double p_20297_, double p_20298_) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double p_19883_) {
+        return true;
+    }
 }

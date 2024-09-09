@@ -59,11 +59,10 @@ public class EarthShatterEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide){
-            if (this.tickCount > settings.getLifetime()){
-                this.remove(RemovalReason.DISCARDED);
-            }
+        if (this.tickCount > settings.getLifetime()){
+            this.remove(RemovalReason.DISCARDED);
         }
+
     }
 
     public BlockState getBlockState(){
@@ -98,5 +97,16 @@ public class EarthShatterEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         this.settings.save("settings",tag);
+    }
+
+
+    @Override
+    public boolean shouldRender(double p_20296_, double p_20297_, double p_20298_) {
+        return super.shouldRender(p_20296_, p_20297_, p_20298_);
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double p_19883_) {
+        return true;
     }
 }

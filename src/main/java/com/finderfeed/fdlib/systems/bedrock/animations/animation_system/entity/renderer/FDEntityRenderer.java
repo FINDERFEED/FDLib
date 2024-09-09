@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -77,5 +78,10 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
     @Override
     public ResourceLocation getTextureLocation(T p_114482_) {
         return TextureAtlas.LOCATION_BLOCKS;
+    }
+
+    @Override
+    public boolean shouldRender(T p_114491_, Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {
+        return super.shouldRender(p_114491_, p_114492_, p_114493_, p_114494_, p_114495_);
     }
 }
