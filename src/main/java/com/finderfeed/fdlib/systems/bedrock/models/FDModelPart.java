@@ -19,9 +19,9 @@ public class FDModelPart {
     public float y;
     public float z;
 
-    public float xRot;
-    public float yRot;
-    public float zRot;
+    private float xRot;
+    private float yRot;
+    private float zRot;
 
     public Vector3f initRotation;
     public boolean isVisible = true;
@@ -138,5 +138,29 @@ public class FDModelPart {
 
     public FDModelPart getParent() {
         return parent;
+    }
+
+    public void addXRot(float value){
+        this.xRot = (this.xRot + value) % 360;
+    }
+
+    public void addYRot(float value){
+        this.yRot = (this.yRot + value) % 360;
+    }
+
+    public void addZRot(float value){
+        this.zRot = (this.zRot + value) % 360;
+    }
+
+    public float getXRot() {
+        return xRot;
+    }
+
+    public float getYRot() {
+        return yRot;
+    }
+
+    public float getZRot() {
+        return zRot;
     }
 }

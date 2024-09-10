@@ -90,7 +90,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 10;
+        return instance.tick >= 200;
     }
 
 
@@ -114,7 +114,7 @@ public class ChesedEntity extends FDLivingEntity {
                     );
         }
 
-        Vector3f p = this.getModelPartPosition("base",model);
+        Vector3f p = this.getModelPartPosition(this,"base",model);
         Vec3 pos = this.position().add(
                 p.x,p.y,p.z
         );
@@ -234,7 +234,7 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
     private void handleClientRolling(){
-        Vector3f p = this.getModelPartPosition("base",model);
+        Vector3f p = this.getModelPartPosition(this,"base",model);
         Vec3 pos = this.position().add(
                 p.x,p.y - 2,p.z
         );

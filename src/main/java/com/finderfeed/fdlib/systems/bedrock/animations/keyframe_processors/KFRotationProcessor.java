@@ -20,9 +20,9 @@ public class KFRotationProcessor extends KeyFrameProcessor{
     @Override
     public void applyTransformations(AnimationContext context, FDModelPart model, float time, float partialTick) {
         Vector3f v = this.getCurrentTransformation(context,time,partialTick);
-        model.xRot += v.x;
-        model.yRot += v.y;
-        model.zRot += v.z;
+        model.addXRot(v.x);
+        model.addYRot(v.y);
+        model.addZRot(v.z);
     }
 
     @Override

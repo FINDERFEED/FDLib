@@ -50,7 +50,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         for (var layer : this.layers){
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
-            model.main.yRot -= idk;
+            model.main.addYRot(-idk);
         }
     }
 
