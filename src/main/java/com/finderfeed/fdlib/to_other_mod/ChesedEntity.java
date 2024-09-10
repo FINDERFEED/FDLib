@@ -121,7 +121,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (oldRollPos == null){
             oldRollPos = pos;
         }
-        this.summonRollEarthShatters(oldRollPos.add(0,-2,0),pos.add(0,-2,0));
+        this.summonRollEarthShatters(oldRollPos.add(0,-1,0),pos.add(0,-1,0));
         oldRollPos = pos;
 
         if (instance.tick >= animTime){
@@ -236,7 +236,7 @@ public class ChesedEntity extends FDLivingEntity {
     private void handleClientRolling(){
         Vector3f p = this.getModelPartPosition(this,"base",model);
         Vec3 pos = this.position().add(
-                p.x,p.y - 2,p.z
+                p.x,p.y - 1,p.z
         );
         if (oldRollPos == null){
             oldRollPos = pos;

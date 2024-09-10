@@ -92,7 +92,10 @@ public class FDModel {
     private void collectParentTransformations(FDModelPart part,Matrix4f mat){
         List<FDModelPart> parts = new ArrayList<>();
         FDModelPart p = part;
-        while (p != null){parts.add(p);p = p.parent;}
+        while (p != null){
+            parts.add(p);
+            p = p.parent;
+        }
         for (int i = parts.size() - 1; i >= 0;i--){
             p = parts.get(i);
             p.transform(mat);
@@ -143,7 +146,10 @@ public class FDModel {
             parent.children.put(child.name,child);
         }
         this.main = new FDModelPart("root",null,new ArrayList<>(),new Vector3f(),new Vector3f());
-        noParentsParts.forEach(part->main.children.put(part.name,part));
+        noParentsParts.forEach(part->{
+            main.children.put(part.name,part);
+            part.parent = main;
+        });
         this.partsLookup = allParts;
     }
 }
