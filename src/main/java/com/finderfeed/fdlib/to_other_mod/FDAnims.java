@@ -7,20 +7,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class FDAnimations {
+public class FDAnims {
 
 
     public static DeferredRegister<Animation> ANIMATIONS = DeferredRegister.create(FDRegistries.ANIMATIONS, FDLib.MOD_ID);
 
-    public static DeferredHolder<Animation,Animation> TEST2 = ANIMATIONS.register("uldera_crystal_idle", ()->{
-        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"uldera_crystal_animations"));
-    });
-    public static DeferredHolder<Animation,Animation> TEST3 = ANIMATIONS.register("uldera_crystal_attack_1",()->{
-        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"uldera_crystal_animations"));
-    });
-    public static DeferredHolder<Animation,Animation> TEST4 = ANIMATIONS.register("uld_test", ()->{
-        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"uldera_crystal_animations"));
-    });
     public static DeferredHolder<Animation,Animation> CHESED_IDLE = ANIMATIONS.register("chesed_idle", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
@@ -30,9 +21,16 @@ public class FDAnimations {
     public static DeferredHolder<Animation,Animation> CHESED_ROLL_UP = ANIMATIONS.register("chesed_roll_up", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
+    public static DeferredHolder<Animation,Animation> CHESED_ROLL_UP_END = ANIMATIONS.register("chesed_roll_up_end", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
     public static DeferredHolder<Animation,Animation> CHESED_ROLL = ANIMATIONS.register("chesed_roll", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
+    public static DeferredHolder<Animation,Animation> CHESED_ROLL_ROLL = ANIMATIONS.register("chesed_roll_roll", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
+
 
 
 

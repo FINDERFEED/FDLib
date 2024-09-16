@@ -118,6 +118,7 @@ public abstract class AnimationSystem {
                     Animation toNull = animation.createTransitionTo(context, null, ticker.getElapsedTime(),
                             ticker.getToNullTransitionTime(), 0);
                     AnimationTicker newTicker = new AnimationTicker(ticker);
+                    newTicker.setLoopMode(Animation.LoopMode.ONCE);
                     newTicker.setAnimation(toNull);
                     this.tickers.put(name,newTicker);
                 }else{
@@ -135,6 +136,14 @@ public abstract class AnimationSystem {
 
     public AnimationTicker getTicker(String name){
         return tickers.get(name);
+    }
+
+    public Animation getTickerAnimation(String ticker){
+        if (this.tickers.containsKey(ticker)){
+            return this.getTicker(ticker).getAnimation();
+        }else{
+            return null;
+        }
     }
 
     /*

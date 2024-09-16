@@ -2,7 +2,7 @@ package com.finderfeed.fdlib;
 
 
 import com.finderfeed.fdlib.init.FDEDataSerializers;
-import com.finderfeed.fdlib.to_other_mod.FDAnimations;
+import com.finderfeed.fdlib.to_other_mod.FDAnims;
 import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
 import com.finderfeed.fdlib.to_other_mod.FDItems;
@@ -32,7 +32,7 @@ public class FDLib {
         FDItems.ITEMS.register(bus);
         FDModels.INFOS.register(bus);
         FDEntities.ENTITIES.register(bus);
-        FDAnimations.ANIMATIONS.register(bus);
+        FDAnims.ANIMATIONS.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
     }

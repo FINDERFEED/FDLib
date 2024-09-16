@@ -1,6 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod;
 
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
+import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDLivingEntity;
@@ -16,7 +16,6 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -25,10 +24,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
 
 public class ChesedEntity extends FDLivingEntity {
 
@@ -38,6 +38,7 @@ public class ChesedEntity extends FDLivingEntity {
     public AttackChain chain;
     private static FDModel model;
     private Vec3 oldRollPos;
+    private boolean playIdle = true;
 
 
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
@@ -71,7 +72,11 @@ public class ChesedEntity extends FDLivingEntity {
         system.setVariable("variable.angle",180);
         if (!this.level().isClientSide){
             this.chain.tick();
-            system.startAnimation("IDLE", new AnimationTicker(FDAnimations.CHESED_IDLE.get()));
+            if (playIdle) {
+                system.startAnimation("IDLE", AnimationTicker.builder(CHESED_IDLE).build());
+            }else{
+                system.stopAnimation("IDLE");
+            }
         }else{
             if (this.isRolling()){
                 this.handleClientRolling();
@@ -90,47 +95,89 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 200;
+        return instance.tick >= 20;
     }
 
 
     public boolean roll(AttackInstance instance){
-        if (instance.tick == 0){
+        int tick = instance.tick;
+        if (tick == 0){
+            this.oldRollPos = this.position();
+        }
+        Vector3f p = this.getModelPartPosition(this,"base",model);
+        Vec3 pos = this.position().add(p.x,p.y,p.z);
+        var system = this.getSystem();
+
+
+        if (tick < CHESED_ROLL_UP.get().getAnimTime()){
+
+            this.playIdle = false;
+            if (system.getTickerAnimation("ROLL_UP") != CHESED_ROLL_UP.get()) {
+                system.startAnimation("ROLL_UP", AnimationTicker.builder(CHESED_ROLL_UP)
+                        .startTime(tick)
+                        .build());
+            }
+        }else if (tick >= CHESED_ROLL_UP.get().getAnimTime() && tick < CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP.get().getAnimTime() - 10){
+            if (tick < 11 * 20 + CHESED_ROLL_UP.get().getAnimTime()) {
+                this.handleRollEarthShatters(tick, pos);
+            }
+
+            this.playIdle = false;
+            if (system.getTickerAnimation("ROLL_AROUND") != CHESED_ROLL.get()){
+                system.startAnimation("ROLL_AROUND",AnimationTicker.builder(CHESED_ROLL)
+                                .startTime(tick - CHESED_ROLL_UP.get().getAnimTime())
+                                .setToNullTransitionTime(0)
+                        .build());
+            }
+            if (system.getTickerAnimation("ROLLING") != CHESED_ROLL_ROLL.get() && tick < 13 * 20 + CHESED_ROLL_UP.get().getAnimTime()){
+                system.startAnimation("ROLLING",AnimationTicker.builder(CHESED_ROLL_ROLL)
+                                .setToNullTransitionTime(0)
+                                .startTime(tick - CHESED_ROLL_UP.get().getAnimTime())
+                        .build());
+            }
+        }else{
+//            this.playIdle = true;
+            system.stopAnimation("ROLL_UP");
+            system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_END)
+                    .setToNullTransitionTime(0)
+                    .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
+                    .build());
+        }
+
+
+        if (tick > CHESED_ROLL_UP.get().getAnimTime() + CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP_END.get().getAnimTime() + 20 * 2){
+            this.playIdle = true;
+            this.setRolling(false);
+            system.stopAnimation("ROLL_UP");
+            system.stopAnimation("ROLL_UP_END");
+            system.stopAnimation("ROLL_AROUND");
+            system.stopAnimation("ROLLING");
+            return true;
+        }
+
+
+
+        return false;
+    }
+
+    private void handleRollEarthShatters(int attackTime,Vec3 pos){
+        if (attackTime == 0){
             this.oldRollPos = this.position();
         }
 
-        float speed = 0.75f;
-
-        float animTime = FDAnimations.CHESED_ROLL.get().getAnimTime() / speed;
-
-        var system = this.getSystem();
-        AnimationTicker ticker = system.getTicker("ROLL");
-        if (ticker == null && instance.tick < animTime){
-            system.startAnimation("ROLL",
-                    AnimationTicker.builder(FDAnimations.CHESED_ROLL.get())
-                            .startTime(instance.tick)
-                            .setSpeed(speed)
-                            .build()
-                    );
-        }
-
-        Vector3f p = this.getModelPartPosition(this,"base",model);
-        Vec3 pos = this.position().add(
-                p.x,p.y,p.z
-        );
         if (oldRollPos == null){
             oldRollPos = pos;
         }
         this.summonRollEarthShatters(oldRollPos.add(0,-1,0),pos.add(0,-1,0));
         oldRollPos = pos;
 
-        if (instance.tick >= animTime){
+        int rollTime = FDAnims.CHESED_ROLL.get().getAnimTime() + FDAnims.CHESED_ROLL_UP.get().getAnimTime();
+
+        if (attackTime >= rollTime){
             this.setRolling(false);
-            return true;
         }else{
             this.setRolling(true);
         }
-        return false;
     }
 
 
@@ -280,7 +327,7 @@ public class ChesedEntity extends FDLivingEntity {
                 for (int g = 0; g < 5;g++) {
                     level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, mainState),true,
                             v.x + level().random.nextFloat() * randomRadius - randomRadius/2,
-                            v.y + 1,
+                            v.y + 0.75,
                             v.z + level().random.nextFloat() * randomRadius - randomRadius/2,
                             0, 0, 0
                     );
@@ -290,7 +337,7 @@ public class ChesedEntity extends FDLivingEntity {
                 for (int g = 0; g < 5;g++) {
                     level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, leftState),true,
                             l1.x + level().random.nextFloat() * randomRadius - randomRadius / 2,
-                            l1.y + 1.25,
+                            l1.y + 0.75,
                             l1.z + level().random.nextFloat() * randomRadius - randomRadius / 2,
                             0, 0, 0
                     );
@@ -300,7 +347,7 @@ public class ChesedEntity extends FDLivingEntity {
                 for (int g = 0; g < 5;g++) {
                     level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, rightState),true,
                             r1.x + level().random.nextFloat() * randomRadius - randomRadius / 2,
-                            r1.y + 1.25,
+                            r1.y + 0.75,
                             r1.z + level().random.nextFloat() * randomRadius - randomRadius / 2,
                             0, 0, 0
                     );

@@ -87,11 +87,11 @@ public class Animation {
 
 
     public boolean isTransition(){
-        return name.getNamespace().equals(TRANSITION);
+        return name.getPath().equals(TRANSITION);
     }
 
     public boolean isToNullTransition(){
-        return name.getNamespace().equals(TO_NULL_TRANSITION);
+        return name.getPath().equals(TO_NULL_TRANSITION);
     }
 
     public LoopMode getDefaultLoopMode() {

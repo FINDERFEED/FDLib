@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class AnimationTicker {
 
@@ -50,7 +51,7 @@ public class AnimationTicker {
 
     public AnimationTicker(Animation animation){
         this.animation = animation;
-        this.toNullTransitionTime = 0;
+        this.toNullTransitionTime = animation.getAnimTime();
         this.loopMode = animation.getDefaultLoopMode();
     }
 
@@ -110,6 +111,9 @@ public class AnimationTicker {
     public static Builder builder(Animation animation){
         return new Builder(animation);
     }
+    public static Builder builder(Supplier<Animation> animation){
+        return new Builder(animation.get());
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -156,7 +160,7 @@ public class AnimationTicker {
         }
 
         public Builder startTime(float startTime){
-            this.ticker.elapsedTime = startTime;
+            this.ticker.elapsedTime = Mth.clamp(startTime,0,ticker.animation.getAnimTime());
             return this;
         }
 

@@ -145,7 +145,7 @@ public class FDModelPart {
     }
 
     public void addYRot(float value){
-        this.yRot = (this.yRot + value) % 360;
+        this.yRot = (this.yRot + value);
     }
 
     public void addZRot(float value){
