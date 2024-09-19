@@ -1,7 +1,5 @@
-package com.finderfeed.fdlib.to_other_mod.client.particles;
+package com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning;
 
-import com.finderfeed.fdlib.util.math.FDMathUtil;
-import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
@@ -10,32 +8,23 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 public class ArcLightningParticle extends Particle {
 
-    private float lightningWidth;
-    private Vec3 endPos;
+    private ArcLightningOptions options;
 
-    public ArcLightningParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
-                                float lightningWidth,Vec3 endPos) {
+    public ArcLightningParticle(ArcLightningOptions options,ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
         super(level, x, y, z, xd, yd, zd);
         this.x = x;
         this.y = y;
@@ -43,9 +32,8 @@ public class ArcLightningParticle extends Particle {
         this.xd = xd;
         this.yd = yd;
         this.zd = zd;
-        this.lightningWidth = lightningWidth;
-        this.endPos = endPos;
-        this.lifetime = 60;
+        this.options = options;
+        this.lifetime = options.lifetime;
         this.setBoundingBox(this.getBoundingBox().inflate(1000));
     }
 
@@ -59,7 +47,7 @@ public class ArcLightningParticle extends Particle {
         ).subtract(camera.getPosition());
 
 
-        Vec3 between = endPos.subtract(camera.getPosition()).subtract(pos);
+        Vec3 between = options.end.subtract(camera.getPosition()).subtract(pos);
 
         double horLen = Math.sqrt(between.x * between.x + between.z * between.z);
         double verticalLength = between.y;
@@ -87,12 +75,12 @@ public class ArcLightningParticle extends Particle {
                 (float)pos.z
         );
         mat.rotateY(-(float)Math.atan2(between.z,between.x));
-        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,lightningWidth,1f,0,0f);
+        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,options.lightningWidth,options.r,options.g,options.b);
 
         mat.translate(0,0,0.001f);
-        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,lightningWidth * 0.15f,1f,1,1f);
+        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
         mat.translate(0,0,-0.002f);
-        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,lightningWidth * 0.15f,1f,1,1f);
+        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
 
     }
 
@@ -300,16 +288,12 @@ public class ArcLightningParticle extends Particle {
     }
 
 
-    public static class Factory implements ParticleProvider<SimpleParticleType>{
+    public static class Factory implements ParticleProvider<ArcLightningOptions>{
 
         @Nullable
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
-            return new ArcLightningParticle(level,x,y,z,xd,yd,zd,0.1f,new Vec3(
-               x + 2,
-               y - 5,
-               z + 2
-            ));
+        public Particle createParticle(ArcLightningOptions options, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+            return new ArcLightningParticle(options,level,x,y,z,xd,yd,zd);
         }
     }
 

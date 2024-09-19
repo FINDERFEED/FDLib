@@ -4,7 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDEntityRendererBuilder;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDRenderLayerOptions;
 import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
-import com.finderfeed.fdlib.to_other_mod.client.particles.ArcLightningParticle;
+import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningParticle;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;

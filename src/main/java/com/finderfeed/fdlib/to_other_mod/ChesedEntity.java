@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
+import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
 import net.minecraft.client.Minecraft;
@@ -72,7 +73,8 @@ public class ChesedEntity extends FDLivingEntity {
         this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(0,0,0));
 
         if (level().isClientSide && level().getGameTime() % 60 == 0) {
-            this.level().addParticle(FDParticles.ARC_LIGHTNING.get(),
+            this.level().addParticle(new ArcLightningOptions(FDParticles.ARC_LIGHTNING.get(),new Vec3(
+                    this.getX() + 10,this.getY(),this.getZ() + 10),60,0.1f,1f,0f,0f),
                     this.getX(), this.getY() + 10, this.getZ(), 0, 0, 0
             );
             Minecraft.getInstance().player.sendSystemMessage(Component.literal("Spawned particle"));
