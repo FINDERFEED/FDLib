@@ -7,6 +7,7 @@ import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
 import com.finderfeed.fdlib.to_other_mod.FDItems;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
+import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 
@@ -31,8 +32,9 @@ public class FDLib {
     public FDLib(IEventBus bus, ModContainer modContainer) {
         FDItems.ITEMS.register(bus);
         FDModels.INFOS.register(bus);
-        FDEntities.ENTITIES.register(bus);
         FDAnims.ANIMATIONS.register(bus);
+        FDEntities.ENTITIES.register(bus);
+        FDParticles.PARTICLES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
     }

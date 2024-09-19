@@ -26,6 +26,23 @@ public class FDMathUtil {
         );
     }
 
+    public static Vec3 catmullRom(Vec3[] points,float p){
+        if (p < 0){
+            return points[0];
+        }else if (p >= 1){
+            return points[points.length - 1];
+        }
+
+        float glP = p * (points.length - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vec3 prev = id1 > 0 ? points[id1] : null;
+        Vec3 cur = points[id1];
+        Vec3 next = points[id1 + 1];
+        Vec3 next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
+        return catmullrom(prev,cur,next,next2,lp);
+    }
+
     //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
     public static float catmullrom(Float previous,Float current,Float next,Float next2,float p) {
         if (next == null){return current;}
@@ -45,6 +62,18 @@ public class FDMathUtil {
                 catmullrom(previous.x,current.x,next.x,next2.x,p),
                 catmullrom(previous.y,current.y,next.y,next2.y,p),
                 catmullrom(previous.z,current.z,next.z,next2.z,p)
+        );
+    }
+
+    //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
+    public static Vec3 catmullrom(Vec3 previous,Vec3 current,Vec3 next,Vec3 next2,float p) {
+        if (next == null){return current;}
+        if (previous == null) {previous = current.add(current.subtract(next));}
+        if (next2 == null){next2 = next.add(next.subtract(current));}
+        return new Vec3(
+                catmullrom((float)previous.x,(float)current.x,(float)next.x,(float)next2.x,p),
+                catmullrom((float)previous.y,(float)current.y,(float)next.y,(float)next2.y,p),
+                catmullrom((float)previous.z,(float)current.z,(float)next.z,(float)next2.z,p)
         );
     }
 

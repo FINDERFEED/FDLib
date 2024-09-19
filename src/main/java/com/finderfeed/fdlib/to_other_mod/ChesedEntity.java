@@ -8,13 +8,16 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
+import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -68,6 +71,13 @@ public class ChesedEntity extends FDLivingEntity {
         AnimationSystem system = this.getSystem();
         this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(0,0,0));
 
+        if (level().isClientSide && level().getGameTime() % 60 == 0) {
+            this.level().addParticle(FDParticles.ARC_LIGHTNING.get(),
+                    this.getX(), this.getY() + 10, this.getZ(), 0, 0, 0
+            );
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("Spawned particle"));
+        }
+
         system.setVariable("variable.radius",400);
         system.setVariable("variable.angle",180);
         if (!this.level().isClientSide){
@@ -95,7 +105,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 20;
+        return instance.tick >= 200000;
     }
 
 
@@ -117,7 +127,7 @@ public class ChesedEntity extends FDLivingEntity {
                         .startTime(tick)
                         .build());
             }
-        }else if (tick >= CHESED_ROLL_UP.get().getAnimTime() && tick < CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP.get().getAnimTime() - 10){
+        }else if (tick >= CHESED_ROLL_UP.get().getAnimTime() && tick < CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP.get().getAnimTime() - 50){
             if (tick < 11 * 20 + CHESED_ROLL_UP.get().getAnimTime()) {
                 this.handleRollEarthShatters(tick, pos);
             }
@@ -138,10 +148,10 @@ public class ChesedEntity extends FDLivingEntity {
         }else{
 //            this.playIdle = true;
             system.stopAnimation("ROLL_UP");
-            system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_END)
-                    .setToNullTransitionTime(0)
-                    .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
-                    .build());
+//            system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_END)
+//                    .setToNullTransitionTime(0)
+//                    .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
+//                    .build());
         }
 
 
