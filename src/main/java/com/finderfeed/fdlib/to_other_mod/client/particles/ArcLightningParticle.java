@@ -77,61 +77,31 @@ public class ArcLightningParticle extends Particle {
             positions[2] = new Vec3(horLen,verticalLength / 2,0);
         }
 
+        int lightningCounts = 7;
+        var path = this.buildPath(lightningCounts,positions);
 
-        boolean debugLinesOn = false;
+        Matrix4f mat = new Matrix4f();
+        mat.translate(
+                (float)pos.x,
+                (float)pos.y,
+                (float)pos.z
+        );
+        mat.rotateY(-(float)Math.atan2(between.z,between.x));
+        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,lightningWidth,1f,0,0f);
 
-        if (debugLinesOn) {
-            vertex.addVertex((float) (pos.x + positions[0].x), (float) (pos.y + positions[0].y), (float) (pos.z + positions[0].z)).setColor(1f, 1f, 1f, 1f);
-            vertex.addVertex((float) (pos.x + positions[1].x), (float) (pos.y + positions[1].y), (float) (pos.z + positions[1].z)).setColor(1f, 1f, 1f, 1f);
+        mat.translate(0,0,0.001f);
+        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,lightningWidth * 0.15f,1f,1,1f);
+        mat.translate(0,0,-0.002f);
+        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,lightningWidth * 0.15f,1f,1,1f);
 
-            vertex.addVertex((float) (pos.x + positions[1].x), (float) (pos.y + positions[1].y), (float) (pos.z + positions[1].z)).setColor(1f, 1f, 1f, 1f);
-            vertex.addVertex((float) (pos.x + positions[2].x), (float) (pos.y + positions[2].y), (float) (pos.z + positions[2].z)).setColor(1f, 1f, 1f, 1f);
-
-            vertex.addVertex((float) (pos.x + positions[2].x), (float) (pos.y + positions[2].y), (float) (pos.z + positions[2].z)).setColor(1f, 1f, 1f, 1f);
-            vertex.addVertex((float) (pos.x + positions[3].x), (float) (pos.y + positions[3].y), (float) (pos.z + positions[3].z)).setColor(1f, 1f, 1f, 1f);
-        }
-
-        int lightningCounts = 10;
-        float step = 1f / lightningCounts;
-
-        Random r = new Random((level.getGameTime() * 343234) );
-
-        List<Vec3> path = new ArrayList<>();
-        path.add(Vec3.ZERO);
-        float lightningSpread = .5f;
-
-        Vec3 prevPoint = Vec3.ZERO;
-        for (float i = step; i <= 1 - step/2; i += step){
-            float gl = i * (positions.length - 1);
-            float lp = gl - (int) gl;
-            Vec3 current = positions[(int)gl];
-            Vec3 next = positions[(int)gl + 1];
-
-            Vec3 b = next.subtract(current);
-            Vec3 nb = b.normalize();
-            float rmod = r.nextFloat() * lightningSpread * 2 - lightningSpread;
-            Vec3 point = current.add(b.multiply(lp,lp,0))
-                    .add(nb.zRot((float)Math.PI / 2).multiply(rmod,rmod,rmod));
-            path.add(point);
-            //visualization
-            if (debugLinesOn) {
-                vertex.addVertex((float) (pos.x + prevPoint.x), (float) (pos.y + prevPoint.y), (float) (pos.z + prevPoint.z + 0.1f)).setColor(1f, 0f, 1f, 1f);
-                vertex.addVertex((float) (pos.x + point.x), (float) (pos.y + point.y), (float) (pos.z + point.z + 0.1f)).setColor(1f, 0f, 1f, 1f);
-            }
-            prevPoint = point;
-        }
-        path.add(positions[3]);
-
-        if (debugLinesOn) {
-            vertex.addVertex((float) (pos.x + prevPoint.x), (float) (pos.y + prevPoint.y), (float) (pos.z + prevPoint.z + 0.1f)).setColor(1f, 0f, 1f, 1f);
-            vertex.addVertex((float) (pos.x + positions[3].x), (float) (pos.y + positions[3].y), (float) (pos.z + positions[3].z + 0.1f)).setColor(1f, 0f, 1f, 1f);
-        }
+    }
 
 
-
+    private void drawLightning(Matrix4f transform,VertexConsumer vertex,Vec3 pos,List<Vec3> path,Vec3[] positions,float lightningWidth,float r,float g,float b){
         Vec3 previousCenteredVector = new Vec3(0,1,0);
-        vertex.addVertex((float)pos.x,(float)pos.y,(float)pos.z).setColor(1,1f,0,1f);
-        vertex.addVertex((float)pos.x,(float)pos.y,(float)pos.z).setColor(1,1f,0,1f);
+        Vec3 prevPoint = null;
+        double previousw = 0;
+
         for (int i = 1; i < path.size() - 1;i++){
             Vec3 p1 = path.get(i - 1);
             Vec3 p2 = path.get(i);
@@ -155,45 +125,129 @@ public class ArcLightningParticle extends Particle {
 
             double w = lightningWidth / sin;
 
-            vertex.addVertex(
-                    (float)(pos.x + p2.x + v.x * w),
-                    (float)(pos.y + p2.y + v.y * w),
-                    (float)(pos.z)
-            ).setColor(1,1,0,1f);
-            vertex.addVertex(
-                    (float)(pos.x + p2.x + v.x * -w),
-                    (float)(pos.y + p2.y + v.y * -w),
-                    (float)(pos.z)
-            ).setColor(1,1,0,1f);
+            vertex.addVertex(transform,
+                    (float) (p1.x),
+                    (float) (p1.y),
+                    0
+            ).setColor(r,g,b,1f);
+            vertex.addVertex(transform,
+                    (float) (p1.x + previousCenteredVector.x * previousw),
+                    (float) (p1.y + previousCenteredVector.y * previousw),
+                    0
+            ).setColor(r,g,b,0f);
+            vertex.addVertex(transform,
+                    (float) (p2.x + v.x * w),
+                    (float) (p2.y + v.y * w),
+                    0
+            ).setColor(r,g,b,0f);
+            vertex.addVertex(transform,
+                    (float) (p2.x),
+                    (float) (p2.y),
+                    0
+            ).setColor(r,g,b,1f);
 
+            vertex.addVertex(transform,
+                    (float) (p1.x),
+                    (float) (p1.y),
+                    0
+            ).setColor(r,g,b,1f);
+            vertex.addVertex(transform,
+                    (float) (p1.x - previousCenteredVector.x * previousw),
+                    (float) (p1.y - previousCenteredVector.y * previousw),
+                    0
+            ).setColor(r,g,b,0f);
+            vertex.addVertex(transform,
+                    (float) (p2.x - v.x * w),
+                    (float) (p2.y - v.y * w),
+                    0
+            ).setColor(r,g,b,0f);
+            vertex.addVertex(transform,
+                    (float) (p2.x),
+                    (float) (p2.y),
+                    0
+            ).setColor(r,g,b,1f);
 
-            vertex.addVertex(
-                    (float)(pos.x + p2.x + v.x * -w),
-                    (float)(pos.y + p2.y + v.y * -w),
-                    (float)(pos.z)
-            ).setColor(1,1,0,1f);
-            vertex.addVertex(
-                    (float)(pos.x + p2.x + v.x * w),
-                    (float)(pos.y + p2.y + v.y * w),
-                    (float)(pos.z)
-            ).setColor(1,1,0,1f);
-
-
+            prevPoint = p2;
+            previousw = w;
             previousCenteredVector = v;
         }
-        vertex.addVertex(
-                (float)(pos.x + positions[3].x),
-                (float)(pos.y + positions[3].y),
-                (float)(pos.z)
-        ).setColor(1,1,0,1f);
-        vertex.addVertex(
-                (float)(pos.x + positions[3].x ),
-                (float)(pos.y + positions[3].y ),
-                (float)(pos.z)
-        ).setColor(1,1,0,1f);
+
+
+        Vec3 lastPos = positions[positions.length - 1];
+
+
+        vertex.addVertex(transform,
+                (float) (prevPoint.x),
+                (float) (prevPoint.y),
+                0
+        ).setColor(r,g,b,1f);
+        vertex.addVertex(transform,
+                (float) (prevPoint.x + previousCenteredVector.x * previousw),
+                (float) (prevPoint.y + previousCenteredVector.y * previousw),
+                0
+        ).setColor(r,g,b,0f);
+        vertex.addVertex(transform,
+                (float) (lastPos.x),
+                (float) (lastPos.y),
+                0
+        ).setColor(r,g,b,0f);
+        vertex.addVertex(transform,
+                (float) (lastPos.x),
+                (float) (lastPos.y),
+                0
+        ).setColor(r,g,b,1f);
+
+        vertex.addVertex(transform,
+                (float) (prevPoint.x),
+                (float) (prevPoint.y),
+                0
+        ).setColor(r,g,b,1f);
+        vertex.addVertex(transform,
+                (float) (prevPoint.x - previousCenteredVector.x * previousw),
+                (float) (prevPoint.y - previousCenteredVector.y * previousw),
+                0
+        ).setColor(r,g,b,0f);
+        vertex.addVertex(transform,
+                (float) (lastPos.x),
+                (float) (lastPos.y),
+                0
+        ).setColor(r,g,b,0f);
+        vertex.addVertex(transform,
+                (float) (lastPos.x),
+                (float) (lastPos.y),
+                0
+        ).setColor(r,g,b,1f);
 
 
     }
+
+    private List<Vec3> buildPath(int lightningCounts,Vec3[] positions){
+
+        float step = 1f / lightningCounts;
+
+        Random r = new Random(level.getGameTime()/2 * 233232);
+
+        List<Vec3> path = new ArrayList<>();
+        path.add(Vec3.ZERO);
+        float lightningSpread = .5f;
+
+        for (float i = step; i <= 1 - step/2; i += step){
+            float gl = i * (positions.length - 1);
+            float lp = gl - (int) gl;
+            Vec3 current = positions[(int)gl];
+            Vec3 next = positions[(int)gl + 1];
+
+            Vec3 b = next.subtract(current);
+            Vec3 nb = b.normalize();
+            float rmod = r.nextFloat() * lightningSpread * 2 - lightningSpread;
+            Vec3 point = current.add(b.multiply(lp,lp,0))
+                    .add(nb.zRot((float)Math.PI / 2).multiply(rmod,rmod,rmod));
+            path.add(point);
+        }
+        path.add(positions[positions.length - 1]);
+        return path;
+    }
+
 
     private Vec3 getDirectionFromPositions(Vec3[] positions, int index){
         if (index >= positions.length - 1){
@@ -221,7 +275,7 @@ public class ArcLightningParticle extends Particle {
             RenderSystem.depthMask(true);
             RenderSystem.enableBlend();
             RenderSystem.disableCull();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShader(GameRenderer::getRendertypeLightningShader);
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
             return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         }
@@ -252,9 +306,9 @@ public class ArcLightningParticle extends Particle {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
             return new ArcLightningParticle(level,x,y,z,xd,yd,zd,0.1f,new Vec3(
-               x + 4,
+               x + 2,
                y - 5,
-               z + 4
+               z + 2
             ));
         }
     }
