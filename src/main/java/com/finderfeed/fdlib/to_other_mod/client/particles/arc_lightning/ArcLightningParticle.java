@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning;
 
+import com.finderfeed.fdlib.util.FDColor;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
@@ -14,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -52,20 +55,44 @@ public class ArcLightningParticle extends Particle {
         double horLen = Math.sqrt(between.x * between.x + between.z * between.z);
         double verticalLength = between.y;
 
-        Vec3[] positions = new Vec3[]{
-                Vec3.ZERO,
-                null,null,
-                new Vec3(horLen,verticalLength,0)
-        };
-        if (horLen > Math.abs(verticalLength)){
-            positions[1] = new Vec3(horLen / 2,horLen + verticalLength,0);
-            positions[2] = new Vec3(horLen,horLen / 2 + verticalLength,0);
+        List<Vec3> positions = new ArrayList<>();
+        positions.add(Vec3.ZERO);
+
+        int circleSegmentsAmount = 10;
+
+        float circleOffset = options.circleOffset;
+
+        Vec3 end = new Vec3(horLen,verticalLength,0);
+        Vec3 b = end.normalize();
+        Vec3 center = end.multiply(0.5,0.5,0);
+
+        Vec3 circleCenter = center.add(b.zRot(-(float)Math.PI / 2).multiply(circleOffset,circleOffset,0));
+
+
+        Vec3 v1 = end.subtract(circleCenter);
+        Vec3 v2 = circleCenter.reverse();
+        double angle;
+        if (circleOffset >= 0){
+            angle = (Math.PI * 2 - FDMathUtil.angleBetweenVectors(v1,v2)) / circleSegmentsAmount;
         }else{
-            positions[1] = new Vec3(horLen / 2,0,0);
-            positions[2] = new Vec3(horLen,verticalLength / 2,0);
+            angle = (FDMathUtil.angleBetweenVectors(v1,v2)) / circleSegmentsAmount;
+        }
+        Matrix4f rot = new Matrix4f().identity().rotateZ(-(float)angle);
+        Vector4f v = new Vector4f((float)v2.x,(float)v2.y,0,1);
+        for (int i = 0; i < circleSegmentsAmount;i++){
+            v = rot.transform(v);
+            v.x /= v.w;
+            v.y /= v.w;
+            v.w = 1;
+
+            positions.add(new Vec3(v.x + circleCenter.x,v.y + circleCenter.y,0));
+
         }
 
-        int lightningCounts = 7;
+        positions.add(end);
+
+
+        int lightningCounts = options.lightningSegments;
         var path = this.buildPath(lightningCounts,positions);
 
         Matrix4f mat = new Matrix4f();
@@ -75,17 +102,20 @@ public class ArcLightningParticle extends Particle {
                 (float)pos.z
         );
         mat.rotateY(-(float)Math.atan2(between.z,between.x));
-        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,options.lightningWidth,options.r,options.g,options.b);
+
+        FDColor color = options.color;
+
+        this.drawLightning(mat,vertex,path,positions,options.lightningWidth,color.r,color.g,color.b);
 
         mat.translate(0,0,0.001f);
-        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
+        this.drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
         mat.translate(0,0,-0.002f);
-        this.drawLightning(mat,vertex,Vec3.ZERO,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
+        this.drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
 
     }
 
 
-    private void drawLightning(Matrix4f transform,VertexConsumer vertex,Vec3 pos,List<Vec3> path,Vec3[] positions,float lightningWidth,float r,float g,float b){
+    private void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b){
         Vec3 previousCenteredVector = new Vec3(0,1,0);
         Vec3 prevPoint = null;
         double previousw = 0;
@@ -161,7 +191,7 @@ public class ArcLightningParticle extends Particle {
         }
 
 
-        Vec3 lastPos = positions[positions.length - 1];
+        Vec3 lastPos = positions.getLast();
 
 
         vertex.addVertex(transform,
@@ -209,21 +239,21 @@ public class ArcLightningParticle extends Particle {
 
     }
 
-    private List<Vec3> buildPath(int lightningCounts,Vec3[] positions){
+    private List<Vec3> buildPath(int lightningCounts,List<Vec3> positions){
 
         float step = 1f / lightningCounts;
 
-        Random r = new Random(level.getGameTime()/2 * 233232);
+        Random r = new Random(level.getGameTime() * options.seed);
 
         List<Vec3> path = new ArrayList<>();
         path.add(Vec3.ZERO);
-        float lightningSpread = .5f;
+        float lightningSpread = options.lightningRandomSpread;
 
         for (float i = step; i <= 1 - step/2; i += step){
-            float gl = i * (positions.length - 1);
+            float gl = i * (positions.size() - 1);
             float lp = gl - (int) gl;
-            Vec3 current = positions[(int)gl];
-            Vec3 next = positions[(int)gl + 1];
+            Vec3 current = positions.get((int)gl);
+            Vec3 next = positions.get((int)gl + 1);
 
             Vec3 b = next.subtract(current);
             Vec3 nb = b.normalize();
@@ -232,7 +262,7 @@ public class ArcLightningParticle extends Particle {
                     .add(nb.zRot((float)Math.PI / 2).multiply(rmod,rmod,rmod));
             path.add(point);
         }
-        path.add(positions[positions.length - 1]);
+        path.add(positions.getLast());
         return path;
     }
 

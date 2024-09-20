@@ -73,8 +73,9 @@ public class ChesedEntity extends FDLivingEntity {
         this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(0,0,0));
 
         if (level().isClientSide && level().getGameTime() % 60 == 0) {
-            this.level().addParticle(new ArcLightningOptions(FDParticles.ARC_LIGHTNING.get(),new Vec3(
-                    this.getX() + 10,this.getY(),this.getZ() + 10),60,0.1f,1f,0f,0f),
+            this.level().addParticle(ArcLightningOptions.builder(FDParticles.ARC_LIGHTNING.get())
+                            .end(this.getX() + 10,this.getY(),this.getZ() + 10)
+                            .build(),
                     this.getX(), this.getY() + 10, this.getZ(), 0, 0, 0
             );
             Minecraft.getInstance().player.sendSystemMessage(Component.literal("Spawned particle"));

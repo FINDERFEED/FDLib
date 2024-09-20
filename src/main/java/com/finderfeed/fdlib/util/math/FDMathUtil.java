@@ -17,6 +17,10 @@ public class FDMathUtil {
         return v1 + (v2 - v1) * p;
     }
 
+    public static double angleBetweenVectors(Vec3 v1,Vec3 v2){
+        return Math.acos(v1.dot(v2) / (v1.length() * v2.length()));
+    }
+
 
     public static Vector3f interpolateVectors(Vector3f v1,Vector3f v2,float p){
         return new Vector3f(

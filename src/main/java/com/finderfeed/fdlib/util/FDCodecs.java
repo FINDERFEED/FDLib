@@ -13,4 +13,11 @@ public class FDCodecs {
             ).apply(p,Vec3::new)
     );
 
+    public static final Codec<FDColor> COLOR = RecordCodecBuilder.create(b->b.group(
+            Codec.FLOAT.fieldOf("r").forGetter(v->v.r),
+            Codec.FLOAT.fieldOf("g").forGetter(v->v.g),
+            Codec.FLOAT.fieldOf("b").forGetter(v->v.b),
+            Codec.FLOAT.fieldOf("a").forGetter(v->v.a)
+    ).apply(b,FDColor::new));
+
 }
