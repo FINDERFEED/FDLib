@@ -1,10 +1,17 @@
 package com.finderfeed.fdlib;
 
+import com.finderfeed.fdlib.network.lib_packets.PlayerMovePacket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -16,7 +23,9 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 
 
 // just random things
@@ -25,6 +34,28 @@ public class FDHelpers {
 
     public static final Gson GSON = new GsonBuilder().create();
 
+
+    public static void setServerPlayerSpeed(ServerPlayer player,Vec3 deltaMovement){
+        player.setDeltaMovement(deltaMovement);
+        PacketDistributor.sendToPlayer(player,new PlayerMovePacket(deltaMovement));
+    }
+
+    public static List<Entity> traceEntities(Level level, Vec3 start, Vec3 end,double boxInflate, Predicate<Entity> predicate){
+        var list = level.getEntitiesOfClass(Entity.class,new AABB(start,end).inflate(boxInflate),predicate);
+        Iterator<Entity> entityIterator = list.iterator();
+        while (entityIterator.hasNext()){
+            Entity e = entityIterator.next();
+            AABB box = e.getBoundingBox().inflate(boxInflate);
+            var opt = box.clip(start,end);
+            if (opt.isEmpty()){
+                var opt2 = box.clip(end,start);
+                if (opt2.isEmpty()){
+                    entityIterator.remove();
+                }
+            }
+        }
+        return list;
+    }
 
     public static JsonElement readJsonFileFromAssets(ResourceLocation location,String format){
         ResourceLocation rl = ResourceLocation.tryBuild(location.getNamespace(),location.getPath() + format);

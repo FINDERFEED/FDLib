@@ -23,6 +23,14 @@ public class FDMathUtil {
         return Math.acos(v1.dot(v2) / (v1.length() * v2.length()));
     }
 
+    public static Vec3 getNormalVectorFromLineToPoint(Vec3 begin,Vec3 end,Vec3 point){
+        Vec3 between = end.subtract(begin);
+        Vec3 topr = point.subtract(begin);
+        double d = topr.dot(between);
+        double w = between.length(); w *= w;
+        double mod = d / w;
+        return point.subtract(begin.add(between.multiply(mod,mod,mod)));
+    }
 
     public static Vector3f interpolateVectors(Vector3f v1,Vector3f v2,float p){
         return new Vector3f(

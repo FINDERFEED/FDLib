@@ -7,9 +7,16 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSy
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class FDClientPacketExecutables {
+
+    public static void movePlayer(Vec3 movement){
+        Player player = Minecraft.getInstance().player;
+        player.setDeltaMovement(movement);
+    }
 
     public static void entityStartAnimationPacket(int entityId, String tickerName, AnimationTicker ticker){
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);

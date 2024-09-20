@@ -24,6 +24,9 @@ public class FDAnims {
     public static DeferredHolder<Animation,Animation> CHESED_ROLL_UP_END = ANIMATIONS.register("chesed_roll_up_end", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
+    public static DeferredHolder<Animation,Animation> CHESED_ROLL_UP_JUST_END /*_ALREADY YOU_ROLLING_BASTARD*/ = ANIMATIONS.register("chesed_roll_up_just_end", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
     public static DeferredHolder<Animation,Animation> CHESED_ROLL = ANIMATIONS.register("chesed_roll", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });

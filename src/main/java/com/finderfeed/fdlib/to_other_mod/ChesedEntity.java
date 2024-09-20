@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod;
 
+import com.finderfeed.fdlib.FDHelpers;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
@@ -13,19 +14,21 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLight
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +36,8 @@ import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.List;
 
 import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
 
@@ -42,15 +47,19 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public AttackChain chain;
-    private static FDModel model;
+    private static FDModel serverModel;
+    private static FDModel clientModel;
     private Vec3 oldRollPos;
     private boolean playIdle = true;
 
 
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
         super(type, level);
-        if (model == null) {
-            model = new FDModel(FDModels.CHESED.get());
+        if (serverModel == null) {
+            serverModel = new FDModel(FDModels.CHESED.get());
+        }
+        if (clientModel == null){
+            clientModel = new FDModel(FDModels.CHESED.get());
         }
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
@@ -93,7 +102,7 @@ public class ChesedEntity extends FDLivingEntity {
 
     private void idleParticles(){
         if (this.level().getGameTime() % 2 == 0){
-            var pos = this.getModelPartPosition(this,"core", model).add((float) this.getX(), (float) this.getY(), (float) this.getZ());
+            var pos = this.getModelPartPosition(this,"core", clientModel).add((float) this.getX(), (float) this.getY(), (float) this.getZ());
             float baseAngle = -(float)Math.toRadians(this.yBodyRot) + FDMathUtil.FPI / 4;
             float randomRange = FDMathUtil.FPI * 2 - FDMathUtil.FPI / 2;
             for (int i = 0; i < 2;i++) {
@@ -127,7 +136,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (tick == 0){
             this.oldRollPos = this.position();
         }
-        Vector3f p = this.getModelPartPosition(this,"base",model);
+        Vector3f p = this.getModelPartPosition(this,"base", serverModel);
         Vec3 pos = this.position().add(p.x,p.y,p.z);
         var system = this.getSystem();
 
@@ -140,7 +149,7 @@ public class ChesedEntity extends FDLivingEntity {
                         .startTime(tick)
                         .build());
             }
-        }else if (tick >= CHESED_ROLL_UP.get().getAnimTime() && tick < CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP.get().getAnimTime() - 50){
+        }else if (tick >= CHESED_ROLL_UP.get().getAnimTime() && tick < CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP.get().getAnimTime() - 20){
             if (tick < 11 * 20 + CHESED_ROLL_UP.get().getAnimTime()) {
                 this.handleRollEarthShatters(tick, pos);
             }
@@ -160,16 +169,15 @@ public class ChesedEntity extends FDLivingEntity {
             }
         }else{
             this.setRolling(false);
-//            this.playIdle = true;
             system.stopAnimation("ROLL_UP");
-//            system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_END)
-//                    .setToNullTransitionTime(0)
-//                    .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
-//                    .build());
+            system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_JUST_END)
+                    .setToNullTransitionTime(0)
+                    .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
+                    .build());
         }
 
 
-        if (tick > CHESED_ROLL_UP.get().getAnimTime() + CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP_END.get().getAnimTime() + 20 * 2){
+        if (tick > CHESED_ROLL_UP.get().getAnimTime() + CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP_JUST_END.get().getAnimTime()){
             this.playIdle = true;
             this.setRolling(false);
             system.stopAnimation("ROLL_UP");
@@ -193,7 +201,9 @@ public class ChesedEntity extends FDLivingEntity {
             oldRollPos = pos;
         }
         this.summonRollEarthShatters(oldRollPos.add(0,-1,0),pos.add(0,-1,0));
+        this.rollDamageEntities(oldRollPos,pos);
         oldRollPos = pos;
+
 
         int rollTime = FDAnims.CHESED_ROLL.get().getAnimTime() + FDAnims.CHESED_ROLL_UP.get().getAnimTime();
 
@@ -202,6 +212,29 @@ public class ChesedEntity extends FDLivingEntity {
         }else{
             this.setRolling(true);
         }
+    }
+
+    private void rollDamageEntities(Vec3 oldPos,Vec3 pos){
+        var entities = FDHelpers.traceEntities(level(),oldPos,pos,2.1,entity->{
+            return entity instanceof LivingEntity living && entity != this;
+        });
+
+        //TODO: damage
+        float damage = 10;
+
+        for (Entity entity : entities){
+            LivingEntity livingEntity = (LivingEntity) entity;
+            Vec3 pushDirection = FDMathUtil.getNormalVectorFromLineToPoint(oldPos,pos,entity.position()).multiply(1,0,1)
+                    .normalize()
+                    .multiply(3,0,3)
+                    .add(0,1.5,0);
+            if (livingEntity instanceof Player player){
+                FDHelpers.setServerPlayerSpeed((ServerPlayer) player,pushDirection);
+            }else{
+                livingEntity.setDeltaMovement(pushDirection);
+            }
+        }
+
     }
 
 
@@ -305,7 +338,7 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
     private void handleClientRolling(){
-        Vector3f p = this.getModelPartPosition(this,"base",model);
+        Vector3f p = this.getModelPartPosition(this,"base", clientModel);
         Vec3 pos = this.position().add(
                 p.x,p.y - 1,p.z
         );
@@ -320,9 +353,9 @@ public class ChesedEntity extends FDLivingEntity {
 
 
         Vec3 ppos = pos.add(
-                random.nextFloat() - 0.5,
+                random.nextFloat() * 2 - 1,
                 0,
-                random.nextFloat() - 0.5
+                random.nextFloat() * 2 - 1
         );
 
         float md = random.nextFloat() + 1;
@@ -333,7 +366,7 @@ public class ChesedEntity extends FDLivingEntity {
                         .lifetime(4)
                         .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
                         .lightningSpread(0.25f)
-                        .width(0.1f)
+                        .width(0.2f)
                         .segments(5)
                         .circleOffset(-3)
                         .build(),
