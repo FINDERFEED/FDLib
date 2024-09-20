@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -37,7 +38,13 @@ public class ArcLightningParticle extends Particle {
         this.zd = zd;
         this.options = options;
         this.lifetime = options.lifetime;
-        this.setBoundingBox(this.getBoundingBox().inflate(1000));
+        this.hasPhysics = false;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.setBoundingBox(new AABB(x,y,z,options.end.x,options.end.y,options.end.z));
     }
 
     @Override
@@ -79,7 +86,7 @@ public class ArcLightningParticle extends Particle {
         }
         Matrix4f rot = new Matrix4f().identity().rotateZ(-(float)angle);
         Vector4f v = new Vector4f((float)v2.x,(float)v2.y,0,1);
-        for (int i = 0; i < circleSegmentsAmount;i++){
+        for (int i = 0; i < circleSegmentsAmount - 1;i++){
             v = rot.transform(v);
             v.x /= v.w;
             v.y /= v.w;
@@ -147,7 +154,7 @@ public class ArcLightningParticle extends Particle {
                     (float) (p1.x),
                     (float) (p1.y),
                     0
-            ).setColor(r,g,b,1f);
+            ).setColor(r,g,b,i == 1 ? 0 : 1f);
             vertex.addVertex(transform,
                     (float) (p1.x + previousCenteredVector.x * previousw),
                     (float) (p1.y + previousCenteredVector.y * previousw),
@@ -168,7 +175,7 @@ public class ArcLightningParticle extends Particle {
                     (float) (p1.x),
                     (float) (p1.y),
                     0
-            ).setColor(r,g,b,1f);
+            ).setColor(r,g,b,i == 1 ? 0 : 1f);
             vertex.addVertex(transform,
                     (float) (p1.x - previousCenteredVector.x * previousw),
                     (float) (p1.y - previousCenteredVector.y * previousw),

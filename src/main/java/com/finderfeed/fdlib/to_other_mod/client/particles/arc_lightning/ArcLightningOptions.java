@@ -100,6 +100,19 @@ public class ArcLightningOptions implements ParticleOptions {
             return this;
         }
 
+        public Builder circleOffset(float offset){
+            this.options.circleOffset = offset;
+            return this;
+        }
+
+        public Builder color(int r,int g,int b,int a){
+            return this.color(new FDColor(r/255f,g/255f,b/255f,a/255f));
+        }
+
+        public Builder color(int r,int g,int b){
+            return this.color(new FDColor(r/255f,g/255f,b/255f,1));
+        }
+
         public Builder color(float r,float g,float b){
             return this.color(new FDColor(r,g,b,1));
         }

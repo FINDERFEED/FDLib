@@ -5,6 +5,8 @@ import org.joml.Vector3f;
 
 public class FDMathUtil {
 
+    public static final float FPI = (float) Math.PI;
+
     public static Vector3f vec3ToVector3f(Vec3 v){
         return new Vector3f((float) v.x,(float) v.y,(float) v.z);
     }

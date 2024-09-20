@@ -12,6 +12,7 @@ import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -70,19 +72,9 @@ public class ChesedEntity extends FDLivingEntity {
     public void tick() {
         super.tick();
         AnimationSystem system = this.getSystem();
-        this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(0,0,0));
-
-        if (level().isClientSide && level().getGameTime() % 60 == 0) {
-            this.level().addParticle(ArcLightningOptions.builder(FDParticles.ARC_LIGHTNING.get())
-                            .end(this.getX() + 10,this.getY(),this.getZ() + 10)
-                            .build(),
-                    this.getX(), this.getY() + 10, this.getZ(), 0, 0, 0
-            );
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal("Spawned particle"));
-        }
-
         system.setVariable("variable.radius",400);
         system.setVariable("variable.angle",180);
+        this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(-18,106,544));
         if (!this.level().isClientSide){
             this.chain.tick();
             if (playIdle) {
@@ -93,22 +85,40 @@ public class ChesedEntity extends FDLivingEntity {
         }else{
             if (this.isRolling()){
                 this.handleClientRolling();
+            }else{
+                this.idleParticles();
             }
         }
     }
 
-
-
-
-
-
+    private void idleParticles(){
+        if (this.level().getGameTime() % 2 == 0){
+            var pos = this.getModelPartPosition(this,"core", model).add((float) this.getX(), (float) this.getY(), (float) this.getZ());
+            float baseAngle = -(float)Math.toRadians(this.yBodyRot) + FDMathUtil.FPI / 4;
+            float randomRange = FDMathUtil.FPI * 2 - FDMathUtil.FPI / 2;
+            for (int i = 0; i < 2;i++) {
+                var end = pos.add(new Vector3f(0, 0, 2).rotateY(baseAngle + randomRange * random.nextFloat()), new Vector3f()).add(0, -(pos.y - (float) this.getY()), 0);
+                level().addParticle(ArcLightningOptions.builder(FDParticles.ARC_LIGHTNING.get())
+                                .end(end.x, end.y, end.z)
+                                .lifetime(2)
+                                .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
+                                .lightningSpread(0.25f)
+                                .width(0.1f)
+                                .segments(6)
+                                .circleOffset(random.nextFloat() * 2 - 2)
+                                .build(),
+                        true, pos.x, pos.y, pos.z, 0, 0, 0
+                );
+            }
+        }
+    }
 
     public boolean doNothing(AttackInstance instance){
 
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 200000;
+        return instance.tick >= 20;
     }
 
 
@@ -149,6 +159,7 @@ public class ChesedEntity extends FDLivingEntity {
                         .build());
             }
         }else{
+            this.setRolling(false);
 //            this.playIdle = true;
             system.stopAnimation("ROLL_UP");
 //            system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_END)
@@ -306,6 +317,29 @@ public class ChesedEntity extends FDLivingEntity {
         Vec3 nb = b.normalize();
         Vec3 r = nb.yRot((float)Math.PI / 2);
         Vec3 l = nb.yRot(-(float)Math.PI / 2);
+
+
+        Vec3 ppos = pos.add(
+                random.nextFloat() - 0.5,
+                0,
+                random.nextFloat() - 0.5
+        );
+
+        float md = random.nextFloat() + 1;
+
+        level().addParticle(
+                ArcLightningOptions.builder(FDParticles.ARC_LIGHTNING.get())
+                        .end(ppos.add(-nb.x * md,1 + 0.1f,-nb.z * md))
+                        .lifetime(4)
+                        .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
+                        .lightningSpread(0.25f)
+                        .width(0.1f)
+                        .segments(5)
+                        .circleOffset(-3)
+                        .build(),
+                true,ppos.x,ppos.y + 0.5 + 0.1f,ppos.z,0,0,0
+        );
+
 
         for (float i = 0; i < b.length();i++){
             Vec3 v = pos.add(nb.multiply(i,i,i).reverse());
