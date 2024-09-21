@@ -129,6 +129,8 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
 
+
+
     public boolean roll(AttackInstance instance){
         int tick = instance.tick;
         if (tick == 0){
@@ -447,7 +449,9 @@ public class ChesedEntity extends FDLivingEntity {
     @Override
     public boolean save(CompoundTag tag) {
         if (chain != null){
-            chain.save(tag);
+            CompoundTag t = new CompoundTag();
+            chain.save(t);
+            tag.put("chain",t);
         }
         return super.save(tag);
     }
@@ -455,7 +459,7 @@ public class ChesedEntity extends FDLivingEntity {
     @Override
     public void load(CompoundTag tag) {
         if (chain != null){
-            this.chain.load(tag);
+            this.chain.load(tag.getCompound("chain"));
         }
         super.load(tag);
     }

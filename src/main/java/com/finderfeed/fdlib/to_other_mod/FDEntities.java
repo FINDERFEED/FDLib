@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.to_other_mod;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.BlockProjectile;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -40,6 +41,13 @@ public class FDEntities {
             .sized(1f,1f)
             .updateInterval(1)
             .build("block_projectile"));
+
+    public static final Supplier<EntityType<FlyingBlockEntity>> FLYING_BLOCK = ENTITIES.register("flying_block",()->EntityType.Builder.of(
+            FlyingBlockEntity::new, MobCategory.MISC
+    )
+            .sized(1f,1f)
+            .updateInterval(1)
+            .build("flying_block"));
 
 
     @SubscribeEvent

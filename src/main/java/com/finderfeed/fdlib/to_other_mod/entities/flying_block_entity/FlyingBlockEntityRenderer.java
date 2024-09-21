@@ -1,54 +1,50 @@
-package com.finderfeed.fdlib.to_other_mod.projectiles.renderers;
+package com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity;
 
-import com.finderfeed.fdlib.to_other_mod.projectiles.BlockProjectile;
-import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.joml.Quaternionf;
 
-public class BlockProjectileRenderer extends EntityRenderer<BlockProjectile> {
-
-
-
-    public BlockProjectileRenderer(EntityRendererProvider.Context p_174008_) {
+public class FlyingBlockEntityRenderer extends EntityRenderer<FlyingBlockEntity> {
+    public FlyingBlockEntityRenderer(EntityRendererProvider.Context p_174008_) {
         super(p_174008_);
     }
 
-    @Override
-    public void render(BlockProjectile entity, float yaw, float pticks, PoseStack matrices, MultiBufferSource src, int light) {
-        BlockState state = entity.getBlockState();
 
-        BlockPos pos = entity.getOnPos().above(2);
-        light = LightTexture.pack(this.getBlockLightLevel(entity, pos), this.getSkyLightLevel(entity, pos));
-        BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
+    @Override
+    public void render(FlyingBlockEntity entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light) {
         matrices.pushPose();
+
+        BlockState state = entity.getBlockState();
+        BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
+
         matrices.translate(-0.5,0,-0.5);
         matrices.translate(0.5,0.5,0.5);
+        Vec3 horizontal = entity.getDeltaMovement().multiply(1,0,1).normalize();
 
-        matrices.mulPose(entity.previousRotation.slerp(entity.currentRotation,pticks,new Quaternionf()));
+        FDRenderUtil.applyMovementMatrixRotations(matrices,horizontal);
 
-        matrices.translate(-0.5,-0.5,-0.5);
+        float time = (entity.tickCount + partialTicks) * entity.getRotationSpeed() + entity.getId() * 4332;
+        matrices.mulPose(FDRenderUtil.rotationDegrees(FDRenderUtil.XP(),time));
 
+        matrices.translate(-.5,-.5,-.5);
         renderer.renderSingleBlock(state,matrices,src,light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY,null);
-        matrices.popPose();
 
+
+        matrices.popPose();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BlockProjectile p_114482_) {
+    public ResourceLocation getTextureLocation(FlyingBlockEntity p_114482_) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 }

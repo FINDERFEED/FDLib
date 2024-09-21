@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.r
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningParticle;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterRenderer;
+import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntityRenderer;
 import com.finderfeed.fdlib.to_other_mod.projectiles.renderers.BlockProjectileRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
@@ -45,5 +46,6 @@ public class BossClientModEvents {
         );
         event.registerEntityRenderer(FDEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);
         event.registerEntityRenderer(FDEntities.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
+        event.registerEntityRenderer(FDEntities.FLYING_BLOCK.get(), FlyingBlockEntityRenderer::new);
     }
 }

@@ -1,9 +1,10 @@
 package com.finderfeed.fdlib.to_other_mod.projectiles;
 
-import com.finderfeed.fdlib.init.FDEDataSerializers;
+import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.util.FDProjectile;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -25,16 +26,16 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockProjectile extends FDProjectile {
 
     public static final EntityDataAccessor<Float> ROTATION_SPEED = SynchedEntityData.defineId(BlockProjectile.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<BlockState> STATE = SynchedEntityData.defineId(BlockProjectile.class, EntityDataSerializers.BLOCK_STATE);
 
-    public Vec3 previousDirection = new Vec3(0,1,0);
-    public Vec3 direction = new Vec3(0,1,0);
-
-    public Quaternionf currentRotation = new Quaternionf(new AxisAngle4f(0,0,1,0));
+    public Quaternionf currentRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
+    public Quaternionf previousRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
 
     public BlockProjectile(EntityType<? extends AbstractHurtingProjectile> type, Level level) {
         super(type, level);
@@ -45,79 +46,45 @@ public class BlockProjectile extends FDProjectile {
         super.tick();
 
         if (level().isClientSide){
-            previousDirection = this.getLookDirection();
-            Vec3 oldPos = new Vec3(xo,yo,zo);
-            Vec3 currentPos = this.position();
-            Vec3 b = currentPos.subtract(oldPos);
-            double len = b.length();
-            if (len > 0.01){
-
-                var v = currentRotation.transform(0,1,0,new Vector3f());
-                Vec3 v3 = FDMathUtil.vector3fToVec3(v);
-                float currentAngleBetween = (float) FDMathUtil.angleBetweenVectors(b,new Vec3(0,1,0));
-
-                Vec3 axis = b.cross(new Vec3(0,1,0)).normalize();
-
-                Vec3 ppos = this.position().add(0,0.5,0).add(axis.multiply(3,3,3));
-                Vec3 ppos2 = this.position().add(0,0.5,0).add(v3.multiply(3,3,3));
-                Vec3 ppos3 = this.position().add(0,0.5,0).add(b.normalize().multiply(3,3,3));
-                level().addParticle(ParticleTypes.FLAME,ppos.x,ppos.y,ppos.z,0,0,0);
-                level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE,ppos2.x,ppos2.y,ppos2.z,0,0,0);
-                level().addParticle(ParticleTypes.BUBBLE,ppos3.x,ppos3.y,ppos3.z,0,0,0);
-
-                if (currentAngleBetween > 0.05){
-
-                    Quaternionf targetQuaternion = new Quaternionf(
-                            new AxisAngle4f(-currentAngleBetween,
-                                    (float)axis.x,
-                                    (float)axis.y,
-                                    (float)axis.z
-                            )
-                    );
-//                    currentRotation = targetQuaternion;
-                    currentRotation.slerp(targetQuaternion,0.1f);
-
-//                    currentRotation.mul(new Quaternionf(
-//                            new AxisAngle4f(
-//                                    Mth.clamp(rotationAngle,0,currentAngleBetween),
-//                                    (float)axis.x,
-//                                    (float)axis.y,
-//                                    (float)axis.z
-//                            )
-//                    ));
-//                    currentRotation.rotateAxis(Mth.clamp(rotationAngle,0,currentAngleBetween),
-//                            (float)axis.x,
-//                            (float)axis.y,
-//                            (float)axis.z
-//                    );
-                }
-
-            }
+           this.handleRotation();
         }else{
-            if (tickCount >= 20000){
+            if (tickCount >= 2000){
                 this.remove(RemovalReason.DISCARDED);
             }
         }
 
     }
 
+    private void handleRotation(){
+        Vec3 oldPos = new Vec3(xo,yo,zo);
+        Vec3 currentPos = this.position();
+        Vec3 b = currentPos.subtract(oldPos).add(0.01,0,0.01); // for some ducking reason it messes up when going straight down, so
+        double len = b.length();
+        if (len > 0.01){
 
-    @Override
-    public boolean deflect(ProjectileDeflection p_341900_, @Nullable Entity p_341912_, @Nullable Entity p_341932_, boolean p_341948_) {
-        if (!this.level().isClientSide) {
+            var v = currentRotation.transform(0,1,0,new Vector3f());
+            Vec3 v3 = FDMathUtil.vector3fToVec3(v);
+            float currentAngleBetween = (float) FDMathUtil.angleBetweenVectors(b,v3);
 
-            ProjectileDeflection deflection = (projectile,entity,randomSource)->{
-                projectile.setDeltaMovement(entity.getLookAngle().multiply(0.1,0.1,0.1));
-                projectile.hasImpulse = true;
-            };
+            Vec3 axis = b.cross(new Vec3(0,1,0)).normalize();
+            previousRotation = new Quaternionf(currentRotation);
+            if (currentAngleBetween > 0.1){
+                float bt = (float) FDMathUtil.angleBetweenVectors(b,new Vec3(0,1,0));
+                Quaternionf targetQuaternion = new Quaternionf(
+                        new AxisAngle4f(-bt,
+                                (float)axis.x,
+                                (float)axis.y,
+                                (float)axis.z
+                        )
+                );
+                float rot = (float) Math.toRadians(this.getRotationSpeed() * len);
+                currentRotation.slerp(targetQuaternion,Mth.clamp(rot / currentAngleBetween,0,1));
+            }
 
-            deflection.deflect(this, p_341912_, this.random);
-            this.setOwner(p_341932_);
-//            this.onDeflection(p_341912_, p_341948_);
         }
-
-        return true;
     }
+
+
 
     public float getRotationSpeed() {
         return this.entityData.get(ROTATION_SPEED);
@@ -125,14 +92,6 @@ public class BlockProjectile extends FDProjectile {
 
     public void setRotationSpeed(float rotationSpeed) {
         this.entityData.set(ROTATION_SPEED,rotationSpeed);
-    }
-
-    public void setLookDirection(Vec3 direction){
-        this.direction = direction;
-    }
-
-    public Vec3 getLookDirection(){
-        return this.direction;
     }
 
     public BlockState getBlockState(){
@@ -145,21 +104,73 @@ public class BlockProjectile extends FDProjectile {
 
 
     @Override
-    public boolean hurt(DamageSource p_341896_, float p_341906_) {
-        return super.hurt(p_341896_, p_341906_);
-    }
-
-    @Override
     protected void onHitBlock(BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        this.remove(RemovalReason.DISCARDED);
+        if (!level().isClientSide){
+
+            float baseSpeed = 2;
+            Vec3 base = this.getDeltaMovement().multiply(1,0,1).normalize()
+                    .multiply(baseSpeed,0,baseSpeed);
+
+            float rotationLimit = FDMathUtil.FPI / 6;
+            int count = 10 + random.nextInt(5);
+
+
+            Vec3 center = blockHitResult.getBlockPos().getCenter().add(0,0.5,0);
+
+            var states = this.collectStates(blockHitResult.getBlockPos(),2);
+
+            for (int i = 0; i < count;i++){
+                FlyingBlockEntity blockEntity = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level());
+
+                float randRotation = rotationLimit * (random.nextFloat() * 2 - 1);
+
+                float md = Math.abs(randRotation) / rotationLimit;
+
+                float randY = random.nextFloat() * 0.5f  * md + 0.5f;
+
+                float speedMd = random.nextFloat() / 0.8f + 0.2f;
+
+                Vec3 f = base.multiply(
+                        speedMd,0,speedMd
+                ).yRot(randRotation).add(0,randY,0);
+
+                var state = states.get(random.nextInt(states.size()));
+
+                blockEntity.setAirFriction(0.935f);
+                blockEntity.setPos(center);
+                blockEntity.setNoPhysicsTime(2);
+                blockEntity.setBlockState(state);
+                blockEntity.setRotationSpeed((float)f.length() / 2 * 20f);
+                blockEntity.setDeltaMovement(f);
+
+                level().addFreshEntity(blockEntity);
+            }
+            this.remove(RemovalReason.DISCARDED);
+        }
+    }
+
+    private List<BlockState> collectStates(BlockPos baseImpactPos, int blockRadius){
+        List<BlockState> states = new ArrayList<>();
+        for (int x = -blockRadius;x <= blockRadius;x++){
+            for (int y = -blockRadius;y <= blockRadius;y++){
+                for (int z = -blockRadius;z <= blockRadius;z++){
+                    BlockPos takePos = baseImpactPos.offset(x,y,z);
+                    var state = level().getBlockState(takePos);
+                    if (!state.isAir() && !states.contains(state)){
+                        states.add(state);
+                    }
+                }
+            }
+        }
+        return states;
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder
-                .define(ROTATION_SPEED,5f)
+                .define(ROTATION_SPEED,20f)
                 .define(STATE, Blocks.STONE.defaultBlockState());
     }
 
@@ -172,9 +183,9 @@ public class BlockProjectile extends FDProjectile {
     }
 
     @Override
-    public void load(CompoundTag load) {
-        this.setRotationSpeed(load.getFloat("rotationSpeed"));
-        this.setBlockState(NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK),load.getCompound("state")));
-        super.load(load);
+    public void load(CompoundTag tag) {
+        this.setRotationSpeed(tag.getFloat("rotationSpeed"));
+        this.setBlockState(NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK),tag.getCompound("state")));
+        super.load(tag);
     }
 }
