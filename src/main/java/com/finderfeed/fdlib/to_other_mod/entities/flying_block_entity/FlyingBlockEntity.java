@@ -1,7 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity;
 
 
-import com.finderfeed.fdlib.to_other_mod.projectiles.BlockProjectile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;

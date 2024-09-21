@@ -4,7 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
-import com.finderfeed.fdlib.to_other_mod.projectiles.BlockProjectile;
+import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,8 +35,8 @@ public class FDEntities {
             .sized(1f,1f)
             .build("earth_shatter"));
 
-    public static final Supplier<EntityType<BlockProjectile>> BLOCK_PROJECTILE = ENTITIES.register("block_projectile",()->EntityType.Builder.<BlockProjectile>of(
-            BlockProjectile::new, MobCategory.MISC
+    public static final Supplier<EntityType<ChesedBlockProjectile>> BLOCK_PROJECTILE = ENTITIES.register("block_projectile",()->EntityType.Builder.<ChesedBlockProjectile>of(
+            ChesedBlockProjectile::new, MobCategory.MISC
     )
             .sized(1f,1f)
             .updateInterval(1)

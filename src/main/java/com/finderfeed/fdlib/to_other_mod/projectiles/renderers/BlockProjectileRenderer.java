@@ -1,8 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod.projectiles.renderers;
 
-import com.finderfeed.fdlib.to_other_mod.projectiles.BlockProjectile;
-import com.finderfeed.fdlib.util.math.FDMathUtil;
-import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
+import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -15,11 +13,10 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 
-public class BlockProjectileRenderer extends EntityRenderer<BlockProjectile> {
+public class BlockProjectileRenderer extends EntityRenderer<ChesedBlockProjectile> {
 
 
 
@@ -28,7 +25,7 @@ public class BlockProjectileRenderer extends EntityRenderer<BlockProjectile> {
     }
 
     @Override
-    public void render(BlockProjectile entity, float yaw, float pticks, PoseStack matrices, MultiBufferSource src, int light) {
+    public void render(ChesedBlockProjectile entity, float yaw, float pticks, PoseStack matrices, MultiBufferSource src, int light) {
         BlockState state = entity.getBlockState();
 
         BlockPos pos = entity.getOnPos().above(2);
@@ -48,7 +45,7 @@ public class BlockProjectileRenderer extends EntityRenderer<BlockProjectile> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BlockProjectile p_114482_) {
+    public ResourceLocation getTextureLocation(ChesedBlockProjectile p_114482_) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 }

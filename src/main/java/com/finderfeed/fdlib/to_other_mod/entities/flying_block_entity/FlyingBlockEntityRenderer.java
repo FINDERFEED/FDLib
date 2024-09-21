@@ -33,7 +33,7 @@ public class FlyingBlockEntityRenderer extends EntityRenderer<FlyingBlockEntity>
 
         FDRenderUtil.applyMovementMatrixRotations(matrices,horizontal);
 
-        float time = (entity.tickCount + partialTicks) * entity.getRotationSpeed() + entity.getId() * 4332;
+        float time = (entity.tickCount + partialTicks) * entity.getRotationSpeed() + entity.getId() % 500 * 323;
         matrices.mulPose(FDRenderUtil.rotationDegrees(FDRenderUtil.XP(),time));
 
         matrices.translate(-.5,-.5,-.5);

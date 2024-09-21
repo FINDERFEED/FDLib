@@ -1,6 +1,9 @@
 package com.finderfeed.fdlib.to_other_mod.projectiles;
 
+import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
+import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.util.FDProjectile;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
@@ -11,33 +14,30 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
-import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockProjectile extends FDProjectile {
+public class ChesedBlockProjectile extends FDProjectile {
 
-    public static final EntityDataAccessor<Float> ROTATION_SPEED = SynchedEntityData.defineId(BlockProjectile.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<BlockState> STATE = SynchedEntityData.defineId(BlockProjectile.class, EntityDataSerializers.BLOCK_STATE);
+    public static final EntityDataAccessor<Float> ROTATION_SPEED = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<BlockState> STATE = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.BLOCK_STATE);
 
     public Quaternionf currentRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
     public Quaternionf previousRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
 
-    public BlockProjectile(EntityType<? extends AbstractHurtingProjectile> type, Level level) {
+    public ChesedBlockProjectile(EntityType<? extends AbstractHurtingProjectile> type, Level level) {
         super(type, level);
     }
 
@@ -107,46 +107,93 @@ public class BlockProjectile extends FDProjectile {
     protected void onHitBlock(BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (!level().isClientSide){
+            this.lightningParticles(blockHitResult,FDMathUtil.FPI / 6);
+            this.launchBlocks(blockHitResult,FDMathUtil.FPI / 6);
+            this.remove(RemovalReason.DISCARDED);
+        }
+    }
 
-            float baseSpeed = 2;
-            Vec3 base = this.getDeltaMovement().multiply(1,0,1).normalize()
-                    .multiply(baseSpeed,0,baseSpeed);
+    private void lightningParticles(BlockHitResult result,float rotationLimit){
+        Vec3 v = result.getLocation();
+        Vec3 dir = this.getDeltaMovement().multiply(1,0,1).normalize();
 
-            float rotationLimit = FDMathUtil.FPI / 6;
-            int count = 10 + random.nextInt(5);
+        int count = random.nextInt(4) + 6;
+
+        float angle = rotationLimit * 2 / count;
 
 
-            Vec3 center = blockHitResult.getBlockPos().getCenter().add(0,0.5,0);
+        for (int i = 0; i < count;i++) {
+            float ang = i * angle - rotationLimit + random.nextFloat() * FDMathUtil.FPI / 24f;
+            float md = 1 - Math.abs(ang) / rotationLimit;
 
-            var states = this.collectStates(blockHitResult.getBlockPos(),2);
+            Vec3 end = v.add(dir.yRot(ang));
+            Vec3 endSpeed = dir.yRot(ang).multiply(md * 6, md * 6,md * 6);
+            ArcLightningOptions options = ArcLightningOptions.builder(BossParticles.ARC_LIGHTNING.get())
+                    .end(end)
+                    .lifetime(10)
+                    .endSpeed(endSpeed)
+                    .width(0.5f)
+                    .segments(10)
+                    .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
+                    .circleOffset(-5 * (md * 10))
+                    .build();
 
-            for (int i = 0; i < count;i++){
-                FlyingBlockEntity blockEntity = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level());
+            ((ServerLevel)level()).sendParticles(options,v.x,v.y,v.z,1,0,0,0,0);
+        }
 
-                float randRotation = rotationLimit * (random.nextFloat() * 2 - 1);
 
-                float md = Math.abs(randRotation) / rotationLimit;
+    }
 
-                float randY = random.nextFloat() * 0.5f  * md + 0.5f;
+    private void launchBlocks(BlockHitResult blockHitResult,float rotationLimit){
+        float baseSpeed = 2;
+        Vec3 base = this.getDeltaMovement().multiply(1,0,1).normalize()
+                .multiply(baseSpeed,0,baseSpeed);
 
-                float speedMd = random.nextFloat() / 0.8f + 0.2f;
+        int count = 10 + random.nextInt(5);
 
-                Vec3 f = base.multiply(
-                        speedMd,0,speedMd
-                ).yRot(randRotation).add(0,randY,0);
 
-                var state = states.get(random.nextInt(states.size()));
+        Vec3 center = blockHitResult.getBlockPos().getCenter().add(0,0.5,0);
 
-                blockEntity.setAirFriction(0.935f);
+        var states = this.collectStates(blockHitResult.getBlockPos(),2);
+
+        float angle = rotationLimit * 2 / count;
+
+        for (int i = 0; i < count;i++){
+
+            float ang = i * angle - rotationLimit + random.nextFloat() * FDMathUtil.FPI / 24f;
+
+            float md = 1 - Math.abs(ang) / rotationLimit;
+
+            float randY = random.nextFloat() * 0.25f * md + 0.75f;
+
+            float speedMd = 1f + (random.nextFloat() * 0.25f + md * 0.75f);
+
+            Vec3 f = base.multiply(
+                    speedMd,0,speedMd
+            ).yRot(ang).add(0,randY,0);
+
+            var state = states.get(random.nextInt(states.size()));
+
+            FlyingBlockEntity blockEntity = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level());
+            blockEntity.setAirFriction(0.86f);
+            blockEntity.setPos(center);
+            blockEntity.setNoPhysicsTime(2);
+            blockEntity.setBlockState(state);
+            blockEntity.setRotationSpeed((float)f.length() / 2 * 20f);
+            blockEntity.setDeltaMovement(f);
+            level().addFreshEntity(blockEntity);
+            for (int g = 0;g < md * 3;g++){
+                float mod = 0.6f + random.nextFloat() * 0.4f - 0.2f;
+                f = f.multiply(mod,mod,mod);
+                blockEntity = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level());
+                blockEntity.setAirFriction(0.89f);
                 blockEntity.setPos(center);
                 blockEntity.setNoPhysicsTime(2);
                 blockEntity.setBlockState(state);
                 blockEntity.setRotationSpeed((float)f.length() / 2 * 20f);
                 blockEntity.setDeltaMovement(f);
-
                 level().addFreshEntity(blockEntity);
             }
-            this.remove(RemovalReason.DISCARDED);
         }
     }
 

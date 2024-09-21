@@ -27,6 +27,8 @@ import java.util.Random;
 public class ArcLightningParticle extends Particle {
 
     private ArcLightningOptions options;
+    private Vec3 end;
+    private Vec3 oldEnd;
 
     public ArcLightningParticle(ArcLightningOptions options,ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
         super(level, x, y, z, xd, yd, zd);
@@ -38,13 +40,19 @@ public class ArcLightningParticle extends Particle {
         this.zd = zd;
         this.options = options;
         this.lifetime = options.lifetime;
+        this.end = this.options.end;
+        this.oldEnd = this.options.end;
         this.hasPhysics = false;
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.setBoundingBox(new AABB(x,y,z,options.end.x,options.end.y,options.end.z));
+
+        this.oldEnd = end;
+        this.end = this.end.add(options.endSpeed);
+
+        this.setBoundingBox(new AABB(x,y,z,end.x,end.y,end.z));
     }
 
     @Override
@@ -56,8 +64,9 @@ public class ArcLightningParticle extends Particle {
                 Mth.lerp(partialTicks,this.zo,this.z)
         ).subtract(camera.getPosition());
 
+        Vec3 endi = FDMathUtil.interpolateVectors(oldEnd,this.end,partialTicks);
 
-        Vec3 between = options.end.subtract(camera.getPosition()).subtract(pos);
+        Vec3 between = endi.subtract(camera.getPosition()).subtract(pos);
 
         double horLen = Math.sqrt(between.x * between.x + between.z * between.z);
         double verticalLength = between.y;

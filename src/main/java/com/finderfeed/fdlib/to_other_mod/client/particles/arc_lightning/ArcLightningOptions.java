@@ -20,6 +20,7 @@ public class ArcLightningOptions implements ParticleOptions {
 
     private static final Codec<ArcLightningOptions> CODEC = RecordCodecBuilder.create(p->p.group(
             FDCodecs.VEC3.fieldOf("end").forGetter(v->v.end),
+            FDCodecs.VEC3.fieldOf("endSpeed").forGetter(v->v.end),
             Codec.INT.fieldOf("lifetime").forGetter(v->v.lifetime),
             Codec.INT.fieldOf("seed").forGetter(v->v.seed),
             Codec.INT.fieldOf("lightningSegments").forGetter(v->v.lightningSegments),
@@ -32,6 +33,7 @@ public class ArcLightningOptions implements ParticleOptions {
 
     private static final StreamCodec<FriendlyByteBuf,ArcLightningOptions> STREAM_CODEC = FDByteBufCodecs.composite(
             FDByteBufCodecs.VEC3, v->v.end,
+            FDByteBufCodecs.VEC3, v->v.endSpeed,
             ByteBufCodecs.INT,v->v.lifetime,
             ByteBufCodecs.INT,v->v.seed,
             ByteBufCodecs.INT,v->v.lightningSegments,
@@ -43,15 +45,16 @@ public class ArcLightningOptions implements ParticleOptions {
     );
 
     public static MapCodec<ArcLightningOptions> createCodec(ParticleType<?> type){
-        return CODEC.xmap(a->new ArcLightningOptions(type,a.end,a.lifetime,a.seed,a.lightningSegments,a.lightningRandomSpread,a.lightningWidth,a.circleOffset,a.color),f->f).fieldOf("options");
+        return CODEC.xmap(a->new ArcLightningOptions(type,a.end,a.endSpeed,a.lifetime,a.seed,a.lightningSegments,a.lightningRandomSpread,a.lightningWidth,a.circleOffset,a.color),f->f).fieldOf("options");
     }
 
     public static StreamCodec<FriendlyByteBuf,ArcLightningOptions> createStreamCodec(ParticleType<?> type){
-        return STREAM_CODEC.map(a->new ArcLightningOptions(type,a.end,a.lifetime,a.seed,a.lightningSegments,a.lightningRandomSpread,a.lightningWidth,a.circleOffset,a.color),opt->opt);
+        return STREAM_CODEC.map(a->new ArcLightningOptions(type,a.end,a.endSpeed,a.lifetime,a.seed,a.lightningSegments,a.lightningRandomSpread,a.lightningWidth,a.circleOffset,a.color),opt->opt);
     }
 
     public ParticleType<?> particleType;
     public Vec3 end;
+    public Vec3 endSpeed;
     public int lifetime;
     public int seed;
     public int lightningSegments;
@@ -60,8 +63,9 @@ public class ArcLightningOptions implements ParticleOptions {
     public float circleOffset;
     public FDColor color;
 
-    public ArcLightningOptions(ParticleType<?> particleType, Vec3 end, int lifetime,int seed,int segments,float lightningRandomSpread, float lightningWidth,float circleOffset, FDColor color){
+    public ArcLightningOptions(ParticleType<?> particleType, Vec3 end,Vec3 endSpeed, int lifetime,int seed,int segments,float lightningRandomSpread, float lightningWidth,float circleOffset, FDColor color){
         this.particleType = particleType;
+        this.endSpeed = endSpeed;
         this.lightningWidth = lightningWidth;
         this.color = color;
         this.seed = seed;
@@ -72,8 +76,8 @@ public class ArcLightningOptions implements ParticleOptions {
         this.lightningRandomSpread = lightningRandomSpread;
     }
 
-    public ArcLightningOptions(Vec3 end, int lifetime,int seed, int segments,float lightningRandomSpread, float lightningWidth,float circleOffset, FDColor color){
-        this(null,end,lifetime,seed,segments,lightningRandomSpread,lightningWidth,circleOffset,color);
+    public ArcLightningOptions(Vec3 end,Vec3 endSpeed, int lifetime,int seed, int segments,float lightningRandomSpread, float lightningWidth,float circleOffset, FDColor color){
+        this(null,end,endSpeed,lifetime,seed,segments,lightningRandomSpread,lightningWidth,circleOffset,color);
     }
 
     public static Builder builder(ParticleType<?> type){
@@ -88,7 +92,7 @@ public class ArcLightningOptions implements ParticleOptions {
 
     public static class Builder {
 
-        private ArcLightningOptions options = new ArcLightningOptions(Vec3.ZERO,10,2313,10,0.5f,0.25f,0,new FDColor(0,0,1,1));
+        private ArcLightningOptions options = new ArcLightningOptions(Vec3.ZERO,Vec3.ZERO,10,2313,10,0.5f,0.25f,0,new FDColor(0,0,1,1));
 
         public Builder(ParticleType<?> type){
             options.seed = new Random().nextInt(2543532) + 134234;
@@ -152,6 +156,15 @@ public class ArcLightningOptions implements ParticleOptions {
 
         public Builder end(Vec3 end){
             this.options.end = end;
+            return this;
+        }
+
+        public Builder endSpeed(double x,double y,double z){
+            return this.endSpeed(new Vec3(x,y,z));
+        }
+
+        public Builder endSpeed(Vec3 end){
+            this.options.endSpeed = end;
             return this;
         }
 
