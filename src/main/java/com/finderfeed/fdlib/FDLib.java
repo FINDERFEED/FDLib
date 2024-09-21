@@ -2,12 +2,13 @@ package com.finderfeed.fdlib;
 
 
 import com.finderfeed.fdlib.init.FDEDataSerializers;
+import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
 import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
 import com.finderfeed.fdlib.to_other_mod.FDItems;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
-import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
+import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 
@@ -35,6 +36,7 @@ public class FDLib {
         FDAnims.ANIMATIONS.register(bus);
         FDEntities.ENTITIES.register(bus);
         FDParticles.PARTICLES.register(bus);
+        BossParticles.PARTICLES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
     }

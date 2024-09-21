@@ -18,6 +18,9 @@ public class FDMathUtil {
     public static float lerp(float v1,float v2,float p){
         return v1 + (v2 - v1) * p;
     }
+    public static double lerp(double v1,double v2,double p){
+        return v1 + (v2 - v1) * p;
+    }
 
     public static double angleBetweenVectors(Vec3 v1,Vec3 v2){
         return Math.acos(v1.dot(v2) / (v1.length() * v2.length()));
@@ -34,6 +37,14 @@ public class FDMathUtil {
 
     public static Vector3f interpolateVectors(Vector3f v1,Vector3f v2,float p){
         return new Vector3f(
+                lerp(v1.x,v2.x,p),
+                lerp(v1.y,v2.y,p),
+                lerp(v1.z,v2.z,p)
+        );
+    }
+
+    public static Vec3 interpolateVectors(Vec3 v1,Vec3 v2,float p){
+        return new Vec3(
                 lerp(v1.x,v2.x,p),
                 lerp(v1.y,v2.y,p),
                 lerp(v1.z,v2.z,p)

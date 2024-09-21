@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod;
+package com.finderfeed.fdlib.to_other_mod.entities;
 
 import com.finderfeed.fdlib.FDHelpers;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
@@ -9,12 +9,13 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
-import com.finderfeed.fdlib.to_other_mod.client.FDParticles;
+import com.finderfeed.fdlib.to_other_mod.FDAnims;
+import com.finderfeed.fdlib.to_other_mod.FDModels;
+import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
-import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterEntity;
-import com.finderfeed.fdlib.to_other_mod.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -23,7 +24,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -36,8 +36,6 @@ import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import java.util.List;
 
 import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
 
@@ -107,7 +105,7 @@ public class ChesedEntity extends FDLivingEntity {
             float randomRange = FDMathUtil.FPI * 2 - FDMathUtil.FPI / 2;
             for (int i = 0; i < 2;i++) {
                 var end = pos.add(new Vector3f(0, 0, 2).rotateY(baseAngle + randomRange * random.nextFloat()), new Vector3f()).add(0, -(pos.y - (float) this.getY()), 0);
-                level().addParticle(ArcLightningOptions.builder(FDParticles.ARC_LIGHTNING.get())
+                level().addParticle(ArcLightningOptions.builder(BossParticles.ARC_LIGHTNING.get())
                                 .end(end.x, end.y, end.z)
                                 .lifetime(2)
                                 .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
@@ -361,7 +359,7 @@ public class ChesedEntity extends FDLivingEntity {
         float md = random.nextFloat() + 1;
 
         level().addParticle(
-                ArcLightningOptions.builder(FDParticles.ARC_LIGHTNING.get())
+                ArcLightningOptions.builder(BossParticles.ARC_LIGHTNING.get())
                         .end(ppos.add(-nb.x * md,1 + 0.1f,-nb.z * md))
                         .lifetime(4)
                         .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))

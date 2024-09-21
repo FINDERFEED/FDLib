@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod.earthshatter_entity;
+package com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity;
 
 import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;

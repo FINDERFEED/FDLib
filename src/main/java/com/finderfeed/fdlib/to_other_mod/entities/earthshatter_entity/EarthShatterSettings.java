@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod.earthshatter_entity;
+package com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity;
 
 import com.finderfeed.fdlib.nbt.AutoSerializable;
 import com.finderfeed.fdlib.nbt.SerializableField;

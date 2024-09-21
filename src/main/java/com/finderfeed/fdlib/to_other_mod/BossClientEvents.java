@@ -9,7 +9,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT)
-public class FDClientEvents {
+public class BossClientEvents {
 
 
     @SubscribeEvent

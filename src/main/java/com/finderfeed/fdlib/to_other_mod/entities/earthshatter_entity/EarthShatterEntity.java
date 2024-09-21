@@ -1,10 +1,10 @@
-package com.finderfeed.fdlib.to_other_mod.earthshatter_entity;
+package com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity;
 
-import com.finderfeed.fdlib.init.FDEDataSerializers;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
-import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.function.Consumer;
 
@@ -92,11 +91,13 @@ public class EarthShatterEntity extends Entity {
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.settings = new EarthShatterSettings();
         this.settings.load("settings",tag);
+        this.setBlockState(NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK),tag));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         this.settings.save("settings",tag);
+        tag.put("state", NbtUtils.writeBlockState(this.getBlockState()));
     }
 
 
