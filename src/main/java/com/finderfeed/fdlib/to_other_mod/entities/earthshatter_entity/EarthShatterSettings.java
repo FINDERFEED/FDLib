@@ -11,6 +11,7 @@ import org.joml.Vector3f;
 public class EarthShatterSettings implements AutoSerializable {
 
     public static StreamCodec<FriendlyByteBuf,EarthShatterSettings> NETWORK_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,t->t.delay,
             ByteBufCodecs.FLOAT,t->t.upDistance,
             ByteBufCodecs.INT,t->t.upTime,
             ByteBufCodecs.INT,t->t.stayTime,
@@ -18,6 +19,9 @@ public class EarthShatterSettings implements AutoSerializable {
             ByteBufCodecs.VECTOR3F,t->new Vector3f((float)t.direction.x,(float)t.direction.y,(float)t.direction.z),
             EarthShatterSettings::new
     );
+
+    @SerializableField
+    public int delay = 0;
 
     @SerializableField
     public float upDistance = 0.5f;
@@ -37,7 +41,8 @@ public class EarthShatterSettings implements AutoSerializable {
     @SerializableField
     public EarthShatterSettings s;
 
-    private EarthShatterSettings(float upDistance,int upTime,int stayTime,int downTime,Vector3f direction){
+    private EarthShatterSettings(int delay,float upDistance,int upTime,int stayTime,int downTime,Vector3f direction){
+        this.delay = delay;
         this.upDistance = upDistance;
         this.upTime = upTime;
         this.stayTime = stayTime;
@@ -59,7 +64,7 @@ public class EarthShatterSettings implements AutoSerializable {
     }
 
     public int getLifetime(){
-        return this.upTime + this.stayTime + this.downTime;
+        return this.upTime + this.stayTime + this.downTime + this.delay;
     }
 
     public static class Builder{
@@ -68,6 +73,11 @@ public class EarthShatterSettings implements AutoSerializable {
 
         public Builder(){
             shatterSettings = new EarthShatterSettings();
+        }
+
+        public Builder delay(int delay){
+            this.shatterSettings.delay = delay;
+            return this;
         }
 
         public Builder upTime(int upTime){

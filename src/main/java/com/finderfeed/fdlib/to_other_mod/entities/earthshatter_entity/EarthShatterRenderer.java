@@ -31,17 +31,20 @@ public class EarthShatterRenderer extends EntityRenderer<EarthShatterEntity> {
         BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
         BlockState state = entity.getBlockState();
 
-        matrices.pushPose();
+
 
         EarthShatterSettings settings = entity.settings;
-
+        if (entity.tickCount < settings.delay){
+            return;
+        }
+        matrices.pushPose();
         ComplexEasingFunction function = ComplexEasingFunction.builder()
                 .addArea(settings.upTime, FDEasings::easeOut)
                 .addArea(settings.stayTime,f->1f)
                 .addArea(settings.downTime,FDEasings::reversedEaseOut)
                 .build();
 
-        float p = function.apply(entity.tickCount + pticks);
+        float p = function.apply(entity.tickCount + pticks - settings.delay);
 
         Vec3 dir = entity.getShatterDirection();
 
