@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.util.client.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.InvisibleParticle;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,6 +16,7 @@ public class FDClientModEvents {
     @SubscribeEvent
     public static void assignFactories(RegisterParticleProvidersEvent event){
         event.registerSpriteSet(FDParticles.INVISIBLE.get(),InvisibleParticle.Factory::new);
+        event.registerSpecial(FDParticles.TERRAIN_PARTICLE.get(), new FDTerrainParticle.Provider());
     }
 
 }
