@@ -18,7 +18,7 @@ public class FDParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(Registries.PARTICLE_TYPE, FDLib.MOD_ID);
 
     public static final Supplier<SimpleParticleType> INVISIBLE = PARTICLES.register("invisible",()->new SimpleParticleType(true));
-    public static final Supplier<ParticleType<FDBlockParticleOptions>> TERRAIN_PARTICLE = PARTICLES.register("invisible",()-> new ParticleType<FDBlockParticleOptions>(true) {
+    public static final Supplier<ParticleType<FDBlockParticleOptions>> TERRAIN_PARTICLE = PARTICLES.register("terrain_particle",()-> new ParticleType<FDBlockParticleOptions>(true) {
         @Override
         public MapCodec<FDBlockParticleOptions> codec() {
             return FDBlockParticleOptions.MAP_CODEC;

@@ -1,12 +1,10 @@
 package com.finderfeed.fdlib.to_other_mod.projectiles;
 
-import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
-import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
-import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
+import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
 import com.finderfeed.fdlib.util.FDProjectile;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.core.BlockPos;
@@ -16,7 +14,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
@@ -25,6 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 
 import java.lang.Math;
@@ -109,6 +107,10 @@ public class ChesedBlockProjectile extends FDProjectile {
     protected void onHitBlock(BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (!level().isClientSide){
+            SlamParticlesPacket packet = new SlamParticlesPacket(
+                    new SlamParticlesPacket.SlamData(blockHitResult.getBlockPos(),blockHitResult.getLocation(),this.getDeltaMovement())
+            );
+            PacketDistributor.sendToPlayersTrackingEntity(this,packet);
             this.shatter(blockHitResult,FDMathUtil.FPI / 6);
             this.launchBlocks(blockHitResult,FDMathUtil.FPI / 6);
             this.remove(RemovalReason.DISCARDED);
