@@ -6,15 +6,13 @@ import com.finderfeed.fdlib.nbt.SerializableField;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityMovementPath implements AutoSerializable {
+public class ProjectileMovementPath implements AutoSerializable {
 
     private List<Vec3> positions = new ArrayList<>();
 
@@ -30,14 +28,17 @@ public class EntityMovementPath implements AutoSerializable {
     @SerializableField
     private boolean easeInOut = false;
 
-    public EntityMovementPath(){}
+    @SerializableField
+    private ProjectileMovementPath next;
 
-    public EntityMovementPath(int time,boolean cycle){
+    public ProjectileMovementPath(){}
+
+    public ProjectileMovementPath(int time, boolean cycle){
         this.time = time;
         this.cycle = cycle;
     }
 
-    public EntityMovementPath(Vec3 initPos,int time,boolean cycle){
+    public ProjectileMovementPath(Vec3 initPos, int time, boolean cycle){
         this.positions.add(initPos);
         this.time = time;
         this.cycle = cycle;
@@ -77,6 +78,14 @@ public class EntityMovementPath implements AutoSerializable {
 
     public List<Vec3> getPositions() {
         return positions;
+    }
+
+    public ProjectileMovementPath getNext() {
+        return next;
+    }
+
+    public void setNext(ProjectileMovementPath next) {
+        this.next = next;
     }
 
     @Override

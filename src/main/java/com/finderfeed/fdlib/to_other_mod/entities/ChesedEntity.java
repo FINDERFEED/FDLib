@@ -17,8 +17,9 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLight
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
-import com.finderfeed.fdlib.util.EntityMovementPath;
+import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
+import com.finderfeed.fdlib.util.rendering.FDEasings;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -27,7 +28,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -43,7 +43,6 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
 
@@ -143,46 +142,86 @@ public class ChesedEntity extends FDLivingEntity {
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
 
     public boolean blockAttack(AttackInstance attack){
+        float height = 8;
+        int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){
-            int count = 8;
-            for (int i = 0; i < count;i++){
-                float angle = this.getInitProjectileRotation(i,count);
-                ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(),level());
-                var path = this.createRotationPath(angle,10,30,30,false);
-                path.setEaseInOut(true);
-                projectile.noPhysics = true;
-                projectile.setPos(path.getPositions().getFirst());
-                projectile.movementPath = path;
-                blockAttackProjectiles.add(projectile);
-                level().addFreshEntity(projectile);
+            attack.tick = 0;
+            if (!this.trySearchProjectiles()) {
+                int count = 8;
+                for (int i = 0; i < count; i++) {
+                    float angle = this.getInitProjectileRotation(i, count);
+                    ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(), level());
+
+                    var path = this.createRotationPath(angle, -1,height, 30, timeTillAttack / 2, false);
+                    var next = this.createRotationPath(angle, height,height, 30, timeTillAttack / 2, true);
+
+                    path.setNext(next);
+                    path.setEaseInOut(false);
+                    projectile.noPhysics = true;
+                    projectile.setPos(path.getPositions().getFirst());
+                    projectile.movementPath = path;
+                    blockAttackProjectiles.add(projectile);
+                    level().addFreshEntity(projectile);
+                }
             }
             return false;
         }else{
-            boolean allFinished = true;
-            for (ChesedBlockProjectile projectile : blockAttackProjectiles){
-                if (projectile != null && projectile.movementPath != null){
-                    if (!projectile.movementPath.isFinished() && projectile.isAlive()){
-                        allFinished = false;
-                        break;
-                    }
-                }
+            Player player = level().getNearestPlayer(this,100);
+            if (player == null) return false;
+            if (blockAttackProjectiles.isEmpty()) return true;
+            if (attack.tick >= timeTillAttack && attack.tick % 10 == 0){
+                ChesedBlockProjectile next = this.blockAttackProjectiles.removeLast();
+                next.noPhysics = false;
+                next.movementPath = null;
+                Vec3 tpos = this.targetGroundPosition(player);
+                Vec3 b = tpos.subtract(next.position());
+                Vec3 h = b.multiply(1,0,1);
+                Vec3 targetPos = tpos.add(h.normalize().reverse().multiply(1.5,0,1.5));
+                Vec3 bt = targetPos.subtract(next.position());
+                next.setDeltaMovement(
+                        bt.multiply(0.1,0.1,0.1)
+                );
             }
-            if (allFinished){
-                for (ChesedBlockProjectile projectile : blockAttackProjectiles) if (projectile != null) projectile.discard();
-                blockAttackProjectiles.clear();
-            }
-            return allFinished;
+            return false;
         }
     }
 
-    private EntityMovementPath createRotationPath(float angle, float yDifference, int pathDetalization, int time,boolean cycle){
-        EntityMovementPath path = new EntityMovementPath(time,cycle);
+    private Vec3 targetGroundPosition(LivingEntity target){
+        Vec3 toReturn = target.position();
+        BlockPos pos = new BlockPos(
+                (int)Math.floor(toReturn.x),
+                (int)Math.floor(toReturn.y),
+                (int)Math.floor(toReturn.z)
+        );
+        for (int i = 0; i < 5;i++){
+            if (level().getBlockState(pos.offset(0,-i,0)).isAir()){
+                toReturn = toReturn.subtract(0,1,0);
+            }else{
+                return toReturn;
+            }
+
+        }
+        return toReturn;
+    }
+
+
+    private boolean trySearchProjectiles(){
+        List<ChesedBlockProjectile> projectiles = level().getEntitiesOfClass(ChesedBlockProjectile.class,this.getBoundingBox().inflate(10,20,10));
+        if (!projectiles.isEmpty()){
+            this.blockAttackProjectiles = projectiles;
+            return true;
+        }
+        return false;
+    }
+
+    private ProjectileMovementPath createRotationPath(float angle,float yStart, float yEnd, int pathDetalization, int time, boolean cycle){
+        ProjectileMovementPath path = new ProjectileMovementPath(time,cycle);
         float a1 = FDMathUtil.FPI * 2 / pathDetalization;
         for (int i = 0; i <= pathDetalization;i++){
             float p = i / (float) pathDetalization;
             float a = angle + i * a1;
             Vec3 v = new Vec3(5,0,0).yRot(a);
-            Vec3 pos = this.position().add(v.x,-2 + yDifference * p,v.z);
+            Vec3 pos = this.position().add(v.x,FDMathUtil.lerp(yStart,yEnd, FDEasings.easeOut(p)),v.z);
             path.addPos(pos);
         }
         return path;
@@ -517,19 +556,6 @@ public class ChesedEntity extends FDLivingEntity {
             chain.save(t);
             tag.put("chain",t);
         }
-
-
-        if (!blockAttackProjectiles.isEmpty()){
-            tag.putInt("projectiles",blockAttackProjectiles.size());
-            for (int i = 0; i < blockAttackProjectiles.size();i++){
-                var projectile = blockAttackProjectiles.get(i);
-                if (projectile != null){
-                    UUID uuid = projectile.getUUID();
-                    tag.putUUID("projectile_" + i,uuid);
-                }
-            }
-        }
-
         return super.save(tag);
     }
 
@@ -537,18 +563,6 @@ public class ChesedEntity extends FDLivingEntity {
     public void load(CompoundTag tag) {
         if (chain != null){
             this.chain.load(tag.getCompound("chain"));
-        }
-        if (level() instanceof ServerLevel serverLevel && tag.contains("projectiles")){
-            this.blockAttackProjectiles.clear();
-            int len = tag.getInt("projectiles");
-            for (int i = 0; i < len;i++){
-                if (tag.contains("projectile_"+i)){
-                    ChesedBlockProjectile projectile = (ChesedBlockProjectile) serverLevel.getEntity(tag.getUUID("projectile_"+i));
-                    this.blockAttackProjectiles.add(projectile);
-                }else{
-                    this.blockAttackProjectiles.add(null);
-                }
-            }
         }
         super.load(tag);
     }
