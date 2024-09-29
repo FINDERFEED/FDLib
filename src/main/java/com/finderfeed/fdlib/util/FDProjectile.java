@@ -16,6 +16,11 @@ public class FDProjectile extends AbstractHurtingProjectile {
 
 
     @Override
+    public void tick() {
+        super.tick();
+    }
+
+    @Override
     protected boolean shouldBurn() {
         return false;
     }

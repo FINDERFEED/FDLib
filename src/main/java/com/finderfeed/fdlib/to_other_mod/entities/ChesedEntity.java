@@ -148,9 +148,10 @@ public class ChesedEntity extends FDLivingEntity {
             for (int i = 0; i < count;i++){
                 float angle = this.getInitProjectileRotation(i,count);
                 ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(),level());
-                var path = this.createRotationPath(angle,0,4,60,false);
+                var path = this.createRotationPath(angle,10,30,30,false);
+                path.setEaseInOut(true);
+                projectile.noPhysics = true;
                 projectile.setPos(path.getPositions().getFirst());
-                projectile.setRotationSpeed(500);
                 projectile.movementPath = path;
                 blockAttackProjectiles.add(projectile);
                 level().addFreshEntity(projectile);
@@ -159,15 +160,15 @@ public class ChesedEntity extends FDLivingEntity {
         }else{
             boolean allFinished = true;
             for (ChesedBlockProjectile projectile : blockAttackProjectiles){
-                if (projectile.movementPath != null){
-                    if (!projectile.movementPath.isFinished()){
+                if (projectile != null && projectile.movementPath != null){
+                    if (!projectile.movementPath.isFinished() && projectile.isAlive()){
                         allFinished = false;
                         break;
                     }
                 }
             }
             if (allFinished){
-                for (ChesedBlockProjectile projectile : blockAttackProjectiles) projectile.discard();
+                for (ChesedBlockProjectile projectile : blockAttackProjectiles) if (projectile != null) projectile.discard();
                 blockAttackProjectiles.clear();
             }
             return allFinished;
@@ -181,7 +182,7 @@ public class ChesedEntity extends FDLivingEntity {
             float p = i / (float) pathDetalization;
             float a = angle + i * a1;
             Vec3 v = new Vec3(5,0,0).yRot(a);
-            Vec3 pos = this.position().add(v.x,1 + yDifference * p,v.z);
+            Vec3 pos = this.position().add(v.x,-2 + yDifference * p,v.z);
             path.addPos(pos);
         }
         return path;

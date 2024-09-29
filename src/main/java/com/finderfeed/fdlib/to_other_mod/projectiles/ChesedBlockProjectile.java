@@ -114,7 +114,7 @@ public class ChesedBlockProjectile extends FDProjectile {
     @Override
     protected void onHitBlock(BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        if (!level().isClientSide){
+        if (!level().isClientSide && !this.noPhysics){
             SlamParticlesPacket packet = new SlamParticlesPacket(
                     new SlamParticlesPacket.SlamData(blockHitResult.getBlockPos(),blockHitResult.getLocation(),this.getDeltaMovement())
             );
@@ -226,6 +226,12 @@ public class ChesedBlockProjectile extends FDProjectile {
             }
         }
         return states;
+    }
+
+
+    @Override
+    public void lerpTo(double x, double y, double z, float p_19899_, float p_19900_, int p_19901_) {
+        super.lerpTo(x, y, z, p_19899_, p_19900_, p_19901_);
     }
 
     @Override

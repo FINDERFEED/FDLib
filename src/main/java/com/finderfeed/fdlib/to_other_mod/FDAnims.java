@@ -34,7 +34,4 @@ public class FDAnims {
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
 
-
-
-
 }

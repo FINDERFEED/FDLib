@@ -70,6 +70,21 @@ public class FDMathUtil {
         return catmullrom(prev,cur,next,next2,lp);
     }
 
+
+    public static Vec3 linear(List<Vec3> points,float p){
+        if (p < 0){
+            return points.getFirst();
+        }else if (p >= 1){
+            return points.getLast();
+        }
+        float glP = p * (points.size() - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vec3 cur = points.get(id1);
+        Vec3 next = points.get(id1 + 1);
+        return interpolateVectors(cur,next,lp);
+    }
+
     public static Vec3 catmullRom(List<Vec3> points, float p){
         if (p < 0){
             return points.getFirst();

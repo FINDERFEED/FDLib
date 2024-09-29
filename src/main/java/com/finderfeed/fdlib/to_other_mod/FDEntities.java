@@ -46,7 +46,6 @@ public class FDEntities {
             FlyingBlockEntity::new, MobCategory.MISC
     )
             .sized(1f,1f)
-            .updateInterval(1)
             .build("flying_block"));
 
 
