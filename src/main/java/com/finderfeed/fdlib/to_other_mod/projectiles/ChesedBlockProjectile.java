@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatt
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
+import com.finderfeed.fdlib.util.EntityMovementPath;
 import com.finderfeed.fdlib.util.FDProjectile;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.core.BlockPos;
@@ -34,6 +35,8 @@ public class ChesedBlockProjectile extends FDProjectile {
     public static final EntityDataAccessor<Float> ROTATION_SPEED = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<BlockState> STATE = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.BLOCK_STATE);
 
+    public EntityMovementPath movementPath = null;
+
     public Quaternionf currentRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
     public Quaternionf previousRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
 
@@ -48,6 +51,11 @@ public class ChesedBlockProjectile extends FDProjectile {
         if (level().isClientSide){
            this.handleRotation();
         }else{
+
+            if (movementPath != null){
+                movementPath.tick(this);
+            }
+
             if (tickCount >= 2000){
                 this.remove(RemovalReason.DISCARDED);
             }
@@ -231,6 +239,9 @@ public class ChesedBlockProjectile extends FDProjectile {
 
     @Override
     public boolean save(CompoundTag tag) {
+        if (movementPath != null){
+            movementPath.save("path",tag);
+        }
         tag.putFloat("rotationSpeed",this.getRotationSpeed());
         tag.put("state", NbtUtils.writeBlockState(this.getBlockState()));
         return super.save(tag);
@@ -238,6 +249,10 @@ public class ChesedBlockProjectile extends FDProjectile {
 
     @Override
     public void load(CompoundTag tag) {
+        if (tag.contains("path")){
+            this.movementPath = new EntityMovementPath();
+            this.movementPath.load("path",tag);
+        }
         this.setRotationSpeed(tag.getFloat("rotationSpeed"));
         this.setBlockState(NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK),tag.getCompound("state")));
         super.load(tag);

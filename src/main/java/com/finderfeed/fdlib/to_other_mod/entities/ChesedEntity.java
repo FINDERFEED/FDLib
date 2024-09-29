@@ -10,11 +10,14 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
+import com.finderfeed.fdlib.to_other_mod.FDEntities;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
+import com.finderfeed.fdlib.util.EntityMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -24,6 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -36,6 +40,10 @@ import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
 
@@ -65,9 +73,12 @@ public class ChesedEntity extends FDLivingEntity {
                             .addAttack("nothing1",this::doNothing)
                             .build())
                     .addAttack(1, AttackOptions.builder()
-                            .addAttack("roll",this::roll)
+                            .addAttack("block",this::blockAttack)
                             .build())
                     .addAttack(2, AttackOptions.builder()
+                            .addAttack("roll",this::roll)
+                            .build())
+                    .addAttack(3, AttackOptions.builder()
                             .addAttack("nothing",this::doNothing)
                             .build())
             ;
@@ -129,9 +140,61 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
 
+    private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
+
+    public boolean blockAttack(AttackInstance attack){
+        if (blockAttackProjectiles.isEmpty()){
+            int count = 8;
+            for (int i = 0; i < count;i++){
+                float angle = this.getInitProjectileRotation(i,count);
+                ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(),level());
+                var path = this.createRotationPath(angle,0,4,60,false);
+                projectile.setPos(path.getPositions().getFirst());
+                projectile.setRotationSpeed(500);
+                projectile.movementPath = path;
+                blockAttackProjectiles.add(projectile);
+                level().addFreshEntity(projectile);
+            }
+            return false;
+        }else{
+            boolean allFinished = true;
+            for (ChesedBlockProjectile projectile : blockAttackProjectiles){
+                if (projectile.movementPath != null){
+                    if (!projectile.movementPath.isFinished()){
+                        allFinished = false;
+                        break;
+                    }
+                }
+            }
+            if (allFinished){
+                for (ChesedBlockProjectile projectile : blockAttackProjectiles) projectile.discard();
+                blockAttackProjectiles.clear();
+            }
+            return allFinished;
+        }
+    }
+
+    private EntityMovementPath createRotationPath(float angle, float yDifference, int pathDetalization, int time,boolean cycle){
+        EntityMovementPath path = new EntityMovementPath(time,cycle);
+        float a1 = FDMathUtil.FPI * 2 / pathDetalization;
+        for (int i = 0; i <= pathDetalization;i++){
+            float p = i / (float) pathDetalization;
+            float a = angle + i * a1;
+            Vec3 v = new Vec3(5,0,0).yRot(a);
+            Vec3 pos = this.position().add(v.x,1 + yDifference * p,v.z);
+            path.addPos(pos);
+        }
+        return path;
+    }
+
+    private float getInitProjectileRotation(int id,int count){
+        return 2 * FDMathUtil.FPI * (id / (float) count);
+    }
+
 
 
     public boolean roll(AttackInstance instance){
+        if (true) return true;
         int tick = instance.tick;
         if (tick == 0){
             this.oldRollPos = this.position();
@@ -453,6 +516,19 @@ public class ChesedEntity extends FDLivingEntity {
             chain.save(t);
             tag.put("chain",t);
         }
+
+
+        if (!blockAttackProjectiles.isEmpty()){
+            tag.putInt("projectiles",blockAttackProjectiles.size());
+            for (int i = 0; i < blockAttackProjectiles.size();i++){
+                var projectile = blockAttackProjectiles.get(i);
+                if (projectile != null){
+                    UUID uuid = projectile.getUUID();
+                    tag.putUUID("projectile_" + i,uuid);
+                }
+            }
+        }
+
         return super.save(tag);
     }
 
@@ -460,6 +536,18 @@ public class ChesedEntity extends FDLivingEntity {
     public void load(CompoundTag tag) {
         if (chain != null){
             this.chain.load(tag.getCompound("chain"));
+        }
+        if (level() instanceof ServerLevel serverLevel && tag.contains("projectiles")){
+            this.blockAttackProjectiles.clear();
+            int len = tag.getInt("projectiles");
+            for (int i = 0; i < len;i++){
+                if (tag.contains("projectile_"+i)){
+                    ChesedBlockProjectile projectile = (ChesedBlockProjectile) serverLevel.getEntity(tag.getUUID("projectile_"+i));
+                    this.blockAttackProjectiles.add(projectile);
+                }else{
+                    this.blockAttackProjectiles.add(null);
+                }
+            }
         }
         super.load(tag);
     }

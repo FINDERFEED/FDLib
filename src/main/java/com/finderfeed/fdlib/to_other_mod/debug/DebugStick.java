@@ -22,7 +22,7 @@ public class DebugStick extends Item {
         if (!level.isClientSide){
             ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(),level);
             projectile.setPos(player.position().add(player.getLookAngle()).add(0,2,0));
-            projectile.setDeltaMovement(player.getLookAngle().multiply(4,4,4));
+            projectile.setDeltaMovement(player.getLookAngle().multiply(1,1,1));
 
             projectile.setRotationSpeed(20);
             projectile.setBlockState(Blocks.GRASS_BLOCK.defaultBlockState());

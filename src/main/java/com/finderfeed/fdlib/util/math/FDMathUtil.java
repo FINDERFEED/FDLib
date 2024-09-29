@@ -3,6 +3,8 @@ package com.finderfeed.fdlib.util.math;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
+import java.util.List;
+
 public class FDMathUtil {
 
     public static final float FPI = (float) Math.PI;
@@ -65,6 +67,23 @@ public class FDMathUtil {
         Vec3 cur = points[id1];
         Vec3 next = points[id1 + 1];
         Vec3 next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
+        return catmullrom(prev,cur,next,next2,lp);
+    }
+
+    public static Vec3 catmullRom(List<Vec3> points, float p){
+        if (p < 0){
+            return points.getFirst();
+        }else if (p >= 1){
+            return points.getLast();
+        }
+
+        float glP = p * (points.size() - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vec3 prev = id1 > 0 ? points.get(id1) : null;
+        Vec3 cur = points.get(id1);
+        Vec3 next = points.get(id1 + 1);
+        Vec3 next2 = id1 < points.size() - 2 ? points.get(id1 + 2) : null;
         return catmullrom(prev,cur,next,next2,lp);
     }
 

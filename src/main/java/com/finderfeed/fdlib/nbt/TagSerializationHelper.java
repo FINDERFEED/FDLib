@@ -15,6 +15,7 @@ public class TagSerializationHelper {
         Class<? extends AutoSerializable> clazz = object.getClass();
         List<Field> fields = FDHelpers.getAnnotatedFieldsInClass(clazz, SerializableField.class);
         for (Field field : fields){
+            field.setAccessible(true);
             saveField(object,tag,field);
         }
     }
@@ -23,6 +24,7 @@ public class TagSerializationHelper {
         Class<? extends AutoSerializable> clazz = object.getClass();
         List<Field> fields = FDHelpers.getAnnotatedFieldsInClass(clazz, SerializableField.class);
         for (Field field : fields){
+            field.setAccessible(true);
             loadField(object,tag,field);
         }
     }
@@ -37,6 +39,8 @@ public class TagSerializationHelper {
                 tag.putFloat(name,f);
             }else if (value instanceof Double d){
                 tag.putDouble(name,d);
+            }else if (value instanceof Boolean d){
+                tag.putBoolean(name,d);
             }else if (value instanceof String s){
                 tag.putString(name,s);
             }else if (value instanceof UUID uuid){
@@ -70,7 +74,17 @@ public class TagSerializationHelper {
             Class<?> fieldType = field.getType();
 
             if (!tag.contains(name)){
-                field.set(object,null);
+                if (int.class.isAssignableFrom(fieldType)){
+                    field.set(object,tag.getInt(name));
+                }else if(float.class.isAssignableFrom(fieldType)){
+                    field.set(object,tag.getFloat(name));
+                }else if (double.class.isAssignableFrom(fieldType)){
+                    field.set(object,tag.getDouble(name));
+                }else if (boolean.class.isAssignableFrom(fieldType)){
+                    field.set(object,tag.getBoolean(name));
+                }else {
+                    field.set(object, null);
+                }
                 return;
             }
 
@@ -80,6 +94,8 @@ public class TagSerializationHelper {
                 field.set(object,tag.getFloat(name));
             }else if (Double.class.isAssignableFrom(fieldType) || double.class.isAssignableFrom(fieldType)){
                 field.set(object,tag.getDouble(name));
+            }else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)){
+                field.set(object,tag.getBoolean(name));
             }else if (String.class.isAssignableFrom(fieldType)){
                 field.set(object,tag.getString(name));
             }else if (UUID.class.isAssignableFrom(fieldType)){

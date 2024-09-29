@@ -18,7 +18,7 @@ public interface AutoSerializable {
 
     default void save(String name,CompoundTag tag){
         CompoundTag t = new CompoundTag();
-        TagSerializationHelper.saveFields(t,this);
+        this.save(t);
         tag.put(name,t);
     }
 
@@ -28,7 +28,7 @@ public interface AutoSerializable {
 
     default void load(String name,CompoundTag tag){
         CompoundTag t = tag.getCompound(name);
-        TagSerializationHelper.loadFields(t,this);
+        this.load(t);
     }
 
 }
