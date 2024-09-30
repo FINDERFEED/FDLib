@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.finderfeed.fdlib.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "fdlib.refmap.json",
+  "mixins": [
+  ],
+  "minVersion": "0.8",
+  "client": [
+    "LevelRendererMixin"
+  ]
+}
