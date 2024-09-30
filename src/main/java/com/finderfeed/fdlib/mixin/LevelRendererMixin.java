@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.mixin;
 
 
+import com.finderfeed.fdlib.ClientMixinHandler;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
