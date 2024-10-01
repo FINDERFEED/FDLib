@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.FDHelpers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -105,8 +106,15 @@ public class TagSerializationHelper {
             }else if (AutoSerializable.class.isAssignableFrom(fieldType)){
                 CompoundTag t = tag.getCompound(name);
                 AutoSerializable serializable = (AutoSerializable) field.get(object);
-                if (serializable == null) throw new RuntimeException("Tried to load an uninitialized AutoSerializable field." +
-                        " All fields that implement that interface should be initialized!");
+                if (serializable == null){
+                    try {
+                        Constructor<?> constructor = fieldType.getConstructor();
+                        serializable = (AutoSerializable) constructor.newInstance();
+                    }catch (Exception e) {
+                        throw new RuntimeException("Tried to load an uninitialized AutoSerializable field." +
+                                " All fields that implement that interface should be initialized or at least have a zero-argument constructor!");
+                    }
+                }
                 serializable.load(t);
             } else {
                 Class<?> clazz = field.getType();

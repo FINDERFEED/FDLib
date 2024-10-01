@@ -5,7 +5,9 @@ import com.finderfeed.fdlib.nbt.FDTagHelper;
 import com.finderfeed.fdlib.nbt.SerializableField;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -27,6 +29,12 @@ public class ProjectileMovementPath implements AutoSerializable {
 
     @SerializableField
     private boolean easeInOut = false;
+
+    @SerializableField
+    private boolean easeIn = false;
+
+    @SerializableField
+    private Vec3 speedOnEnd = null;
 
     @SerializableField
     private ProjectileMovementPath next;
@@ -51,7 +59,9 @@ public class ProjectileMovementPath implements AutoSerializable {
     public void tick(Entity entity){
         if (!cycle){
             if (this.isFinished()){
-                entity.setDeltaMovement(Vec3.ZERO);
+                if (speedOnEnd != null) {
+                    entity.setDeltaMovement(speedOnEnd);
+                }
                 return;
             }
             progress++;
@@ -61,10 +71,13 @@ public class ProjectileMovementPath implements AutoSerializable {
         float p = progress / (float) time;
         if (easeInOut){
             p = FDEasings.easeInOut(p);
+        }else if (easeIn){
+            p = FDEasings.easeIn(p);
         }
         Vec3 v = FDMathUtil.linear(positions,p);
         Vec3 currentPos = entity.position();
         Vec3 b = v.subtract(currentPos);
+
         entity.setDeltaMovement(b);
     }
 
@@ -74,6 +87,14 @@ public class ProjectileMovementPath implements AutoSerializable {
 
     public void setEaseInOut(boolean easeInOut) {
         this.easeInOut = easeInOut;
+    }
+
+    public void setEaseIn(boolean easeIn) {
+        this.easeIn = easeIn;
+    }
+
+    public void setSpeedOnEnd(Vec3 speedOnEnd) {
+        this.speedOnEnd = speedOnEnd;
     }
 
     public List<Vec3> getPositions() {

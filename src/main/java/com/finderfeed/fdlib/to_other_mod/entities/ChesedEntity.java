@@ -145,18 +145,21 @@ public class ChesedEntity extends FDLivingEntity {
         float height = 8;
         int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){
-            attack.tick = 0;
             if (!this.trySearchProjectiles()) {
-                int count = 8;
+                this.getSystem().startAnimation("blockAttack", AnimationTicker.builder(CHESED_CAST)
+                                .setToNullTransitionTime(0)
+                                .setSpeed(1.2f)
+                        .build());
+                attack.tick = 0;
+                int count = 1;
                 for (int i = 0; i < count; i++) {
                     float angle = this.getInitProjectileRotation(i, count);
                     ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(), level());
 
-                    var path = this.createRotationPath(angle, -1,height, 30, timeTillAttack / 2, false);
+                    var path = this.createRotationPath(angle, -2,height, 30, timeTillAttack / 2, false);
                     var next = this.createRotationPath(angle, height,height, 30, timeTillAttack / 2, true);
 
                     path.setNext(next);
-                    path.setEaseInOut(false);
                     projectile.noPhysics = true;
                     projectile.setPos(path.getPositions().getFirst());
                     projectile.movementPath = path;
@@ -177,11 +180,18 @@ public class ChesedEntity extends FDLivingEntity {
                 Vec3 b = tpos.subtract(next.position());
                 Vec3 h = b.multiply(1,0,1);
                 Vec3 targetPos = tpos.add(h.normalize().reverse().multiply(1.5,0,1.5));
-                Vec3 bt = targetPos.subtract(next.position());
-                next.setDeltaMovement(
-                        bt.multiply(0.1,0.1,0.1)
-                );
+
+                next.setRotationSpeed(10f);
+
+                Vec3 flyTo = this.position().add(0,height + 1.5,0);
+                ProjectileMovementPath path = new ProjectileMovementPath(5,false);
+                path.addPos(next.position());
+                path.addPos(flyTo);
+                path.addPos(flyTo.add(0,1,0));
+                path.setSpeedOnEnd(targetPos.subtract(flyTo).multiply(0.1,0.1,0.1));
+                next.movementPath = path;
             }
+            if (blockAttackProjectiles.isEmpty()) return true;
             return false;
         }
     }
@@ -221,7 +231,7 @@ public class ChesedEntity extends FDLivingEntity {
             float p = i / (float) pathDetalization;
             float a = angle + i * a1;
             Vec3 v = new Vec3(5,0,0).yRot(a);
-            Vec3 pos = this.position().add(v.x,FDMathUtil.lerp(yStart,yEnd, FDEasings.easeOut(p)),v.z);
+            Vec3 pos = this.position().add(v.x,FDMathUtil.lerp(yStart,yEnd, FDEasings.easeInOutBack(p)),v.z);
             path.addPos(pos);
         }
         return path;

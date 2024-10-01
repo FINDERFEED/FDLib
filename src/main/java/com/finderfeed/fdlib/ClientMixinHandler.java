@@ -43,6 +43,7 @@ public class ClientMixinHandler {
 
 
     public static void renderLevel(DeltaTracker deltaTracker, boolean paused, Camera camera, GameRenderer renderer, LightTexture lightTexture, Matrix4f modelview, Matrix4f projection, CallbackInfo ci){
+        if (true) return;
         if (Minecraft.getInstance().level == null) return;
 
         if (dur > 0) return;

@@ -33,5 +33,8 @@ public class FDAnims {
     public static DeferredHolder<Animation,Animation> CHESED_ROLL_ROLL = ANIMATIONS.register("chesed_roll_roll", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
+    public static DeferredHolder<Animation,Animation> CHESED_CAST = ANIMATIONS.register("chesed_cast", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
 
 }

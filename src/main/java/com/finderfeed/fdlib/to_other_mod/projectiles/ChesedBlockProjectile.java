@@ -55,6 +55,7 @@ public class ChesedBlockProjectile extends FDProjectile {
             if (movementPath != null){
                 movementPath.tick(this);
                 if (movementPath.isFinished()){
+                    movementPath.tick(this);
                     movementPath = movementPath.getNext();
                 }
             }
