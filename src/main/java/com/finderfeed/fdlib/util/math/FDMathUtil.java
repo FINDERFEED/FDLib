@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.util.math;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
@@ -26,6 +27,14 @@ public class FDMathUtil {
 
     public static double angleBetweenVectors(Vec3 v1,Vec3 v2){
         return Math.acos(v1.dot(v2) / (v1.length() * v2.length()));
+    }
+
+    public static BlockPos vec3ToBlockPos(Vec3 v){
+        return new BlockPos(
+                (int)Math.floor(v.x),
+                (int)Math.floor(v.y),
+                (int)Math.floor(v.z)
+        );
     }
 
     public static Vec3 getNormalVectorFromLineToPoint(Vec3 begin,Vec3 end,Vec3 point){

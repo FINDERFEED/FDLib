@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
+import com.finderfeed.fdlib.to_other_mod.BossUtil;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
 import com.finderfeed.fdlib.to_other_mod.FDEntities;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
@@ -28,6 +29,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -151,11 +153,11 @@ public class ChesedEntity extends FDLivingEntity {
                                 .setSpeed(1.2f)
                         .build());
                 attack.tick = 0;
-                int count = 1;
+                int count = 10;
                 for (int i = 0; i < count; i++) {
                     float angle = this.getInitProjectileRotation(i, count);
                     ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(), level());
-
+                    projectile.setDropParticlesTime(timeTillAttack / 2);
                     var path = this.createRotationPath(angle, -2,height, 30, timeTillAttack / 2, false);
                     var next = this.createRotationPath(angle, height,height, 30, timeTillAttack / 2, true);
 
@@ -169,10 +171,13 @@ public class ChesedEntity extends FDLivingEntity {
             }
             return false;
         }else{
+            if (attack.tick == 13){
+                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,0.05,0),BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT,60);
+            }
             Player player = level().getNearestPlayer(this,100);
             if (player == null) return false;
             if (blockAttackProjectiles.isEmpty()) return true;
-            if (attack.tick >= timeTillAttack && attack.tick % 10 == 0){
+            if (attack.tick >= timeTillAttack && attack.tick % 8 == 0){
                 ChesedBlockProjectile next = this.blockAttackProjectiles.removeLast();
                 next.noPhysics = false;
                 next.movementPath = null;
@@ -184,11 +189,11 @@ public class ChesedEntity extends FDLivingEntity {
                 next.setRotationSpeed(10f);
 
                 Vec3 flyTo = this.position().add(0,height + 1.5,0);
-                ProjectileMovementPath path = new ProjectileMovementPath(5,false);
+                ProjectileMovementPath path = new ProjectileMovementPath(8,false);
                 path.addPos(next.position());
                 path.addPos(flyTo);
                 path.addPos(flyTo.add(0,1,0));
-                path.setSpeedOnEnd(targetPos.subtract(flyTo).multiply(0.1,0.1,0.1));
+                path.setSpeedOnEnd(targetPos.subtract(flyTo).multiply(0.25,0.25,0.25));
                 next.movementPath = path;
             }
             if (blockAttackProjectiles.isEmpty()) return true;

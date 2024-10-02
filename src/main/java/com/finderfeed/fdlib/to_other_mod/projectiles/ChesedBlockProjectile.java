@@ -7,6 +7,7 @@ import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBloc
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.FDProjectile;
+import com.finderfeed.fdlib.util.client.FDBlockParticleOptions;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
@@ -34,8 +36,10 @@ public class ChesedBlockProjectile extends FDProjectile {
 
     public static final EntityDataAccessor<Float> ROTATION_SPEED = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<BlockState> STATE = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.BLOCK_STATE);
+    public static final EntityDataAccessor<Boolean> DROP_PARTICLES = SynchedEntityData.defineId(ChesedBlockProjectile.class, EntityDataSerializers.BOOLEAN);
 
     public ProjectileMovementPath movementPath = null;
+    private int dropParticlesTime = 0;
 
     public Quaternionf currentRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
     public Quaternionf previousRotation = new Quaternionf(new AxisAngle4f(0,0.01f,1,0));
@@ -47,6 +51,7 @@ public class ChesedBlockProjectile extends FDProjectile {
     @Override
     public void tick() {
         super.tick();
+        this.dropParticles();
 
         if (level().isClientSide){
            this.handleRotation();
@@ -65,6 +70,28 @@ public class ChesedBlockProjectile extends FDProjectile {
             }
         }
 
+    }
+
+    private void dropParticles(){
+        if (level().isClientSide){
+            if (!this.entityData.get(DROP_PARTICLES)) return;
+            FDBlockParticleOptions options = FDBlockParticleOptions.builder()
+                    .state(this.getBlockState())
+                    .lifetime(20 + random.nextInt(5))
+                    .quadSizeMultiplier(1.5f)
+                    .build();
+            level().addParticle(options,true,
+                    this.getX() + random.nextFloat() - 0.5,
+                    this.getY() + random.nextFloat() * 0.5f,
+                    this.getZ() + random.nextFloat() - 0.5,
+                    0,
+                    -0.05 + random.nextFloat() * 0.025f,
+                    0
+                    );
+        }else{
+            dropParticlesTime = Mth.clamp(dropParticlesTime - 1,0,Integer.MAX_VALUE);
+            this.entityData.set(DROP_PARTICLES,dropParticlesTime > 0);
+        }
     }
 
     private void handleRotation(){
@@ -114,6 +141,13 @@ public class ChesedBlockProjectile extends FDProjectile {
         this.entityData.set(STATE,state);
     }
 
+    public void setDropParticlesTime(int dropParticlesTime) {
+        this.dropParticlesTime = dropParticlesTime;
+    }
+
+    public int getDropParticlesTime() {
+        return dropParticlesTime;
+    }
 
     @Override
     protected void onHitBlock(BlockHitResult blockHitResult) {
@@ -243,7 +277,8 @@ public class ChesedBlockProjectile extends FDProjectile {
         super.defineSynchedData(builder);
         builder
                 .define(ROTATION_SPEED,20f)
-                .define(STATE, Blocks.STONE.defaultBlockState());
+                .define(STATE, Blocks.STONE.defaultBlockState())
+                .define(DROP_PARTICLES,false);
     }
 
 

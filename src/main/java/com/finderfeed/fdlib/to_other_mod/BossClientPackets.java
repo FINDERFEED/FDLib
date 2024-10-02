@@ -20,6 +20,49 @@ public class BossClientPackets {
 
     private static Random random = new Random();
 
+    public static void posEvent(Vec3 pos,int event){
+        switch (event) {
+            case BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT -> {
+                summonBlocksOutOfEarthParticles(pos,5);
+            }
+        }
+    }
+
+    public static void summonBlocksOutOfEarthParticles(Vec3 pos,float radius){
+        Vec3 p = new Vec3(radius,0,0);
+        float rotationAngle = 1 / radius;
+
+        Vec3 poss = pos.add(p);
+        for (float i = 0; i <= FDMathUtil.FPI * 2f; i += rotationAngle){
+            Vec3 pose = pos.add(p.yRot(i + rotationAngle));
+            var bpos = FDMathUtil.vec3ToBlockPos(poss).below();
+            BlockState state = Minecraft.getInstance().level.getBlockState(bpos);
+            if (state.isAir()) continue;
+            Vec3 between = pose.subtract(poss).normalize();
+            for (int k = 0; k < 5 + random.nextInt(5);k++){
+                FDBlockParticleOptions options = FDBlockParticleOptions.builder()
+                        .state(state)
+                        .quadSizeMultiplier(1.5f + random.nextFloat() * 0.5f)
+                        .lifetime(30 + random.nextInt(20))
+                        .build();
+
+                float speedMod = random.nextFloat() + 0.5f;
+
+                Minecraft.getInstance().level.addParticle(options,true,
+                        poss.x + random.nextFloat() * 2 - 1,
+                        poss.y,
+                        poss.z + random.nextFloat() * 2 - 1,
+                        between.x * 0.3 * speedMod,
+                        random.nextFloat() * 0.8f + 0.1f,
+                        between.z * 0.3 * speedMod
+                );
+
+            }
+            poss = pose;
+        }
+    }
+
+
     public static void blockProjectileSlamParticles(SlamParticlesPacket.SlamData slamData){
         Level level = Minecraft.getInstance().level;
         var states = collectStatesForSlam(level,slamData.collectRadius,slamData.bPos);
