@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.debug;
 
-import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,13 +21,15 @@ public class DebugStick extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 
         if (!level.isClientSide){
-            ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(),level);
-            projectile.setPos(player.position().add(player.getLookAngle()).add(0,2,0));
-            projectile.setDeltaMovement(player.getLookAngle().multiply(1,1,1));
 
-            projectile.setRotationSpeed(20);
-            projectile.setBlockState(Blocks.GRASS_BLOCK.defaultBlockState());
-            level.addFreshEntity(projectile);
+            RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level,player.getOnPos(),1,20,0.5f,10);
+            //            ChesedBlockProjectile projectile = new ChesedBlockProjectile(BossEntities.BLOCK_PROJECTILE.get(),level);
+//            projectile.setPos(player.position().add(player.getLookAngle()).add(0,2,0));
+//            projectile.setDeltaMovement(player.getLookAngle().multiply(1,1,1));
+//
+//            projectile.setRotationSpeed(20);
+//            projectile.setBlockState(Blocks.GRASS_BLOCK.defaultBlockState());
+//            level.addFreshEntity(projectile);
 
 //            FlyingBlockEntity block = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level);
 //            block.setPos(player.position().add(player.getLookAngle()).add(0,2,0));

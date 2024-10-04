@@ -2,13 +2,17 @@ package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT)
 public class ClientMixinHandler {
 
+
+    private static Vec3 shakePos = null;
 
     public static int shakeTime = 0;
     public static int dur = 0;
@@ -42,20 +48,19 @@ public class ClientMixinHandler {
     }
 
 
-    public static void renderLevel(DeltaTracker deltaTracker, boolean paused, Camera camera, GameRenderer renderer, LightTexture lightTexture, Matrix4f modelview, Matrix4f projection, CallbackInfo ci){
+    public static void bobHurt(PoseStack matrices,float pticks){
         if (true) return;
         if (Minecraft.getInstance().level == null) return;
 
         if (dur > 0) return;
-        float p = (Mth.clamp(shakeTime + deltaTracker.getGameTimeDeltaPartialTick(paused),0,10)) / 10f;
+        float p = (Mth.clamp(shakeTime + pticks,0,10)) / 10f;
         p = FDEasings.easeOut(p);
 
         float s = p * FDMathUtil.FPI * 2 * 5;
 
-        projection.translate(-20f,0,0);
-        projection.rotateZ((float)Math.sin(s) * FDMathUtil.FPI / 160);
-        projection.translate(20f,0,0);
-        renderer.resetProjectionMatrix(projection);
+        matrices.translate(-20f,0,0);
+        matrices.mulPose(Axis.ZP.rotation((float)Math.sin(s) * FDMathUtil.FPI / 160));
+        matrices.translate(20f,0,0);
 
 
     }

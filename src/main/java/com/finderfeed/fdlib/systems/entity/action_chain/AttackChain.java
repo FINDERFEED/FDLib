@@ -114,6 +114,7 @@ public class AttackChain {
                         this.registeredAttacks.get(tag.getString("currentAttack"))
                 );
                 this.currentAttack.tick = tag.getInt("currentAttackTick");
+                this.currentAttack.stage = tag.getInt("currentAttackStage");
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -130,6 +131,7 @@ public class AttackChain {
         if (currentAttack != null){
             tag.putString("currentAttack",currentAttack.attack.getName());
             tag.putInt("currentAttackTick",currentAttack.tick);
+            tag.putInt("currentAttackStage",currentAttack.stage);
         }
     }
 }

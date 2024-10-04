@@ -1,6 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod.projectiles;
 
-import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
@@ -16,7 +16,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
@@ -225,7 +224,7 @@ public class ChesedBlockProjectile extends FDProjectile {
 
             var state = states.get(random.nextInt(states.size()));
 
-            FlyingBlockEntity blockEntity = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level());
+            FlyingBlockEntity blockEntity = new FlyingBlockEntity(BossEntities.FLYING_BLOCK.get(),level());
             blockEntity.setAirFriction(0.7f);
             blockEntity.setPos(center);
             blockEntity.setNoPhysicsTime(2);
@@ -238,7 +237,7 @@ public class ChesedBlockProjectile extends FDProjectile {
                 f = base.multiply(
                         speedMd,0,speedMd
                 ).yRot(ang + random.nextFloat() * (angle / 2) - (angle / 4)).add(0,randY,0).multiply(mod,mod,mod);
-                blockEntity = new FlyingBlockEntity(FDEntities.FLYING_BLOCK.get(),level());
+                blockEntity = new FlyingBlockEntity(BossEntities.FLYING_BLOCK.get(),level());
                 blockEntity.setAirFriction(0.72f);
                 blockEntity.setPos(center);
                 blockEntity.setNoPhysicsTime(2);
@@ -285,7 +284,7 @@ public class ChesedBlockProjectile extends FDProjectile {
     @Override
     public boolean save(CompoundTag tag) {
         if (movementPath != null){
-            movementPath.save("path",tag);
+            movementPath.autoSave("path",tag);
         }
         tag.putFloat("rotationSpeed",this.getRotationSpeed());
         tag.put("state", NbtUtils.writeBlockState(this.getBlockState()));
@@ -296,7 +295,7 @@ public class ChesedBlockProjectile extends FDProjectile {
     public void load(CompoundTag tag) {
         if (tag.contains("path")){
             this.movementPath = new ProjectileMovementPath();
-            this.movementPath.load("path",tag);
+            this.movementPath.autoLoad("path",tag);
         }
         this.setRotationSpeed(tag.getFloat("rotationSpeed"));
         this.setBlockState(NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK),tag.getCompound("state")));

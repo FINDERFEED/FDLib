@@ -5,7 +5,7 @@ import com.finderfeed.fdlib.init.FDEDataSerializers;
 import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
 import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
-import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.FDItems;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
@@ -34,7 +34,7 @@ public class FDLib {
         FDItems.ITEMS.register(bus);
         FDModels.INFOS.register(bus);
         FDAnims.ANIMATIONS.register(bus);
-        FDEntities.ENTITIES.register(bus);
+        BossEntities.ENTITIES.register(bus);
         FDParticles.PARTICLES.register(bus);
         BossParticles.PARTICLES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);

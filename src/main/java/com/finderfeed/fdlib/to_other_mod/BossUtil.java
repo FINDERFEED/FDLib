@@ -11,8 +11,8 @@ public class BossUtil {
     public static final int CHESED_GET_BLOCKS_FROM_EARTH_EVENT = 1;
 
 
-    public static void posEvent(ServerLevel level, Vec3 pos, int event,double radius){
-        PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new PosLevelEventPacket(pos,event));
+    public static void posEvent(ServerLevel level, Vec3 pos, int event,int data,double radius){
+        PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new PosLevelEventPacket(pos,event,data));
     }
 
 }

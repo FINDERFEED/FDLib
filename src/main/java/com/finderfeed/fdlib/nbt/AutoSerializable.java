@@ -1,7 +1,6 @@
 package com.finderfeed.fdlib.nbt;
 
 import net.minecraft.nbt.CompoundTag;
-import org.lwjgl.system.MemoryUtil;
 
 /**
  * Untested. Idk if it works or not.
@@ -12,23 +11,23 @@ import org.lwjgl.system.MemoryUtil;
  */
 public interface AutoSerializable {
 
-    default void save(CompoundTag tag){
+    default void autoSave(CompoundTag tag){
         TagSerializationHelper.saveFields(tag,this);
     }
 
-    default void save(String name,CompoundTag tag){
+    default void autoSave(String name, CompoundTag tag){
         CompoundTag t = new CompoundTag();
-        this.save(t);
+        this.autoSave(t);
         tag.put(name,t);
     }
 
-    default void load(CompoundTag tag){
+    default void autoLoad(CompoundTag tag){
         TagSerializationHelper.loadFields(tag,this);
     }
 
-    default void load(String name,CompoundTag tag){
+    default void autoLoad(String name, CompoundTag tag){
         CompoundTag t = tag.getCompound(name);
-        this.load(t);
+        this.autoLoad(t);
     }
 
 }

@@ -52,7 +52,7 @@ public class TagSerializationHelper {
                 //don't serialize anything
             }else if (value instanceof AutoSerializable autoSerializable){
                 CompoundTag t = new CompoundTag();
-                autoSerializable.save(t);
+                autoSerializable.autoSave(t);
                 tag.put(name,t);
             } else {
                 Class<?> clazz = field.getType();
@@ -115,7 +115,7 @@ public class TagSerializationHelper {
                                 " All fields that implement that interface should be initialized or at least have a zero-argument constructor!");
                     }
                 }
-                serializable.load(t);
+                serializable.autoLoad(t);
             } else {
                 Class<?> clazz = field.getType();
                 if (FDTagDeserializers.DESERIALIZERS.containsKey(clazz)){

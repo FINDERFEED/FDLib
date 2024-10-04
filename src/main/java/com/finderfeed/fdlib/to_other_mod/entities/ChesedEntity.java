@@ -11,7 +11,7 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.to_other_mod.BossUtil;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
-import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
@@ -156,7 +156,7 @@ public class ChesedEntity extends FDLivingEntity {
                 int count = 10;
                 for (int i = 0; i < count; i++) {
                     float angle = this.getInitProjectileRotation(i, count);
-                    ChesedBlockProjectile projectile = new ChesedBlockProjectile(FDEntities.BLOCK_PROJECTILE.get(), level());
+                    ChesedBlockProjectile projectile = new ChesedBlockProjectile(BossEntities.BLOCK_PROJECTILE.get(), level());
                     projectile.setDropParticlesTime(timeTillAttack / 2);
                     var path = this.createRotationPath(angle, -2,height, 30, timeTillAttack / 2, false);
                     var next = this.createRotationPath(angle, height,height, 30, timeTillAttack / 2, true);
@@ -172,7 +172,7 @@ public class ChesedEntity extends FDLivingEntity {
             return false;
         }else{
             if (attack.tick == 13){
-                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,0.05,0),BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT,60);
+                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,0.05,0),BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT,0,60);
             }
             Player player = level().getNearestPlayer(this,100);
             if (player == null) return false;

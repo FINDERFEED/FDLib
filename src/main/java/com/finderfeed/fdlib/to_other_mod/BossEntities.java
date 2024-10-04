@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 
 
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.MOD)
-public class FDEntities {
+public class BossEntities {
 
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, FDLib.MOD_ID);
@@ -47,6 +48,12 @@ public class FDEntities {
     )
             .sized(1f,1f)
             .build("flying_block"));
+
+    public static final Supplier<EntityType<RadialEarthquakeEntity>> RADIAL_EARTHQUAKE = ENTITIES.register("radial_earthquake",()->EntityType.Builder.of(
+            RadialEarthquakeEntity::new, MobCategory.MISC
+    )
+            .sized(0.2f,0.2f)
+            .build("radial_earthquake"));
 
 
     @SubscribeEvent

@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.mixin;
 
 
 import com.finderfeed.fdlib.ClientMixinHandler;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
@@ -13,13 +14,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LevelRenderer.class)
+@Mixin(GameRenderer.class)
 public class LevelRendererMixin {
 
-
-    @Inject(method = "renderLevel",at = @At("HEAD"))
-    public void renderLevel(DeltaTracker deltaTracker, boolean idk, Camera camera, GameRenderer renderer, LightTexture lightTexture, Matrix4f modelview, Matrix4f projection, CallbackInfo ci){
-        ClientMixinHandler.renderLevel(deltaTracker, idk, camera, renderer, lightTexture, modelview, projection, ci);
+    @Inject(method = "bobHurt",at = @At("HEAD"))
+    public void bobHurt(PoseStack matrices, float pticks, CallbackInfo ci){
+        ClientMixinHandler.bobHurt(matrices,pticks);
     }
 
 }

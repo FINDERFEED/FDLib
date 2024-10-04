@@ -1,6 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity;
 
-import com.finderfeed.fdlib.to_other_mod.FDEntities;
+import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -44,7 +44,7 @@ public class EarthShatterEntity extends Entity {
             return null;
         }
 
-        EarthShatterEntity entity = new EarthShatterEntity(FDEntities.EARTH_SHATTER.get(),level);
+        EarthShatterEntity entity = new EarthShatterEntity(BossEntities.EARTH_SHATTER.get(),level);
 
         entity.setPos(pos.getX() + 0.5,pos.getY(),pos.getZ() + 0.5);
         entity.settings = settings;
@@ -90,13 +90,13 @@ public class EarthShatterEntity extends Entity {
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.settings = new EarthShatterSettings();
-        this.settings.load("settings",tag);
+        this.settings.autoLoad("settings",tag);
         this.setBlockState(NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK),tag));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-        this.settings.save("settings",tag);
+        this.settings.autoSave("settings",tag);
         tag.put("state", NbtUtils.writeBlockState(this.getBlockState()));
     }
 

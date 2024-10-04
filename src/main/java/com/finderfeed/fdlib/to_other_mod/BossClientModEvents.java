@@ -8,6 +8,7 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLight
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterRenderer;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntityRenderer;
 import com.finderfeed.fdlib.to_other_mod.projectiles.renderers.BlockProjectileRenderer;
+import com.finderfeed.fdlib.util.client.NullEntityRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -26,7 +27,7 @@ public class BossClientModEvents {
 
     @SubscribeEvent
     public static void addRenderers(EntityRenderersEvent.RegisterRenderers event){
-        event.registerEntityRenderer(FDEntities.CHESED.get(),
+        event.registerEntityRenderer(BossEntities.CHESED.get(),
                 FDEntityRendererBuilder.builder()
                         .shouldRender(((entity, frustum, x, y, z) -> {
                             return true;
@@ -44,8 +45,9 @@ public class BossClientModEvents {
                         )
                         .build()
         );
-        event.registerEntityRenderer(FDEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);
-        event.registerEntityRenderer(FDEntities.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
-        event.registerEntityRenderer(FDEntities.FLYING_BLOCK.get(), FlyingBlockEntityRenderer::new);
+        event.registerEntityRenderer(BossEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);
+        event.registerEntityRenderer(BossEntities.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
+        event.registerEntityRenderer(BossEntities.FLYING_BLOCK.get(), FlyingBlockEntityRenderer::new);
+        event.registerEntityRenderer(BossEntities.RADIAL_EARTHQUAKE.get(), NullEntityRenderer::new);
     }
 }

@@ -5,9 +5,7 @@ import com.finderfeed.fdlib.nbt.FDTagHelper;
 import com.finderfeed.fdlib.nbt.SerializableField;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -110,14 +108,14 @@ public class ProjectileMovementPath implements AutoSerializable {
     }
 
     @Override
-    public void save(CompoundTag tag) {
-        AutoSerializable.super.save(tag);
+    public void autoSave(CompoundTag tag) {
+        AutoSerializable.super.autoSave(tag);
         FDTagHelper.saveVec3List(tag,"pos",positions);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        AutoSerializable.super.load(tag);
+    public void autoLoad(CompoundTag tag) {
+        AutoSerializable.super.autoLoad(tag);
         this.positions = FDTagHelper.loadVec3List(tag,"pos");
     }
 }
