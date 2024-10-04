@@ -9,6 +9,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class BossUtil {
 
     public static final int CHESED_GET_BLOCKS_FROM_EARTH_EVENT = 1;
+    public static final int RADIAL_EARTHQUAKE_PARTICLES = 2;
+
+
 
 
     public static void posEvent(ServerLevel level, Vec3 pos, int event,int data,double radius){

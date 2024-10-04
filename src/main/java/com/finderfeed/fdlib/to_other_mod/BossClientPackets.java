@@ -20,11 +20,58 @@ public class BossClientPackets {
 
     private static Random random = new Random();
 
-    public static void posEvent(Vec3 pos,int event){
+    public static void posEvent(Vec3 pos,int event,int data){
         switch (event) {
             case BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT -> {
                 summonBlocksOutOfEarthParticles(pos,5);
             }
+            case BossUtil.RADIAL_EARTHQUAKE_PARTICLES -> {
+                radialEarthquakeParticles(pos,data);
+            }
+        }
+    }
+
+    public static void radialEarthquakeParticles(Vec3 tpos,int rad){
+        Vec3 b = new Vec3(rad,0,0);
+        float angle;
+        if (rad != 0){
+            angle = 0.5f / rad;
+        }else{
+            angle = FDMathUtil.FPI * 2;
+        }
+        Level level = Minecraft.getInstance().level;
+
+        BlockPos prevPos = null;
+        for (float i = 0; i < FDMathUtil.FPI * 2;i += angle){
+            Vec3 pos = tpos.add(b.yRot(i));
+            BlockPos ppos = FDMathUtil.vec3ToBlockPos(pos);
+            if (!ppos.equals(prevPos)){
+                Vec3 c = ppos.getCenter();
+                Vec3 dir = tpos.subtract(c).multiply(1,0,1).normalize();
+
+                BlockState state = level.getBlockState(ppos);
+                if (state.isAir()) continue;
+                for (int g = 0;g < 5 + random.nextInt(5);g++){
+
+                    Vec3 sppos = new Vec3(
+                            c.x + random.nextFloat() * 2 - 1,
+                            c.y + 0.6 + random.nextFloat() * 0.19,
+                            c.z + random.nextFloat() * 2 - 1
+                    );
+
+                    Vec3 speed = dir.yRot(FDMathUtil.FPI / 4 * (random.nextFloat() * 2 - 1)).add(0,1 + random.nextFloat() * 0.5f,0);
+
+                    FDBlockParticleOptions options = FDBlockParticleOptions.builder()
+                            .lifetime(30 + random.nextInt(20))
+                            .state(state)
+                            .quadSizeMultiplier(1.5f + random.nextFloat() * 0.5f)
+                            .build();
+
+                    level.addParticle(options,true,sppos.x,sppos.y,sppos.z,speed.x,speed.y,speed.z);
+
+                }
+            }
+            prevPos = ppos;
         }
     }
 

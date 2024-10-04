@@ -3,12 +3,14 @@ package com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake;
 import com.finderfeed.fdlib.nbt.AutoSerializable;
 import com.finderfeed.fdlib.nbt.SerializableField;
 import com.finderfeed.fdlib.to_other_mod.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.BossUtil;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -66,15 +68,9 @@ public class RadialEarthquakeEntity extends Entity implements AutoSerializable {
         }
     }
 
-
-    public void doEarthquake(int start,int end){
-        for (int i = start; i <= end;i++){
-            this.spawnAndDamageWithRadius(i);
-        }
-    }
-
-
     public void spawnAndDamageWithRadius(int rad){
+
+        //todo damage
         Vec3 b = new Vec3(rad,0,0);
         float angle;
         if (rad != 0){
@@ -85,6 +81,7 @@ public class RadialEarthquakeEntity extends Entity implements AutoSerializable {
 
         BlockPos prevPos = null;
         Vec3 tpos = this.position();
+        BossUtil.posEvent((ServerLevel) level(),tpos,BossUtil.RADIAL_EARTHQUAKE_PARTICLES,rad,60);
         for (float i = 0; i < FDMathUtil.FPI * 2;i += angle){
             Vec3 pos = tpos.add(b.yRot(i));
             BlockPos ppos = FDMathUtil.vec3ToBlockPos(pos);

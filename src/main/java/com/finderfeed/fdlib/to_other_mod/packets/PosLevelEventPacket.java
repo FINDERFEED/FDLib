@@ -37,7 +37,7 @@ public class PosLevelEventPacket extends FDPacket {
 
     @Override
     public void clientAction(IPayloadContext context) {
-        BossClientPackets.posEvent(pos,event);
+        BossClientPackets.posEvent(pos,event,data);
     }
 
     @Override
