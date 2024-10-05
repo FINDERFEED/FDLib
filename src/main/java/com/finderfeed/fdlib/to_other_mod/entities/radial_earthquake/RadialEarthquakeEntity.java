@@ -90,9 +90,9 @@ public class RadialEarthquakeEntity extends Entity implements AutoSerializable {
                 Vec3 dir = tpos.subtract(c).multiply(1,0,1).normalize().add(0,1,0);
                 EarthShatterEntity entity = EarthShatterEntity.summon(level(),ppos, EarthShatterSettings.builder()
                                 .direction(dir)
-                                .stayTime(0)
-                                .upTime(2)
-                                .downTime(2)
+                                .stayTime(random.nextInt(4))
+                                .upTime(4 - random.nextInt(4))
+                                .downTime(4 - random.nextInt(4))
                         .build());
             }
             prevPos = ppos;

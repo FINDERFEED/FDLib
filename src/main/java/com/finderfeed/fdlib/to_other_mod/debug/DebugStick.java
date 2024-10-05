@@ -22,7 +22,7 @@ public class DebugStick extends Item {
 
         if (!level.isClientSide){
 
-            RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level,player.getOnPos(),1,20,0.5f,10);
+            RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level,player.getOnPos(),1,50,0.35f,10);
             //            ChesedBlockProjectile projectile = new ChesedBlockProjectile(BossEntities.BLOCK_PROJECTILE.get(),level);
 //            projectile.setPos(player.position().add(player.getLookAngle()).add(0,2,0));
 //            projectile.setDeltaMovement(player.getLookAngle().multiply(1,1,1));
