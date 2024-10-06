@@ -71,8 +71,8 @@ public class SonicParticleOptions implements ParticleOptions {
     public Vec3 facingDirection = new Vec3(0,1,0);
     public float startSize = 1f;
     public float endSize = 0.0f;
-    public float resizeSpeed = -0.05f;
-    public float resizeAcceleration = -0.05f;
+    public float resizeSpeed = -0.1f;
+    public float resizeAcceleration = 0;
     public int lifetime = 60;
 
 
@@ -138,6 +138,12 @@ public class SonicParticleOptions implements ParticleOptions {
             options.color.r = r;
             options.color.g = g;
             options.color.b = b;
+            return this;
+        }
+        public Builder color(int r,int g,int b){
+            options.color.r = r/255f;
+            options.color.g = g/255f;
+            options.color.b = b/255f;
             return this;
         }
 

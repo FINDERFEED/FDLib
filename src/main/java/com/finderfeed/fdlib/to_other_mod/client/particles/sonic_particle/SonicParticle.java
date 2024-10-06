@@ -3,7 +3,9 @@ package com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle;
 import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -40,14 +42,19 @@ public class SonicParticle extends TextureSheetParticle {
         this.rCol = options.color.r;
         this.gCol = options.color.g;
         this.bCol = options.color.b;
-//        facing = new AxisAngle4f(
-//                (float)0,
-//                (float)options.facingDirection.x,
-//                (float)options.facingDirection.y,
-//                (float)options.facingDirection.z
-//        );
-//
 
+        double finalResize = options.endSize - options.startSize;
+        if (options.resizeAcceleration != 0) {
+            double d = options.resizeSpeed * options.resizeSpeed + 2 * options.resizeAcceleration * finalResize;
+
+            double t1 = (-options.resizeSpeed + Math.sqrt(d)) / options.resizeAcceleration;
+            double t2 = (-options.resizeSpeed - Math.sqrt(d)) / options.resizeAcceleration;
+
+            this.lifetime = (int) Math.ceil(Math.max(Math.abs(t2), Math.abs(t1)));
+        }else{
+            double t = finalResize / options.resizeSpeed;
+            this.lifetime = (int) Math.ceil(Math.abs(t));
+        }
         double l = options.facingDirection.x * options.facingDirection.x + options.facingDirection.z * options.facingDirection.z; l = Math.sqrt(l);
         float angle1 = (float) Math.atan2(options.facingDirection.z,options.facingDirection.x);
         float angle2 = (float) Math.atan2(options.facingDirection.y,l);
@@ -76,6 +83,14 @@ public class SonicParticle extends TextureSheetParticle {
 
 
     @Override
+    public void render(VertexConsumer p_107678_, Camera p_107679_, float p_107680_) {
+        float pticks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(Minecraft.getInstance().isPaused());
+        float q = FDMathUtil.lerp(oldQuadSize,currentQuadSize,pticks);
+        this.quadSize = q;
+        super.render(p_107678_, p_107679_, p_107680_);
+    }
+
+    @Override
     public void tick() {
         super.tick();
 
@@ -89,10 +104,6 @@ public class SonicParticle extends TextureSheetParticle {
         this.currentQuadSize = Mth.clamp(this.currentQuadSize + this.currentResizeSpeed,min,max);
         this.currentResizeSpeed += options.resizeAcceleration;
 
-
-        float pticks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(Minecraft.getInstance().isPaused());
-        float q = FDMathUtil.lerp(oldQuadSize,currentQuadSize,pticks);
-        this.quadSize = q;
     }
 
     @Override

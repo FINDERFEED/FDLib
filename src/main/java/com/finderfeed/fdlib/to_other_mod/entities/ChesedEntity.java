@@ -18,6 +18,7 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLight
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
@@ -36,6 +37,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -96,7 +98,7 @@ public class ChesedEntity extends FDLivingEntity {
     public void tick() {
         super.tick();
         AnimationSystem system = this.getSystem();
-        system.setVariable("variable.radius",400);
+        system.setVariable("variable.radius",600);
         system.setVariable("variable.angle",180);
         this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(-18,106,544));
         if (!this.level().isClientSide){
@@ -146,30 +148,50 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
     public boolean earthquakeAttack(AttackInstance instance){
-
+        if (true) return true;
         int t = instance.tick;
-
-        int loadTime = 40;
-        if (t <= 40) {
-            if (t % 5 == 0) {
-                float add = t /(float) loadTime * 1;
+        int radius = 40;
+        if (t < 6) {
+            if (t % 2 == 0) {
+                float p =1 -  t / 5f;
                 SonicParticleOptions options = SonicParticleOptions.builder()
                         .facing(0, 1,0)
-                        .color(0.3f,0.25f, 1f)
-                        .startSize(20)
+                        .color(41 , 133 + (int)(p * 60), 175 + (int)(p * 60))
+
+                        .startSize(radius)
                         .endSize(0)
-                        .resizeSpeed(-1f)
-                        .resizeAcceleration(-0.1f - add)
-                        .lifetime(20)
+                        .resizeSpeed(-0.3f)
+                        .resizeAcceleration(-1f)
                         .build();
-
-                ((ServerLevel) level()).sendParticles(options, this.position().x, this.position().y + 0.01, this.position().z, 1, 0, 0, 0, 0);
+                for (Player player : this.level().getNearbyPlayers(BossUtil.ALL,this,this.getBoundingBox().inflate(100))) {
+                    ((ServerLevel) level()).sendParticles((ServerPlayer) player, options, true, this.position().x, this.position().y + 0.01, this.position().z, 1, 0, 0, 0, 0);
+                }
             }
-
         }else{
-            return true;
+
+            if (t == 15){
+                RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level(),this.getOnPos(),1,radius,1f,10f);
+                for (int i = 0; i < 3;i++) {
+                    float p = 1 - i / 3f;
+                    SonicParticleOptions options = SonicParticleOptions.builder()
+                            .facing(0, 1, 0)
+                            .color(41 , 133 + (int)(p * 60), 175 + (int)(p * 60))
+
+                            .startSize(2)
+                            .endSize(radius)
+                            .resizeSpeed(-i * 2)
+                            .resizeAcceleration(0.75f)
+                            .lifetime(60)
+                            .build();
+                    for (Player player : this.level().getNearbyPlayers(BossUtil.ALL,this,this.getBoundingBox().inflate(100))) {
+                        ((ServerLevel) level()).sendParticles((ServerPlayer) player, options, true, this.position().x, this.position().y + 0.01, this.position().z, 1, 0, 0, 0, 0);
+                    }
+                }
+            }else if (t > 50){
+                instance.nextStage();
+            }
         }
-        return false;
+        return instance.stage > 4;
     }
 
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
@@ -281,7 +303,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean roll(AttackInstance instance){
-        if (true) return true;
+//        if (true) return true;
         int tick = instance.tick;
         if (tick == 0){
             this.oldRollPos = this.position();

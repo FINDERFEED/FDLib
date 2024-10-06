@@ -51,7 +51,7 @@ public class BossClientPackets {
 
                 BlockState state = level.getBlockState(ppos);
                 if (state.isAir()) continue;
-                for (int g = 0;g < 3 + random.nextInt(3);g++){
+//                for (int g = 0;g < 1;g++){
 
                     Vec3 sppos = new Vec3(
                             c.x + random.nextFloat() * 2 - 1 - dir.x,
@@ -69,7 +69,7 @@ public class BossClientPackets {
 
                     level.addParticle(options,sppos.x,sppos.y,sppos.z,speed.x,speed.y,speed.z);
 
-                }
+//                }
             }
             prevPos = ppos;
         }
