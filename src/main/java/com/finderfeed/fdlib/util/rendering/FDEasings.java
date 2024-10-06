@@ -1,6 +1,17 @@
 package com.finderfeed.fdlib.util.rendering;
 
+import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
+
 public class FDEasings {
+
+
+    public static float linear(float p){
+        return p;
+    }
+
+    public static float reversedLinear(float p){
+        return - p + 1;
+    }
 
     public static float squareHill(float p){
         return 1 - 4 * (float) Math.pow(p - 0.5,2);

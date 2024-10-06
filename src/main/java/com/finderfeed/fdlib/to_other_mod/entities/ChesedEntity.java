@@ -15,6 +15,7 @@ import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
@@ -31,6 +32,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,12 +76,15 @@ public class ChesedEntity extends FDLivingEntity {
                             .addAttack("nothing1",this::doNothing)
                             .build())
                     .addAttack(1, AttackOptions.builder()
-                            .addAttack("block",this::blockAttack)
+                            .addAttack("earthquake",this::earthquakeAttack)
                             .build())
                     .addAttack(2, AttackOptions.builder()
-                            .addAttack("roll",this::roll)
+                            .addAttack("block",this::blockAttack)
                             .build())
                     .addAttack(3, AttackOptions.builder()
+                            .addAttack("roll",this::roll)
+                            .build())
+                    .addAttack(4, AttackOptions.builder()
                             .addAttack("nothing",this::doNothing)
                             .build())
             ;
@@ -140,10 +145,37 @@ public class ChesedEntity extends FDLivingEntity {
         return instance.tick >= 20;
     }
 
+    public boolean earthquakeAttack(AttackInstance instance){
+
+        int t = instance.tick;
+
+        int loadTime = 40;
+        if (t <= 40) {
+            if (t % 5 == 0) {
+                float add = t /(float) loadTime * 1;
+                SonicParticleOptions options = SonicParticleOptions.builder()
+                        .facing(0, 1,0)
+                        .color(0.3f,0.25f, 1f)
+                        .startSize(20)
+                        .endSize(0)
+                        .resizeSpeed(-1f)
+                        .resizeAcceleration(-0.1f - add)
+                        .lifetime(20)
+                        .build();
+
+                ((ServerLevel) level()).sendParticles(options, this.position().x, this.position().y + 0.01, this.position().z, 1, 0, 0, 0, 0);
+            }
+
+        }else{
+            return true;
+        }
+        return false;
+    }
 
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
 
     public boolean blockAttack(AttackInstance attack){
+        if (true) return true;
         float height = 8;
         int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){

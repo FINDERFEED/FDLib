@@ -13,8 +13,15 @@ public class ComplexEasingFunction implements Function<Float,Float> {
 
     private float length = 0;
 
+    public float apply(float value){
+        return this.apply((Float)value);
+    }
+
     @Override
     public Float apply(Float value){
+        if (length == 0 || areas.isEmpty()){
+            return value;
+        }
         value = Mth.clamp(value,0,length);
         EasingArea lastArea = areas.getFirst();
         float accumulatedLength = 0;

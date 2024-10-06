@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.to_other_mod.client;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -24,6 +25,18 @@ public class BossParticles {
         @Override
         public StreamCodec<? super RegistryFriendlyByteBuf, ArcLightningOptions> streamCodec() {
             return ArcLightningOptions.createStreamCodec(this);
+        }
+    });
+
+    public static final Supplier<ParticleType<SonicParticleOptions>> SONIC_PARTICLE = PARTICLES.register("sonic",()-> new ParticleType<>(true) {
+        @Override
+        public MapCodec<SonicParticleOptions> codec() {
+            return SonicParticleOptions.createCodec();
+        }
+
+        @Override
+        public StreamCodec<? super RegistryFriendlyByteBuf, SonicParticleOptions> streamCodec() {
+            return SonicParticleOptions.STREAM_CODEC;
         }
     });
 
