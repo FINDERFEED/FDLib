@@ -99,7 +99,7 @@ public class ChesedEntity extends FDLivingEntity {
         super.tick();
         AnimationSystem system = this.getSystem();
         system.setVariable("variable.radius",600);
-        system.setVariable("variable.angle",180);
+        system.setVariable("variable.angle",270);
         this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(-18,106,544));
         if (!this.level().isClientSide){
             this.chain.tick();

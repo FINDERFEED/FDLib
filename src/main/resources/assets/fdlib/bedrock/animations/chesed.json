@@ -1322,14 +1322,11 @@
 							"math.atan2(   math.sin(query.anim_time * variable.angle) * variable.radius,math.cos(query.anim_time * variable.angle) * variable.radius) + (90 * (1 - math.clamp(1 - query.anim_time,0,1)))",
 							0
 						],
-						"12.0": {
-							"pre": [
+						"12.0": {"pre": [
 								0,
 								"math.atan2(   math.sin(query.anim_time * variable.angle) * variable.radius,math.cos(query.anim_time * variable.angle) * variable.radius) + (150 * (1 - math.clamp(1 - query.anim_time,0,1)))",
 								0
-							],
-							"post": [0, 150, 0]
-						},
+							], "post": [0, 150, 0]},
 						"12.375": [-40, 180, 0],
 						"13.1667": {
 							"pre": [-60, 180, 0],
@@ -1337,32 +1334,26 @@
 							"lerp_mode": "catmullrom"
 						},
 						"13.7083": {
-							"post": [180, 180, 0],
+							"post": [-40, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
 						"14.25": {
-							"post": [180, 180, 0],
+							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						}
 					},
 					"position": {
 						"0.0": [0, 0, 0],
-						"6.0": {
-							"pre": ["math.sin(query.anim_time * variable.angle) * variable.radius", 0, "math.cos(query.anim_time * variable.angle) * variable.radius"],
-							"post": [
+						"6.0": {"pre": ["math.sin(query.anim_time * variable.angle) * variable.radius", 0, "math.cos(query.anim_time * variable.angle) * variable.radius"], "post": [
 								"math.sin(query.anim_time * variable.angle) * (variable.radius * (12 - query.anim_time) / 6)",
 								0,
 								"math.cos(query.anim_time * variable.angle) * (variable.radius * (12 - query.anim_time) / 6)"
-							]
-						},
-						"12.0": {
-							"pre": [
-								"math.sin(query.anim_time * 180) * (variable.radius * (12 - query.anim_time) / 6)",
+							]},
+						"12.0": {"pre": [
+								"math.sin(query.anim_time * variable.angle) * (variable.radius * (12 - query.anim_time) / 6)",
 								0,
-								"math.cos(query.anim_time * 180) * (variable.radius * (12 - query.anim_time) / 6)"
-							],
-							"post": [0, 0, 0]
-						},
+								"math.cos(query.anim_time * variable.angle) * (variable.radius * (12 - query.anim_time) / 6)"
+							], "post": [0, 0, 0]},
 						"12.375": [0, 0, -20],
 						"13.1667": {
 							"pre": [0, 0, -30],
@@ -1394,52 +1385,105 @@
 				},
 				"down_down": {
 					"rotation": {
-						"13.1667": {
+						"12.1667": {
 							"pre": [0, 0, 0],
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
-						"13.7083": {
-							"post": [0, 0, -180],
+						"13.125": {
+							"post": [0, 10, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"13.6667": {
+							"post": [0, -380, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"14.1667": {
+							"post": [0, -360, 0],
 							"lerp_mode": "catmullrom"
 						}
 					}
 				},
 				"down": {
 					"rotation": {
-						"13.1667": {
+						"12.1667": {
 							"pre": [0, 0, 0],
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
-						"13.7083": {
-							"post": [0, 0, -180],
+						"13.125": {
+							"post": [0, -10, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"13.6667": {
+							"post": [0, 380, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"14.1667": {
+							"post": [0, 360, 0],
 							"lerp_mode": "catmullrom"
 						}
 					}
 				},
 				"center": {
 					"rotation": {
-						"13.1667": {
+						"12.1667": {
 							"pre": [0, 0, 0],
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
-						"13.7083": {
-							"post": [0, 0, 180],
+						"13.125": {
+							"post": [0, 10, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"13.6667": {
+							"post": [0, -380, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"14.1667": {
+							"post": [0, -360, 0],
 							"lerp_mode": "catmullrom"
 						}
 					}
 				},
 				"up": {
 					"rotation": {
-						"13.1667": {
+						"12.1667": {
 							"pre": [0, 0, 0],
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
+						"13.125": {
+							"post": [0, -10, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"13.6667": {
+							"post": [0, 380, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"14.1667": {
+							"post": [0, 360, 0],
+							"lerp_mode": "catmullrom"
+						}
+					}
+				},
+				"up_up": {
+					"rotation": {
+						"12.2083": {
+							"pre": [0, 0, 0],
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"13.1667": {
+							"post": [0, 10, 0],
+							"lerp_mode": "catmullrom"
+						},
 						"13.7083": {
-							"post": [0, 0, -180],
+							"post": [0, -380, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"14.2083": {
+							"post": [0, -360, 0],
 							"lerp_mode": "catmullrom"
 						}
 					}
