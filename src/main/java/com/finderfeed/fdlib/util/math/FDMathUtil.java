@@ -25,6 +25,18 @@ public class FDMathUtil {
         return v1 + (v2 - v1) * p;
     }
 
+    public static Vec3 projectVectorOnVector(Vec3 v,Vec3 on){
+        double dot = v.dot(on);
+        double v2 = on.dot(on);
+        double md = dot / v2;
+        return on.multiply(md,md,md);
+    }
+
+    public static Vec3 projectVectorOntoPlane(Vec3 v,Vec3 normal){
+        Vec3 proj = projectVectorOnVector(v,normal);
+        return v.subtract(proj);
+    }
+
     public static double angleBetweenVectors(Vec3 v1,Vec3 v2){
         return Math.acos(v1.dot(v2) / (v1.length() * v2.length()));
     }
