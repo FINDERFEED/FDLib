@@ -148,10 +148,15 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
     public boolean earthquakeAttack(AttackInstance instance){
-        if (true) return true;
+//        if (true) return true;
         int t = instance.tick;
         int radius = 40;
         if (t < 6) {
+            if (t == 0){
+                this.getSystem().startAnimation("earthquake", AnimationTicker.builder(CHESED_EARTHQUAKE_CAST)
+                                .setToNullTransitionTime(0)
+                        .build());
+            }
             if (t % 2 == 0) {
                 float p =1 -  t / 5f;
                 SonicParticleOptions options = SonicParticleOptions.builder()
@@ -169,10 +174,10 @@ public class ChesedEntity extends FDLivingEntity {
             }
         }else{
 
-            if (t == 15){
+            if (t == 18){
                 RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level(),this.getOnPos(),1,radius,1f,10f);
-                for (int i = 0; i < 3;i++) {
-                    float p = 1 - i / 3f;
+                for (int i = 0; i < 6;i++) {
+                    float p = 1 - i / 6f;
                     SonicParticleOptions options = SonicParticleOptions.builder()
                             .facing(0, 1, 0)
                             .color(41 , 133 + (int)(p * 60), 175 + (int)(p * 60))
@@ -180,7 +185,7 @@ public class ChesedEntity extends FDLivingEntity {
                             .startSize(2)
                             .endSize(radius)
                             .resizeSpeed(-i * 2)
-                            .resizeAcceleration(0.75f)
+                            .resizeAcceleration(0.75f + i)
                             .lifetime(60)
                             .build();
                     for (Player player : this.level().getNearbyPlayers(BossUtil.ALL,this,this.getBoundingBox().inflate(100))) {
@@ -303,7 +308,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean roll(AttackInstance instance){
-//        if (true) return true;
+        if (true) return true;
         int tick = instance.tick;
         if (tick == 0){
             this.oldRollPos = this.position();

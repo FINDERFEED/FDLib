@@ -33,10 +33,13 @@ public class AttackChain {
             this.buildQueue();
         }
         if (currentAttack != null){
+            int previousStage = currentAttack.stage;
             if (currentAttack.attack.getExecutor().execute(currentAttack)){
                 this.currentAttack = null;
             }else{
-                currentAttack.tick++;
+                if (currentAttack.stage == previousStage) {
+                    currentAttack.tick++;
+                }
             }
         }else{
             AttackInstance attack = this.chain.poll();
