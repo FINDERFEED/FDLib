@@ -5,7 +5,9 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.util.FDByteBufCodecs;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 
@@ -41,4 +43,9 @@ public class PositionedScreenShakePacket extends FDPacket {
     public void serverAction(IPayloadContext context) {
 
     }
+
+    public static void send(ServerLevel serverLevel,FDShakeData data,Vec3 pos,double radius){
+        PacketDistributor.sendToPlayersNear(serverLevel,null,pos.x,pos.y,pos.z,radius,new PositionedScreenShakePacket(data,pos));
+    }
+
 }

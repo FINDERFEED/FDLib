@@ -9,6 +9,9 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
+import com.finderfeed.fdlib.systems.shake.FDShakeData;
+import com.finderfeed.fdlib.systems.shake.PositionedScreenShake;
+import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
 import com.finderfeed.fdlib.to_other_mod.BossUtil;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
 import com.finderfeed.fdlib.to_other_mod.BossEntities;
@@ -192,6 +195,14 @@ public class ChesedEntity extends FDLivingEntity {
                         ((ServerLevel) level()).sendParticles((ServerPlayer) player, options, true, this.position().x, this.position().y + 0.01, this.position().z, 1, 0, 0, 0, 0);
                     }
                 }
+            }else if (t == 21) {
+                PositionedScreenShakePacket.send((ServerLevel) level(), FDShakeData.builder()
+                        .frequency(10f)
+                        .stayTime(2)
+                        .inTime(5)
+                        .outTime(5)
+                        .amplitude(0.75f)
+                        .build(),this.position(),50);
             }else if (t > 50){
                 instance.nextStage();
             }

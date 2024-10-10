@@ -23,7 +23,7 @@ public class PositionedScreenShake extends FDScreenShake{
         this.easingFunction = ComplexEasingFunction.builder()
                 .addArea(data.getInTime(), FDEasings::easeIn)
                 .addArea(data.getStayTime(), FDEasings::one)
-                .addArea(data.getOutTime(), FDEasings::easeOut)
+                .addArea(data.getOutTime(), FDEasings::reversedEaseOut)
                 .build();
     }
 
@@ -43,7 +43,9 @@ public class PositionedScreenShake extends FDScreenShake{
         }
 
         int duration = this.getData().duration();
-        float p = easingFunction.apply(Mth.clamp(time + partialTicks,0,duration));
+        float t = Mth.clamp(time + partialTicks,0,duration);
+
+        float p = t / duration;
         float s = p * FDMathUtil.FPI * 2 * this.getData().getFrequency();
 
         if (proj.dot(left) < 0){
@@ -53,8 +55,8 @@ public class PositionedScreenShake extends FDScreenShake{
         Vector3f axis = new Vector3f(0,1,0).rotateZ((float)(angle + FDMathUtil.FPI / 2));
 
         float amplitude = this.getData().getAmplitude();
-
-        projection.mulPose(new Quaternionf(new AxisAngle4f((float)Math.sin(s) * amplitude,axis.x,axis.y,axis.z)));
+        float strength = easingFunction.apply(t);
+        projection.mulPose(new Quaternionf(new AxisAngle4f((float) Math.toRadians(Math.sin(s + FDMathUtil.FPI) * amplitude * strength),axis.x,axis.y,axis.z)));
 
 
     }
