@@ -4,6 +4,9 @@ import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 
 public class FDEasings {
 
+    public static float one(float p){
+        return 1;
+    }
 
     public static float linear(float p){
         return p;
