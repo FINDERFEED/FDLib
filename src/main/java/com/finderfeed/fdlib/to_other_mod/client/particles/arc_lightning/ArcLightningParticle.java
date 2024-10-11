@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -109,7 +110,7 @@ public class ArcLightningParticle extends Particle {
 
 
         int lightningCounts = options.lightningSegments;
-        var path = this.buildPath(lightningCounts,positions);
+        var path = buildPath(level, options.lightningRandomSpread, options.seed,lightningCounts,positions);
 
         Matrix4f mat = new Matrix4f();
         mat.translate(
@@ -121,17 +122,17 @@ public class ArcLightningParticle extends Particle {
 
         FDColor color = options.color;
 
-        this.drawLightning(mat,vertex,path,positions,options.lightningWidth,color.r,color.g,color.b);
+        drawLightning(mat,vertex,path,positions,options.lightningWidth,color.r,color.g,color.b);
 
         mat.translate(0,0,0.001f);
-        this.drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
+        drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
         mat.translate(0,0,-0.002f);
-        this.drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
+        drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
 
     }
 
 
-    private void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b){
+    private static void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b){
         Vec3 previousCenteredVector = new Vec3(0,1,0);
         Vec3 prevPoint = null;
         double previousw = 0;
@@ -152,7 +153,7 @@ public class ArcLightningParticle extends Particle {
             }
 
 
-            Vec3 v = this.findCenteredVector(v1,v2);
+            Vec3 v = findCenteredVector(v1,v2);
             if (v.dot(previousCenteredVector) < 0){
                 v = v.reverse();
             }
@@ -255,15 +256,15 @@ public class ArcLightningParticle extends Particle {
 
     }
 
-    private List<Vec3> buildPath(int lightningCounts,List<Vec3> positions){
+    private static List<Vec3> buildPath(Level level,float lightningRandomSpread,int seed,int lightningCounts, List<Vec3> positions){
 
         float step = 1f / lightningCounts;
 
-        Random r = new Random(level.getGameTime() * options.seed);
+        Random r = new Random(level.getGameTime() * seed);
 
         List<Vec3> path = new ArrayList<>();
         path.add(Vec3.ZERO);
-        float lightningSpread = options.lightningRandomSpread;
+        float lightningSpread = lightningRandomSpread;
 
         for (float i = step; i <= 1 - step/2; i += step){
             float gl = i * (positions.size() - 1);
@@ -283,7 +284,7 @@ public class ArcLightningParticle extends Particle {
     }
 
 
-    private Vec3 getDirectionFromPositions(Vec3[] positions, int index){
+    private static Vec3 getDirectionFromPositions(Vec3[] positions, int index){
         if (index >= positions.length - 1){
             return positions[positions.length - 1].subtract(positions[positions.length - 2]);
         }else if (index < 0){
@@ -293,7 +294,7 @@ public class ArcLightningParticle extends Particle {
 
     }
 
-    private Vec3 findCenteredVector(Vec3 v1, Vec3 v2){
+    private static Vec3 findCenteredVector(Vec3 v1, Vec3 v2){
         v1 = v1.reverse().normalize();
         v2 = v2.normalize();
         return v1.add(v2).normalize();

@@ -103,7 +103,6 @@ public class ChesedEntity extends FDLivingEntity {
         AnimationSystem system = this.getSystem();
         system.setVariable("variable.radius",600);
         system.setVariable("variable.angle",270);
-        this.lookAt(EntityAnchorArgument.Anchor.FEET,new Vec3(-18,106,544));
         if (!this.level().isClientSide){
             this.chain.tick();
             if (playIdle) {
@@ -151,7 +150,6 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
     public boolean earthquakeAttack(AttackInstance instance){
-//        if (true) return true;
         int t = instance.tick;
         int radius = 40;
         if (t < 6) {
@@ -213,7 +211,6 @@ public class ChesedEntity extends FDLivingEntity {
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
 
     public boolean blockAttack(AttackInstance attack){
-//        if (true) return true;
         float height = 8;
         int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){
@@ -320,40 +317,27 @@ public class ChesedEntity extends FDLivingEntity {
 
     public boolean roll(AttackInstance instance){
         int tick = instance.tick;
-        if (tick == 0){
+        var stage = instance.stage;
+        if (tick == 0 && stage == 0){
             this.oldRollPos = this.position();
         }
         Vector3f p = this.getModelPartPosition(this,"base", serverModel);
         Vec3 pos = this.position().add(p.x,p.y,p.z);
         var system = this.getSystem();
 
-
-        if (tick < CHESED_ROLL_UP.get().getAnimTime()){
-
+        if (stage == 0){
             this.playIdle = false;
             if (system.getTickerAnimation("ROLL_UP") != CHESED_ROLL_UP.get()) {
                 system.startAnimation("ROLL_UP", AnimationTicker.builder(CHESED_ROLL_UP)
                         .startTime(tick)
                         .build());
             }
-        }else if (tick >= CHESED_ROLL_UP.get().getAnimTime() && tick < CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP.get().getAnimTime() - 20){
-            if (tick < 11 * 20 + CHESED_ROLL_UP.get().getAnimTime()) {
-                this.handleRollEarthShatters(tick, pos);
+            if (tick >= CHESED_ROLL_UP.get().getAnimTime()){
+                instance.nextStage();
+                return false;
             }
-
+        }else if (stage == 1){
             this.playIdle = false;
-            if (system.getTickerAnimation("ROLL_AROUND") != CHESED_ROLL.get()){
-                system.startAnimation("ROLL_AROUND",AnimationTicker.builder(CHESED_ROLL)
-                                .startTime(tick - CHESED_ROLL_UP.get().getAnimTime())
-                                .setToNullTransitionTime(0)
-                        .build());
-            }
-            if (system.getTickerAnimation("ROLLING") != CHESED_ROLL_ROLL.get() && tick < 13 * 20 + CHESED_ROLL_UP.get().getAnimTime()){
-                system.startAnimation("ROLLING",AnimationTicker.builder(CHESED_ROLL_ROLL)
-                                .setToNullTransitionTime(0)
-                                .startTime(tick - CHESED_ROLL_UP.get().getAnimTime())
-                        .build());
-            }
             PositionedScreenShakePacket.send((ServerLevel) level(), FDShakeData.builder()
                     .frequency(5f)
                     .stayTime(0)
@@ -361,17 +345,37 @@ public class ChesedEntity extends FDLivingEntity {
                     .outTime(5)
                     .amplitude(3.5f)
                     .build(),pos,10);
-        }else{
+            if (system.getTickerAnimation("ROLL_AROUND") != CHESED_ROLL.get()){
+                system.startAnimation("ROLL_AROUND",AnimationTicker.builder(CHESED_ROLL)
+                        .startTime(tick)
+                        .setToNullTransitionTime(0)
+                        .build());
+            }
+            if (system.getTickerAnimation("ROLLING") != CHESED_ROLL_ROLL.get()){
+                system.startAnimation("ROLLING",AnimationTicker.builder(CHESED_ROLL_ROLL)
+                        .setToNullTransitionTime(0)
+                        .startTime(tick)
+                        .build());
+            }
+            if (tick >= CHESED_ROLL.get().getAnimTime() - 20){
+                instance.nextStage();
+                return false;
+            }else{
+                this.handleRollEarthShatters(tick, pos);
+            }
+        }else if (stage == 2){
             this.setRolling(false);
             system.stopAnimation("ROLL_UP");
             system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_JUST_END)
                     .setToNullTransitionTime(0)
                     .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
                     .build());
-        }
-
-
-        if (tick > CHESED_ROLL_UP.get().getAnimTime() + CHESED_ROLL.get().getAnimTime() + CHESED_ROLL_UP_JUST_END.get().getAnimTime()){
+            if (tick >= CHESED_ROLL_UP_JUST_END.get().getAnimTime() + 20){
+                instance.nextStage();
+                this.playIdle = true;
+                return false;
+            }
+        }else{
             this.playIdle = true;
             this.setRolling(false);
             system.stopAnimation("ROLL_UP");
@@ -380,9 +384,6 @@ public class ChesedEntity extends FDLivingEntity {
             system.stopAnimation("ROLLING");
             return true;
         }
-
-
-
         return false;
     }
 
