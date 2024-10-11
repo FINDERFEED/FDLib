@@ -198,10 +198,10 @@ public class ChesedEntity extends FDLivingEntity {
             }else if (t == 21) {
                 PositionedScreenShakePacket.send((ServerLevel) level(), FDShakeData.builder()
                         .frequency(10f)
-                        .stayTime(2)
+                        .stayTime(0)
                         .inTime(5)
                         .outTime(5)
-                        .amplitude(0.75f)
+                        .amplitude(3.f)
                         .build(),this.position(),50);
             }else if (t > 50){
                 instance.nextStage();
@@ -213,7 +213,7 @@ public class ChesedEntity extends FDLivingEntity {
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
 
     public boolean blockAttack(AttackInstance attack){
-        if (true) return true;
+//        if (true) return true;
         float height = 8;
         int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){
@@ -319,7 +319,6 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean roll(AttackInstance instance){
-        if (true) return true;
         int tick = instance.tick;
         if (tick == 0){
             this.oldRollPos = this.position();
@@ -355,6 +354,13 @@ public class ChesedEntity extends FDLivingEntity {
                                 .startTime(tick - CHESED_ROLL_UP.get().getAnimTime())
                         .build());
             }
+            PositionedScreenShakePacket.send((ServerLevel) level(), FDShakeData.builder()
+                    .frequency(5f)
+                    .stayTime(0)
+                    .inTime(2)
+                    .outTime(5)
+                    .amplitude(3.5f)
+                    .build(),pos,10);
         }else{
             this.setRolling(false);
             system.stopAnimation("ROLL_UP");

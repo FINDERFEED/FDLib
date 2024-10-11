@@ -15,9 +15,10 @@ import org.joml.Vector3f;
 public class PositionedScreenShake extends FDScreenShake{
 
     private Vec3 pos;
+    private double maxDistance;
     private ComplexEasingFunction easingFunction;
 
-    public PositionedScreenShake(FDShakeData data, Vec3 pos) {
+    public PositionedScreenShake(FDShakeData data, Vec3 pos,double maxDistance) {
         super(data);
         this.pos = pos;
         this.easingFunction = ComplexEasingFunction.builder()
@@ -25,12 +26,19 @@ public class PositionedScreenShake extends FDScreenShake{
                 .addArea(data.getStayTime(), FDEasings::one)
                 .addArea(data.getOutTime(), FDEasings::reversedEaseOut)
                 .build();
+        this.maxDistance = maxDistance;
     }
 
     @Override
     public void process(PoseStack projection,int time, float partialTicks) {
 
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
+        double distToCamera = camera.getPosition().subtract(pos).length();
+        if (distToCamera > maxDistance) return;
+        double pdist = distToCamera / maxDistance * 2;
+        double distStrength = Math.exp(-pdist * pdist);
+
         Vec3 cameraPos = camera.getPosition();
         Vec3 look = Minecraft.getInstance().player.getLookAngle();
         Vec3 left = new Vec3(0,1,0).cross(look);
@@ -56,7 +64,7 @@ public class PositionedScreenShake extends FDScreenShake{
 
         float amplitude = this.getData().getAmplitude();
         float strength = easingFunction.apply(t);
-        projection.mulPose(new Quaternionf(new AxisAngle4f((float) Math.toRadians(Math.sin(s + FDMathUtil.FPI) * amplitude * strength),axis.x,axis.y,axis.z)));
+        projection.mulPose(new Quaternionf(new AxisAngle4f((float) Math.toRadians(Math.sin(s + FDMathUtil.FPI) * amplitude * strength * distStrength),axis.x,axis.y,axis.z)));
 
 
     }

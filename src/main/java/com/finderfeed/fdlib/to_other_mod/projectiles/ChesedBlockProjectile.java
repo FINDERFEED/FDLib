@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.projectiles;
 
+import com.finderfeed.fdlib.systems.shake.FDShakeData;
+import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
 import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
@@ -16,6 +18,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
@@ -156,6 +159,13 @@ public class ChesedBlockProjectile extends FDProjectile {
                     new SlamParticlesPacket.SlamData(blockHitResult.getBlockPos(),blockHitResult.getLocation(),this.getDeltaMovement())
             );
             PacketDistributor.sendToPlayersTrackingEntity(this,packet);
+            PositionedScreenShakePacket.send((ServerLevel) level(), FDShakeData.builder()
+                    .frequency(1.5f)
+                    .stayTime(0)
+                    .inTime(2)
+                    .outTime(6)
+                    .amplitude(15.f)
+                    .build(),blockHitResult.getLocation().add(this.getDeltaMovement().multiply(1,0,1).normalize().multiply(2,2,2)),5);
             this.shatter(blockHitResult,FDMathUtil.FPI / 6);
             this.launchBlocks(blockHitResult,FDMathUtil.FPI / 6);
             this.remove(RemovalReason.DISCARDED);

@@ -46,6 +46,8 @@ public class ClientMixinHandler {
             var inst = iter.next();
             if (!inst.hasEnded()){
                 inst.tick();
+            }else{
+                iter.remove();
             }
         }
 

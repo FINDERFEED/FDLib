@@ -16,27 +16,31 @@ public class PositionedScreenShakePacket extends FDPacket {
 
     public FDShakeData data;
     public Vec3 pos;
+    public double maxDistance;
 
 
-    public PositionedScreenShakePacket(FDShakeData data, Vec3 pos){
+    public PositionedScreenShakePacket(FDShakeData data, Vec3 pos,double maxDistance){
         this.data = data;
         this.pos = pos;
+        this.maxDistance = maxDistance;
     }
 
     public PositionedScreenShakePacket(FriendlyByteBuf buf){
         this.data = FDShakeData.STREAM_CODEC.decode(buf);
         this.pos = FDByteBufCodecs.VEC3.decode(buf);
+        this.maxDistance = buf.readDouble();
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
         FDShakeData.STREAM_CODEC.encode(buf,data);
         FDByteBufCodecs.VEC3.encode(buf,pos);
+        buf.writeDouble(maxDistance);
     }
 
     @Override
     public void clientAction(IPayloadContext context) {
-        ClientMixinHandler.addShake(new PositionedScreenShake(data,pos));
+        ClientMixinHandler.addShake(new PositionedScreenShake(data,pos,maxDistance));
     }
 
     @Override
@@ -45,7 +49,7 @@ public class PositionedScreenShakePacket extends FDPacket {
     }
 
     public static void send(ServerLevel serverLevel,FDShakeData data,Vec3 pos,double radius){
-        PacketDistributor.sendToPlayersNear(serverLevel,null,pos.x,pos.y,pos.z,radius,new PositionedScreenShakePacket(data,pos));
+        PacketDistributor.sendToPlayersNear(serverLevel,null,pos.x,pos.y,pos.z,radius,new PositionedScreenShakePacket(data,pos,radius));
     }
 
 }
