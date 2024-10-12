@@ -132,7 +132,7 @@ public class ArcLightningParticle extends Particle {
     }
 
 
-    private static void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b){
+    public static void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b){
         Vec3 previousCenteredVector = new Vec3(0,1,0);
         Vec3 prevPoint = null;
         double previousw = 0;
@@ -256,7 +256,7 @@ public class ArcLightningParticle extends Particle {
 
     }
 
-    private static List<Vec3> buildPath(Level level,float lightningRandomSpread,int seed,int lightningCounts, List<Vec3> positions){
+    public static List<Vec3> buildPath(Level level,float lightningRandomSpread,int seed,int lightningCounts, List<Vec3> positions){
 
         float step = 1f / lightningCounts;
 

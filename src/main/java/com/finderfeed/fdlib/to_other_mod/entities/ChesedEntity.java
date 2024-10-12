@@ -146,10 +146,11 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 20;
+        return instance.tick >= 5;
     }
 
     public boolean earthquakeAttack(AttackInstance instance){
+        if (true) return true;
         int t = instance.tick;
         int radius = 40;
         if (t < 6) {
@@ -211,6 +212,7 @@ public class ChesedEntity extends FDLivingEntity {
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
 
     public boolean blockAttack(AttackInstance attack){
+        if (true) return true;
         float height = 8;
         int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){
@@ -316,6 +318,10 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean roll(AttackInstance instance){
+
+        ((ServerLevel)level()).sendParticles(BossParticles.CHESED_RAY_ATTACK.get(),this.position().x,this.position().y + 10,this.position().z,1,0,0,0,0);
+
+        if (true) return true;
         int tick = instance.tick;
         var stage = instance.stage;
         if (tick == 0 && stage == 0){

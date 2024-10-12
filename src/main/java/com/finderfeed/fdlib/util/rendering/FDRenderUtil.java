@@ -52,6 +52,13 @@ public class FDRenderUtil {
         matrices.mulPose(rotationDegrees(XP(),(float)angleX));
     }
 
+    public static void applyMovementMatrixRotations(Matrix4f matrices, Vec3 vec){
+        double angleY = Math.atan2(vec.x,vec.z);
+        double angleX = Math.atan2(Math.sqrt(vec.x*vec.x + vec.z*vec.z),vec.y);
+        matrices.rotateY((float)angleY);
+        matrices.rotateX((float)angleX);
+    }
+
 
     public static void scissor(float x,float y, float width,float boxY){
         Window window = Minecraft.getInstance().getWindow();
