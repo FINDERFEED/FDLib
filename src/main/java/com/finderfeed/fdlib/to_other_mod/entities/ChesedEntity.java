@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
+import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShake;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
@@ -147,7 +148,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 5;
+        return instance.tick >= 20;
     }
 
     public boolean earthquakeAttack(AttackInstance instance){
@@ -320,17 +321,13 @@ public class ChesedEntity extends FDLivingEntity {
 
     public boolean roll(AttackInstance instance){
 
-        ((ServerLevel)level()).sendParticles(
-                ChesedRayOptions.builder()
-                        .end(this.position().add(30,15,30))
-                        .color(1f,0f,0f)
-                        .width(0.5f)
-                        .lightningColor(1f,0.6f,0.6f)
-                        .in(2)
-                        .out(10)
-                        .stay(5)
-                        .build()
-                ,this.position().x,this.position().y + 10,this.position().z,1,0,0,0,0);
+        DefaultShakePacket.send((ServerLevel) level(),this.position(),60,FDShakeData.builder()
+                        .amplitude(0.1f)
+                        .inTime(2)
+                        .stayTime(0)
+                        .outTime(30)
+                .build());
+
 
         if (true) return true;
         int tick = instance.tick;
