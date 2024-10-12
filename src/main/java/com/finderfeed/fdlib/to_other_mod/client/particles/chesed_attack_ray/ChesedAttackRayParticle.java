@@ -1,7 +1,9 @@
 package com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray;
 
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningParticle;
+import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
+import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -24,34 +26,42 @@ import java.util.List;
 
 public class ChesedAttackRayParticle extends Particle {
 
-    public Vec3 rayEnd = new Vec3(0,0,0);
+    public Vec3 rayEnd;
+    private ChesedRayOptions options;
+    private ComplexEasingFunction easingFunction;
 
-    public ChesedAttackRayParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+    public ChesedAttackRayParticle(ChesedRayOptions rayOptions,ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
         super(level, x, y, z, xd, yd, zd);
-
-
+        this.options = rayOptions;
         this.x = x;
         this.y = y;
         this.z = z;
         this.xd = xd;
         this.yd = yd;
         this.zd = zd;
-        this.rayEnd = new Vec3(
-                x + 0,
-                y + 10,
-                z + 0
-        );
+        this.rayEnd = rayOptions.rayEnd;
         this.setBoundingBox(new AABB(
                 x,y,z,
                 rayEnd.x,rayEnd.y,rayEnd.z
         ));
+        this.lifetime = options.rayOptions.inTime + options.rayOptions.stayTime + options.rayOptions.outTime;
+        easingFunction = ComplexEasingFunction.builder()
+                .addArea(options.rayOptions.inTime, FDEasings::easeIn)
+                .addArea(options.rayOptions.stayTime,FDEasings::one)
+                .addArea(options.rayOptions.outTime,FDEasings::reversedEaseOut)
+                .build();
+    }
 
+    @Override
+    public void tick() {
 
-        this.lifetime = 60;
+        super.tick();
+
     }
 
     @Override
     public void render(VertexConsumer vertex, Camera camera, float pticks) {
+
         Vec3 pos = new Vec3(
                 Mth.lerp(pticks,this.xo,this.x),
                 Mth.lerp(pticks,this.yo,this.y),
@@ -87,34 +97,46 @@ public class ChesedAttackRayParticle extends Particle {
             mat.rotateY(-angle);
         }
 
+        float p = easingFunction.apply(this.age);
+
+        float alpha = p * options.color.a;
 
 
-        float w = 1;
-        vertex.addVertex(mat,0,0,0).setColor(1f,1f,1f,1f);
-        vertex.addVertex(mat,w,0,0).setColor(1,1,1,0f);
-        vertex.addVertex(mat,w,(float)len,0).setColor(1,1,1,0f);
-        vertex.addVertex(mat,0,(float)len,0).setColor(1f,1f,1f,1f);
+        float w = options.rayWidth * p;
+        vertex.addVertex(mat,0,0,0).setColor(options.color.r,options.color.g,options.color.b,alpha);
+        vertex.addVertex(mat,w,0,0).setColor(options.color.r,options.color.g,options.color.b,0f);
+        vertex.addVertex(mat,w,(float)len,0).setColor(options.color.r,options.color.g,options.color.b,0f);
+        vertex.addVertex(mat,0,(float)len,0).setColor(options.color.r,options.color.g,options.color.b,alpha);
 
-        vertex.addVertex(mat,0,0,0).setColor(1f,1f,1f,1f);
-        vertex.addVertex(mat,-w,0,0).setColor(1,1,1,0f);
-        vertex.addVertex(mat,-w,(float)len,0).setColor(1,1,1,0f);
-        vertex.addVertex(mat,0,(float)len,0).setColor(1f,1f,1f,1f);
+        vertex.addVertex(mat,0,0,0).setColor(options.color.r,options.color.g,options.color.b,alpha);
+        vertex.addVertex(mat,-w,0,0).setColor(options.color.r,options.color.g,options.color.b,0f);
+        vertex.addVertex(mat,-w,(float)len,0).setColor(options.color.r,options.color.g,options.color.b,0f);
+        vertex.addVertex(mat,0,(float)len,0).setColor(options.color.r,options.color.g,options.color.b,alpha);
 
+        vertex.addVertex(mat,0,0,0.0005f).setColor(1f,1f,1f,alpha);
+        vertex.addVertex(mat,w * 0.15f,0,0.0005f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,w * 0.15f,(float)len,0.0005f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,0,(float)len,0.0005f).setColor(1f,1f,1f,alpha);
 
-
-        var positions = List.of(
-                Vec3.ZERO,new Vec3(0,len,0)
-        );
-        var path = ArcLightningParticle.buildPath(level,w * 2,34234234,Math.max((int)Math.round(len / 2),2), positions);
-        mat.translate(0,0,0.001f);
-        ArcLightningParticle.drawLightning(mat,vertex,path,positions,0.25f,1f,0,0);
-
-        mat.translate(0,0,0.001f);
-        ArcLightningParticle.drawLightning(mat,vertex,path,positions,0.25f * 0.15f,1f,1,1f);
-        mat.translate(0,0,-0.003f);
-        ArcLightningParticle.drawLightning(mat,vertex,path,positions,0.25f * 0.15f,1f,1,1f);
+        vertex.addVertex(mat,0,0,0.0005f).setColor(1f,1f,1f,alpha);
+        vertex.addVertex(mat,-w * 0.15f,0,0.0005f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,-w * 0.15f,(float)len,0.0005f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,0,(float)len,0.0009f).setColor(1f,1f,1f,alpha);
 
 
+
+
+            var positions = List.of(
+                    Vec3.ZERO,new Vec3(0,len,0)
+            );
+            var path = ArcLightningParticle.buildPath(level, w * 2, 342332, Math.max((int) Math.round(len / (2 * w * 2)), 2), positions);
+            mat.translate(0, 0, 0.002f);
+            ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f, options.lightningColor.r, options.lightningColor.g, options.lightningColor.b, alpha);
+
+            mat.translate(0, 0, 0.002f);
+            ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f * 0.15f, 1f,1f, 1f, alpha);
+            mat.translate(0, 0, -0.006f);
+            ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f * 0.15f, 1f, 1f, 1f, alpha);
 
     }
 
@@ -124,12 +146,12 @@ public class ChesedAttackRayParticle extends Particle {
     }
 
 
-    public static class Factory implements ParticleProvider<SimpleParticleType>{
+    public static class Factory implements ParticleProvider<ChesedRayOptions>{
 
         @Nullable
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
-            return new ChesedAttackRayParticle(level,x,y,z,xd,yd,zd);
+        public Particle createParticle(ChesedRayOptions type, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+            return new ChesedAttackRayParticle(type,level,x,y,z,xd,yd,zd);
         }
     }
 

@@ -122,17 +122,17 @@ public class ArcLightningParticle extends Particle {
 
         FDColor color = options.color;
 
-        drawLightning(mat,vertex,path,positions,options.lightningWidth,color.r,color.g,color.b);
+        drawLightning(mat,vertex,path,positions,options.lightningWidth,color.r,color.g,color.b,1f);
 
         mat.translate(0,0,0.001f);
-        drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
+        drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f,1f);
         mat.translate(0,0,-0.002f);
-        drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f);
+        drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f,1f);
 
     }
 
 
-    public static void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b){
+    public static void drawLightning(Matrix4f transform,VertexConsumer vertex,List<Vec3> path,List<Vec3> positions,float lightningWidth,float r,float g,float b,float a){
         Vec3 previousCenteredVector = new Vec3(0,1,0);
         Vec3 prevPoint = null;
         double previousw = 0;
@@ -164,7 +164,7 @@ public class ArcLightningParticle extends Particle {
                     (float) (p1.x),
                     (float) (p1.y),
                     0
-            ).setColor(r,g,b,i == 1 ? 0 : 1f);
+            ).setColor(r,g,b,i == 1 ? 0 : a);
             vertex.addVertex(transform,
                     (float) (p1.x + previousCenteredVector.x * previousw),
                     (float) (p1.y + previousCenteredVector.y * previousw),
@@ -179,13 +179,13 @@ public class ArcLightningParticle extends Particle {
                     (float) (p2.x),
                     (float) (p2.y),
                     0
-            ).setColor(r,g,b,1f);
+            ).setColor(r,g,b,a);
 
             vertex.addVertex(transform,
                     (float) (p1.x),
                     (float) (p1.y),
                     0
-            ).setColor(r,g,b,i == 1 ? 0 : 1f);
+            ).setColor(r,g,b,i == 1 ? 0 : a);
             vertex.addVertex(transform,
                     (float) (p1.x - previousCenteredVector.x * previousw),
                     (float) (p1.y - previousCenteredVector.y * previousw),
@@ -200,7 +200,7 @@ public class ArcLightningParticle extends Particle {
                     (float) (p2.x),
                     (float) (p2.y),
                     0
-            ).setColor(r,g,b,1f);
+            ).setColor(r,g,b,a);
 
             prevPoint = p2;
             previousw = w;
@@ -215,7 +215,7 @@ public class ArcLightningParticle extends Particle {
                 (float) (prevPoint.x),
                 (float) (prevPoint.y),
                 0
-        ).setColor(r,g,b,1f);
+        ).setColor(r,g,b,a);
         vertex.addVertex(transform,
                 (float) (prevPoint.x + previousCenteredVector.x * previousw),
                 (float) (prevPoint.y + previousCenteredVector.y * previousw),
@@ -230,13 +230,13 @@ public class ArcLightningParticle extends Particle {
                 (float) (lastPos.x),
                 (float) (lastPos.y),
                 0
-        ).setColor(r,g,b,1f);
+        ).setColor(r,g,b,a);
 
         vertex.addVertex(transform,
                 (float) (prevPoint.x),
                 (float) (prevPoint.y),
                 0
-        ).setColor(r,g,b,1f);
+        ).setColor(r,g,b,a);
         vertex.addVertex(transform,
                 (float) (prevPoint.x - previousCenteredVector.x * previousw),
                 (float) (prevPoint.y - previousCenteredVector.y * previousw),
@@ -251,7 +251,7 @@ public class ArcLightningParticle extends Particle {
                 (float) (lastPos.x),
                 (float) (lastPos.y),
                 0
-        ).setColor(r,g,b,1f);
+        ).setColor(r,g,b,a);
 
 
     }

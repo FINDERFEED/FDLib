@@ -18,6 +18,7 @@ import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
@@ -319,7 +320,17 @@ public class ChesedEntity extends FDLivingEntity {
 
     public boolean roll(AttackInstance instance){
 
-        ((ServerLevel)level()).sendParticles(BossParticles.CHESED_RAY_ATTACK.get(),this.position().x,this.position().y + 10,this.position().z,1,0,0,0,0);
+        ((ServerLevel)level()).sendParticles(
+                ChesedRayOptions.builder()
+                        .end(this.position().add(30,15,30))
+                        .color(1f,0f,0f)
+                        .width(0.5f)
+                        .lightningColor(1f,0.6f,0.6f)
+                        .in(2)
+                        .out(10)
+                        .stay(5)
+                        .build()
+                ,this.position().x,this.position().y + 10,this.position().z,1,0,0,0,0);
 
         if (true) return true;
         int tick = instance.tick;
