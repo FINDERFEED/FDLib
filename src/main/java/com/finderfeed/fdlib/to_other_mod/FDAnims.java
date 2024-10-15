@@ -39,5 +39,8 @@ public class FDAnims {
     public static DeferredHolder<Animation,Animation> CHESED_EARTHQUAKE_CAST = ANIMATIONS.register("chesed_earthquake_cast", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
     });
+    public static DeferredHolder<Animation,Animation> CHESED_ROCKFALL_CAST = ANIMATIONS.register("chesed_rockfall_cast", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
 
 }

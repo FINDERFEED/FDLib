@@ -31,7 +31,7 @@ public class DefaultShake extends FDScreenShake{
     @Override
     public void process(PoseStack projection, int time, float partialTicks) {
         float power = easingFunction.apply(time + partialTicks);
-        long t = Minecraft.getInstance().level.getGameTime() ;
+        long t = Math.round((Minecraft.getInstance().level.getGameTime() % 3000) * this.getData().getFrequency());
         Random random = new Random(t * 34324);
         double x = this.randomN(random,power);
         double y = this.randomN(random,power);

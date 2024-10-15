@@ -113,15 +113,16 @@ public class ChesedAttackRayParticle extends Particle {
         vertex.addVertex(mat,-w,(float)len,0).setColor(options.color.r,options.color.g,options.color.b,0f);
         vertex.addVertex(mat,0,(float)len,0).setColor(options.color.r,options.color.g,options.color.b,alpha);
 
-        vertex.addVertex(mat,0,0,0.0005f).setColor(1f,1f,1f,alpha);
-        vertex.addVertex(mat,w * 0.15f,0,0.0005f).setColor(1f,1f,1f,0f);
-        vertex.addVertex(mat,w * 0.15f,(float)len,0.0005f).setColor(1f,1f,1f,0f);
-        vertex.addVertex(mat,0,(float)len,0.0005f).setColor(1f,1f,1f,alpha);
+        mat.translate(0,0,0.01f);
+        vertex.addVertex(mat,0,0,0f).setColor(1f,1f,1f,alpha);
+        vertex.addVertex(mat,w * 0.15f,0,0f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,w * 0.15f,(float)len,0f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,0,(float)len,0f).setColor(1f,1f,1f,alpha);
 
-        vertex.addVertex(mat,0,0,0.0005f).setColor(1f,1f,1f,alpha);
-        vertex.addVertex(mat,-w * 0.15f,0,0.0005f).setColor(1f,1f,1f,0f);
-        vertex.addVertex(mat,-w * 0.15f,(float)len,0.0005f).setColor(1f,1f,1f,0f);
-        vertex.addVertex(mat,0,(float)len,0.0009f).setColor(1f,1f,1f,alpha);
+        vertex.addVertex(mat,0,0,0f).setColor(1f,1f,1f,alpha);
+        vertex.addVertex(mat,-w * 0.15f,0,0f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,-w * 0.15f,(float)len,0f).setColor(1f,1f,1f,0f);
+        vertex.addVertex(mat,0,(float)len,0f).setColor(1f,1f,1f,alpha);
 
 
 
@@ -130,12 +131,12 @@ public class ChesedAttackRayParticle extends Particle {
                     Vec3.ZERO,new Vec3(0,len,0)
             );
             var path = ArcLightningParticle.buildPath(level, w * 2, 342332, Math.max((int) Math.round(len / (2 * w * 2)), 2), positions);
-            mat.translate(0, 0, 0.002f);
+            mat.translate(0, 0, 0.02f);
             ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f, options.lightningColor.r, options.lightningColor.g, options.lightningColor.b, alpha);
 
-            mat.translate(0, 0, 0.002f);
+            mat.translate(0, 0, 0.02f);
             ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f * 0.15f, 1f,1f, 1f, alpha);
-            mat.translate(0, 0, -0.006f);
+            mat.translate(0, 0, -0.06f);
             ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f * 0.15f, 1f, 1f, 1f, alpha);
 
     }

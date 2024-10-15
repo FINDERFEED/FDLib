@@ -25,6 +25,7 @@ import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatt
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
+import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
@@ -79,8 +80,11 @@ public class ChesedEntity extends FDLivingEntity {
         }
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
-                    .addAttack(0, AttackOptions.builder()
+                    .addAttack(-1, AttackOptions.builder()
                             .addAttack("nothing1",this::doNothing)
+                            .build())
+                    .addAttack(0, AttackOptions.builder()
+                            .addAttack("rockfall",this::rockfallAttack)
                             .build())
                     .addAttack(1, AttackOptions.builder()
                             .addAttack("earthquake",this::earthquakeAttack)
@@ -150,6 +154,55 @@ public class ChesedEntity extends FDLivingEntity {
         }
         return instance.tick >= 20;
     }
+
+
+    public boolean rockfallAttack(AttackInstance instance){
+        int stage = instance.stage;
+        int tick = instance.tick;
+
+        if (stage == 0){
+            this.getSystem().startAnimation("ROCKFALL", AnimationTicker.builder(CHESED_ROCKFALL_CAST)
+                            .setToNullTransitionTime(0)
+                    .build());
+            if (tick == 45){
+                Vec3 pos = this.position();
+                int height = 60;
+                FDUtil.sendParticles((ServerLevel) level(),ChesedRayOptions.builder()
+                                .width(1f)
+                                .end(pos.add(0,60,0))
+                                .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
+                                .lightningColor(1 + random.nextInt(40), 183 - random.nextInt(60), 165 + random.nextInt(60))
+                                .stay(8)
+                                .in(2)
+                                .out(10)
+                        .build(), pos.add(0,1,0),60);
+                PositionedScreenShakePacket.send((ServerLevel) level(),FDShakeData.builder()
+                        .frequency(10)
+                        .amplitude(7f)
+                        .inTime(0)
+                        .stayTime(0)
+                        .outTime(10)
+                        .build(),this.position().add(0,height,0),height * 2);
+                DefaultShakePacket.send((ServerLevel) level(),this.position(),60,FDShakeData.builder()
+                                .frequency(10)
+                                .amplitude(0.1f)
+                                .inTime(0)
+                                .stayTime(50)
+                                .outTime(50)
+                        .build());
+            }else if (tick >= 80){
+                instance.nextStage();
+            }
+        }else if (stage == 1){
+            instance.nextStage();
+        }else{
+            return true;
+        }
+
+
+        return false;
+    }
+
 
     public boolean earthquakeAttack(AttackInstance instance){
         if (true) return true;
@@ -320,15 +373,6 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean roll(AttackInstance instance){
-
-        DefaultShakePacket.send((ServerLevel) level(),this.position(),60,FDShakeData.builder()
-                        .amplitude(0.1f)
-                        .inTime(2)
-                        .stayTime(0)
-                        .outTime(30)
-                .build());
-
-
         if (true) return true;
         int tick = instance.tick;
         var stage = instance.stage;

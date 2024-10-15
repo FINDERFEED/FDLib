@@ -110,6 +110,14 @@ public class ChesedRayOptions implements ParticleOptions {
             return this.color(new FDColor(r,g,b,1));
         }
 
+        public Builder color(int r,int g,int b,int a){
+            return this.color(new FDColor(r/255f,g/255f,b/255f,a/255f));
+        }
+
+        public Builder color(int r,int g,int b){
+            return this.color(new FDColor(r/255f,g/255f,b/255f,1));
+        }
+
         public Builder lightningColor(FDColor color){
             rayOptions.lightningColor = color;
             return this;
@@ -121,6 +129,14 @@ public class ChesedRayOptions implements ParticleOptions {
 
         public Builder lightningColor(float r,float g,float b){
             return this.lightningColor(new FDColor(r,g,b,1));
+        }
+
+        public Builder lightningColor(int r,int g,int b,int a){
+            return this.lightningColor(new FDColor(r/255f,g/255f,b/255f,a/255f));
+        }
+
+        public Builder lightningColor(int r,int g,int b){
+            return this.lightningColor(new FDColor(r/255f,g/255f,b/255f,1));
         }
 
         public Builder width(float lwidth){

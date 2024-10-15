@@ -53,7 +53,18 @@ public class ClientMixinHandler {
 
     }
 
+    private static boolean renderShake = true;
+
+    public static void beforeLevel(){
+        renderShake = true;
+    }
+
+    public static void beforeHand(){
+        renderShake = false;
+    }
+
     public static void bobHurt(PoseStack matrices,float pticks){
+        if (!renderShake) return;
         if (Minecraft.getInstance().level == null) return;
         if (Minecraft.getInstance().isPaused()) return;
         if (Minecraft.getInstance().player == null) return;
