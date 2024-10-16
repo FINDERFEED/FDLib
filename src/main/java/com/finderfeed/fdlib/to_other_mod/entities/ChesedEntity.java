@@ -159,14 +159,15 @@ public class ChesedEntity extends FDLivingEntity {
     public boolean rockfallAttack(AttackInstance instance){
         int stage = instance.stage;
         int tick = instance.tick;
-
+        int height = 60;
         if (stage == 0){
             this.getSystem().startAnimation("ROCKFALL", AnimationTicker.builder(CHESED_ROCKFALL_CAST)
                             .setToNullTransitionTime(0)
                     .build());
+
             if (tick == 45){
                 Vec3 pos = this.position();
-                int height = 60;
+
                 FDUtil.sendParticles((ServerLevel) level(),ChesedRayOptions.builder()
                                 .width(1f)
                                 .end(pos.add(0,60,0))
@@ -190,11 +191,19 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
-            }else if (tick >= 80){
+            }else if (tick >= 46){
                 instance.nextStage();
             }
         }else if (stage == 1){
-            instance.nextStage();
+            int rd = 3;
+            int startRad = tick * rd;
+            int endRad = startRad + rd;
+            for (int i = startRad; i < endRad;i++){
+                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,i,height * 2);
+            }
+            if (endRad > 33){
+                instance.nextStage();
+            }
         }else{
             return true;
         }

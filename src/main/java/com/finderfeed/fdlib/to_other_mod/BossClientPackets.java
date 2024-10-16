@@ -8,6 +8,7 @@ import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -28,7 +29,39 @@ public class BossClientPackets {
             case BossUtil.RADIAL_EARTHQUAKE_PARTICLES -> {
                 radialEarthquakeParticles(pos,data);
             }
+            case BossUtil.ROCKFALL_PARTICLES -> {
+                rockfallParticles(pos,data);
+            }
         }
+    }
+
+    public static void rockfallParticles(Vec3 tpos,int rad){
+
+        Vec3 b = new Vec3(rad,0,0);
+        float angle;
+        if (rad != 0){
+            angle = 1f / rad;
+        }else{
+            angle = FDMathUtil.FPI * 2;
+        }
+        Level level = Minecraft.getInstance().level;
+
+
+        for (float i = 0; i <= FDMathUtil.FPI * 2;i += angle){
+            Vec3 v = b.yRot(i);
+            level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,true,
+                    tpos.x + v.x + random.nextFloat() - 0.5,
+                    tpos.y + v.y + random.nextFloat() * 0.1 - 0.05,
+                    tpos.z + v.z + random.nextFloat() - 0.5,
+
+                    random.nextFloat() * 0.025 -  0.0125,
+                    -0.05 - random.nextFloat() * 0.05,
+                    random.nextFloat() * 0.025 -  0.0125
+                    );
+
+
+        }
+
     }
 
     public static void radialEarthquakeParticles(Vec3 tpos,int rad){
