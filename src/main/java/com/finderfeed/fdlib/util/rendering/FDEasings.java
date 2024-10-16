@@ -1,8 +1,14 @@
 package com.finderfeed.fdlib.util.rendering;
 
 import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 
 public class FDEasings {
+
+
+    public static float gaussian(float p){
+        return (float)Math.exp(-(p*p));
+    }
 
     public static float one(float p){
         return 1;

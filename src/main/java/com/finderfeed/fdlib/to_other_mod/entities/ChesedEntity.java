@@ -23,6 +23,7 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.Ches
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
 import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import com.finderfeed.fdlib.util.FDUtil;
@@ -46,7 +47,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Math;
 import org.joml.Matrix4fStack;
@@ -55,6 +58,7 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
 
@@ -152,7 +156,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 20;
+        return instance.tick >= 120;
     }
 
 
@@ -160,6 +164,7 @@ public class ChesedEntity extends FDLivingEntity {
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 60;
+        int rad = 36;
         if (stage == 0){
             this.getSystem().startAnimation("ROCKFALL", AnimationTicker.builder(CHESED_ROCKFALL_CAST)
                             .setToNullTransitionTime(0)
@@ -191,25 +196,59 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
+                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
             }else if (tick >= 46){
                 instance.nextStage();
             }
         }else if (stage == 1){
-            int rd = 3;
-            int startRad = tick * rd;
-            int endRad = startRad + rd;
-            for (int i = startRad; i < endRad;i++){
-                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,i,height * 2);
+
+            float duration = 200;
+
+            this.spawnStonesAround(4,rad, this.position().add(0,height,0),true,false,FDEasings::easeOut);
+
+            if (tick % 2 == 0) {
+                AABB box = new AABB(-rad, -2, -rad, rad, height, rad).move(this.position());
+                for (Player player : this.level().getNearbyPlayers(BossUtil.ALL, this, box)) {
+
+                    Vec3 p = player.position();
+
+                    if (p.subtract(this.position()).multiply(1, 0, 1).length() > rad) continue;
+
+                    this.spawnStonesAround(1, 5, p.multiply(1, 0, 1).add(0, this.position().y + height, 0), true, false, FDEasings::easeOut);
+
+                }
             }
-            if (endRad > 33){
+
+            if (tick >= duration) {
                 instance.nextStage();
             }
-        }else{
+        }else {
             return true;
         }
 
 
         return false;
+    }
+
+    private void spawnStonesAround(int count, int rad, Vec3 center, boolean useEasing, boolean reverseEasing, Function<Float,Float> func){
+        for (int i = 0; i < count;i++){
+
+            float rnd = random.nextFloat();
+
+            if (useEasing){
+                if (!reverseEasing) {
+                    rnd = func.apply(rnd);
+                }else{
+                    rnd = 1 - func.apply(rnd);
+                }
+            }
+
+            Vec3 v = new Vec3(rad * rnd,0,0).yRot(random.nextFloat() * FDMathUtil.FPI * 2);
+
+            Vec3 p = center.add(v);
+
+            ChesedFallingBlock.summon(level(), Blocks.STONE.defaultBlockState(),p);
+        }
     }
 
 

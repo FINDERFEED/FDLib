@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.debug;
 
 import com.finderfeed.fdlib.to_other_mod.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
 import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import net.minecraft.world.InteractionHand;
@@ -22,7 +23,8 @@ public class DebugStick extends Item {
 
         if (!level.isClientSide){
 
-            RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level,player.getOnPos(),1,50,0.35f,10);
+//            RadialEarthquakeEntity radialEarthquakeEntity = RadialEarthquakeEntity.summon(level,player.getOnPos(),1,50,0.35f,10);
+            ChesedFallingBlock.summon(level,Blocks.STONE.defaultBlockState(),player.position());
             //            ChesedBlockProjectile projectile = new ChesedBlockProjectile(BossEntities.BLOCK_PROJECTILE.get(),level);
 //            projectile.setPos(player.position().add(player.getLookAngle()).add(0,2,0));
 //            projectile.setDeltaMovement(player.getLookAngle().multiply(1,1,1));

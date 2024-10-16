@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.to_other_mod;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
@@ -42,6 +43,12 @@ public class BossEntities {
             .sized(1f,1f)
             .updateInterval(1)
             .build("block_projectile"));
+
+    public static final Supplier<EntityType<ChesedFallingBlock>> CHESED_FALLING_BLOCK = ENTITIES.register("chesed_falling_block",()->EntityType.Builder.<ChesedFallingBlock>of(
+            ChesedFallingBlock::new, MobCategory.MISC
+    )
+            .sized(0.2f,0.2f)
+            .build("chesed_falling_block"));
 
     public static final Supplier<EntityType<FlyingBlockEntity>> FLYING_BLOCK = ENTITIES.register("flying_block",()->EntityType.Builder.of(
             FlyingBlockEntity::new, MobCategory.MISC

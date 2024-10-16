@@ -35,31 +35,33 @@ public class BossClientPackets {
         }
     }
 
-    public static void rockfallParticles(Vec3 tpos,int rad){
+    public static void rockfallParticles(Vec3 tpos,int maxRad){
 
-        Vec3 b = new Vec3(rad,0,0);
-        float angle;
-        if (rad != 0){
-            angle = 1f / rad;
-        }else{
-            angle = FDMathUtil.FPI * 2;
-        }
-        Level level = Minecraft.getInstance().level;
-
-
-        for (float i = 0; i <= FDMathUtil.FPI * 2;i += angle){
-            Vec3 v = b.yRot(i);
-            level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,true,
-                    tpos.x + v.x + random.nextFloat() - 0.5,
-                    tpos.y + v.y + random.nextFloat() * 0.1 - 0.05,
-                    tpos.z + v.z + random.nextFloat() - 0.5,
-
-                    random.nextFloat() * 0.025 -  0.0125,
-                    -0.05 - random.nextFloat() * 0.05,
-                    random.nextFloat() * 0.025 -  0.0125
-                    );
+        for (int rad = 0; rad < maxRad;rad++){
+            Vec3 b = new Vec3(rad,0,0);
+            float angle;
+            if (rad != 0){
+                angle = 0.5f / rad;
+            }else{
+                angle = FDMathUtil.FPI * 2;
+            }
+            Level level = Minecraft.getInstance().level;
 
 
+            for (float i = 0; i <= FDMathUtil.FPI * 2;i += angle){
+                Vec3 v = b.yRot(i);
+                level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,true,
+                        tpos.x + v.x + random.nextFloat() - 0.5,
+                        tpos.y + v.y + random.nextFloat() * 0.1 - 0.05,
+                        tpos.z + v.z + random.nextFloat() - 0.5,
+
+                        random.nextFloat() * 0.025 -  0.0125,
+                        -0.05 - random.nextFloat() * 0.05,
+                        random.nextFloat() * 0.025 -  0.0125
+                        );
+
+
+            }
         }
 
     }
