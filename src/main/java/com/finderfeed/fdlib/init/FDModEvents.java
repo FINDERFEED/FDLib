@@ -9,8 +9,14 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.ReflectiveJsonConfig;
+import com.finderfeed.fdlib.systems.particle.EmptyParticleProcessor;
+import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -32,7 +38,21 @@ public class FDModEvents {
             }
         }
 
+
+        EmptyParticleProcessor processor = new EmptyParticleProcessor();
+
+        DataResult<Tag> result = ParticleProcessor.CODEC.encodeStart(NbtOps.INSTANCE,processor);
+        System.out.println(result);
+
+        var element = result.getOrThrow();
+        var proc = ParticleProcessor.CODEC.decode(NbtOps.INSTANCE,element);
+        System.out.println(proc.getOrThrow().getFirst());
+
+        if (true) throw new RuntimeException();
+
         event.enqueueWork(()->{
+
+
             loadAnimations();
             loadModels();
             FDTagDeserializers.registerDeserializer(Vec3.class,FDDefaultTagDeserializers.VEC3);
