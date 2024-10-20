@@ -5,10 +5,10 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.r
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDRenderLayerOptions;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningParticle;
+import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedAttackRayParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticle;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterRenderer;
-import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
 import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlockRenderer;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntityRenderer;
 import com.finderfeed.fdlib.to_other_mod.projectiles.renderers.BlockProjectileRenderer;
@@ -28,7 +28,8 @@ public class BossClientModEvents {
     public static void registerParticleFactories(RegisterParticleProvidersEvent event){
         event.registerSpecial(BossParticles.CHESED_RAY_ATTACK.get(), new ChesedAttackRayParticle.Factory());
         event.registerSpecial(BossParticles.ARC_LIGHTNING.get(), new ArcLightningParticle.Factory());
-        event.registerSpriteSet(BossParticles.SONIC_PARTICLE.get(), SonicParticle.Provider::new);
+        event.registerSpriteSet(BossParticles.SONIC_PARTICLE.get(), SonicParticle.Factory::new);
+        event.registerSpriteSet(BossParticles.BALL_PARTICLE.get(), BallParticle.Factory::new);
     }
 
     @SubscribeEvent

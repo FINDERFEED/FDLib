@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.to_other_mod.client;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.mojang.serialization.MapCodec;
@@ -53,6 +54,19 @@ public class BossParticles {
         @Override
         public StreamCodec<? super RegistryFriendlyByteBuf, SonicParticleOptions> streamCodec() {
             return SonicParticleOptions.STREAM_CODEC;
+        }
+    });
+
+
+    public static final Supplier<ParticleType<BallParticleOptions>> BALL_PARTICLE = PARTICLES.register("ball_particle",()-> new ParticleType<>(true) {
+        @Override
+        public MapCodec<BallParticleOptions> codec() {
+            return BallParticleOptions.MAP_CODEC;
+        }
+
+        @Override
+        public StreamCodec<? super RegistryFriendlyByteBuf, BallParticleOptions> streamCodec() {
+            return BallParticleOptions.STREAM_CODEC;
         }
     });
 

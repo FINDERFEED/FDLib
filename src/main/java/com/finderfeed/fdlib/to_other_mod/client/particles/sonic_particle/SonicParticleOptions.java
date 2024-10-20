@@ -77,7 +77,7 @@ public class SonicParticleOptions implements ParticleOptions {
 
 
     public static MapCodec<SonicParticleOptions> createCodec(){
-        return CODEC.xmap(a->a,a->a).fieldOf("options");
+        return CODEC.fieldOf("options");
     }
 
 

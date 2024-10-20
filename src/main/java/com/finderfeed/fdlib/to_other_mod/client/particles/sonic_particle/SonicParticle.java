@@ -4,9 +4,7 @@ import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
@@ -119,11 +117,11 @@ public class SonicParticle extends TextureSheetParticle {
         };
     }
 
-    public static class Provider implements ParticleProvider<SonicParticleOptions>{
+    public static class Factory implements ParticleProvider<SonicParticleOptions>{
 
         private SpriteSet spriteSet;
 
-        public Provider(SpriteSet spriteSet){
+        public Factory(SpriteSet spriteSet){
             this.spriteSet = spriteSet;
         }
 

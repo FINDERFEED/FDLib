@@ -49,6 +49,10 @@ public class AlphaOptions {
         return inTime == 0 && outTime == 0 && stayTime == 0;
     }
 
+    public int fullTime(){
+        return this.inTime + this.outTime + this.stayTime;
+    }
+
     public static Builder builder(){
         return new Builder();
     }

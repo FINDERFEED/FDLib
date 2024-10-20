@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.ReflectiveJsonConfig;
+import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.EmptyParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
 import com.google.gson.JsonElement;
@@ -37,18 +38,6 @@ public class FDModEvents {
                 c.memorizeDefaultValues();
             }
         }
-
-
-        EmptyParticleProcessor processor = new EmptyParticleProcessor();
-
-        DataResult<Tag> result = ParticleProcessor.CODEC.encodeStart(NbtOps.INSTANCE,processor);
-        System.out.println(result);
-
-        var element = result.getOrThrow();
-        var proc = ParticleProcessor.CODEC.decode(NbtOps.INSTANCE,element);
-        System.out.println(proc.getOrThrow().getFirst());
-
-        if (true) throw new RuntimeException();
 
         event.enqueueWork(()->{
 

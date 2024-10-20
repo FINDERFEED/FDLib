@@ -1,15 +1,22 @@
 package com.finderfeed.fdlib.systems.particle;
 
 import com.finderfeed.fdlib.FDLib;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.ListCodec;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class CompositeParticleProcessor implements ParticleProcessor<CompositeParticleProcessor> {
 
-    private ParticleProcessor[] processors;
+    private ParticleProcessor<?>[] processors;
 
     public CompositeParticleProcessor(ParticleProcessor<?>... processors){
         this.processors = processors;
@@ -28,6 +35,19 @@ public class CompositeParticleProcessor implements ParticleProcessor<CompositePa
     }
 
     public static class Type implements ParticleProcessorType<CompositeParticleProcessor> {
+
+        private static Codec<List<ParticleProcessor<?>>> PARTICLE_PROCESSOR_LIST = Codec.list(ParticleProcessor.CODEC).fieldOf("processors").codec();
+
+        public static final ResourceLocation LOCATION = ResourceLocation.tryBuild(FDLib.MOD_ID,"composite");
+
+        public static Codec<CompositeParticleProcessor> CODEC = PARTICLE_PROCESSOR_LIST.xmap(particleProcessors -> {
+            ParticleProcessor<?>[] arr = particleProcessors.toArray(new ParticleProcessor<?>[0]);
+            return new CompositeParticleProcessor(arr);
+        },compositeParticleProcessor -> {
+            return Arrays.asList(compositeParticleProcessor.processors);
+        });
+
+
 
         public static StreamCodec<FriendlyByteBuf,CompositeParticleProcessor> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, CompositeParticleProcessor>() {
             @Override
@@ -58,12 +78,12 @@ public class CompositeParticleProcessor implements ParticleProcessor<CompositePa
 
         @Override
         public Codec<CompositeParticleProcessor> codec() {
-            return null;
+            return CODEC;
         }
 
         @Override
         public ResourceLocation id() {
-            return ResourceLocation.tryBuild(FDLib.MOD_ID,"composite");
+            return LOCATION;
         }
     }
 }

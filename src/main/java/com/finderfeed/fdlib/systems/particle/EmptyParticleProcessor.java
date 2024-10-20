@@ -23,6 +23,7 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
 
     @Override
     public void processParticle(Particle particle) {
+
     }
 
     public static class Type implements ParticleProcessorType<EmptyParticleProcessor>{
@@ -39,12 +40,7 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
             }
         };
 
-        public static final Codec<EmptyParticleProcessor> CODEC = RecordCodecBuilder.create(b->b.group(
-                Codec.STRING.fieldOf("shit").forGetter(v->"zhopa")
-        ).apply(b,s->{
-            System.out.println(s);
-            return new EmptyParticleProcessor();
-        }));
+        public static final Codec<EmptyParticleProcessor> CODEC = Codec.unit(INSTANCE);
 
         @Override
         public StreamCodec<FriendlyByteBuf, EmptyParticleProcessor> streamCodec() {
