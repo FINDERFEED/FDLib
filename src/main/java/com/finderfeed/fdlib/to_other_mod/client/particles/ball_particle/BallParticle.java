@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle;
 
+import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
 import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
@@ -74,7 +75,9 @@ public class BallParticle extends TextureSheetParticle {
         return RENDER_TYPE;
     }
 
-    public static final ParticleRenderType RENDER_TYPE = new ParticleRenderType() {
+    public static final ParticleRenderType RENDER_TYPE = new FDParticleRenderType() {
+
+
         @Nullable
         @Override
         public BufferBuilder begin(Tesselator bufferBuilder, TextureManager textureManager) {
@@ -86,7 +89,13 @@ public class BallParticle extends TextureSheetParticle {
 
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+            Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true,true);
             return bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+        }
+
+        @Override
+        public void end() {
+            Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap();
         }
 
         @Override

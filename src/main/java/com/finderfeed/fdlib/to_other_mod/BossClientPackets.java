@@ -42,7 +42,7 @@ public class BossClientPackets {
     public static void rayExplosion(Vec3 pos,int data){
         Level level = Minecraft.getInstance().level;
         int maxCount = 10;
-        int maxParticlePerCount = 10;
+        int maxParticlePerCount = 15;
         float maxVerticalSpeed = 5f;
         float maxHorizontalSpeed = maxVerticalSpeed / 4f;
         float maxFriction = 0.7f;
@@ -67,7 +67,7 @@ public class BossClientPackets {
                         .friction(maxFriction)
                         .size(size)
                         .color(1 + random.nextInt(40), 183 - random.nextInt(60), 165 + random.nextInt(60))
-                        .scalingOptions(3,0,60)
+                        .scalingOptions(3,0,50)
                         .build();
 
 
