@@ -11,7 +11,6 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
-import com.finderfeed.fdlib.systems.shake.PositionedScreenShake;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
 import com.finderfeed.fdlib.to_other_mod.BossUtil;
 import com.finderfeed.fdlib.to_other_mod.FDAnims;
@@ -30,7 +29,6 @@ import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -40,11 +38,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -156,14 +152,16 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 120;
+        return instance.tick >= 20;
     }
 
 
     public boolean rockfallAttack(AttackInstance instance){
+//        BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,30,0),new Vec3(0,-1,0),120);
+//        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
-        int height = 60;
+        int height = 35;
         int rad = 36;
         if (stage == 0){
             this.getSystem().startAnimation("ROCKFALL", AnimationTicker.builder(CHESED_ROCKFALL_CAST)
@@ -175,7 +173,7 @@ public class ChesedEntity extends FDLivingEntity {
 
                 FDUtil.sendParticles((ServerLevel) level(),ChesedRayOptions.builder()
                                 .width(1f)
-                                .end(pos.add(0,60,0))
+                                .end(pos.add(0,height,0))
                                 .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
                                 .lightningColor(1 + random.nextInt(40), 183 - random.nextInt(60), 165 + random.nextInt(60))
                                 .stay(8)
@@ -196,7 +194,9 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
-                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
+//                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
+                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
+                return true;
             }else if (tick >= 46){
                 instance.nextStage();
             }

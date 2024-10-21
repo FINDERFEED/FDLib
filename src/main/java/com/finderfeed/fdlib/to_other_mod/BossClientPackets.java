@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod;
 
+import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
@@ -31,6 +32,54 @@ public class BossClientPackets {
             }
             case BossUtil.ROCKFALL_PARTICLES -> {
                 rockfallParticles(pos,data);
+            }
+            case BossUtil.CHESED_RAY_EXPLOSION -> {
+                rayExplosion(pos,data);
+            }
+        }
+    }
+
+    public static void rayExplosion(Vec3 pos,int data){
+        Level level = Minecraft.getInstance().level;
+        int maxCount = 10;
+        int maxParticlePerCount = 10;
+        float maxVerticalSpeed = 5f;
+        float maxHorizontalSpeed = maxVerticalSpeed / 4f;
+        float maxFriction = 0.7f;
+        float maxSize = 2.5f;
+
+        for (int i = 0; i < maxCount;i++){
+
+            float p = i / 10f;
+            float angle = p * FDMathUtil.FPI * 2;
+            float rangle = FDMathUtil.FPI * 2f / maxCount / 2;
+            for (int g = 0; g < maxParticlePerCount;g++){
+                Vec3 dir = new Vec3(1,0,0).yRot(angle + random.nextFloat() * rangle * 2 - rangle);
+                Vec3 ppos = pos.add(dir.multiply(0.5,0.5,0.5));
+                float p2 = g / (float) (maxParticlePerCount - 1);
+
+                float size = maxSize / 2 * (1 - p2) + maxSize / 2;
+                float yspeed = maxVerticalSpeed * p2 + random.nextFloat() * maxVerticalSpeed / 5;
+                float zxspeedAddition = random.nextFloat() * maxHorizontalSpeed * 2 - maxHorizontalSpeed;
+                float zxspeed = (maxHorizontalSpeed + zxspeedAddition / 4) * p2;
+
+                BallParticleOptions options = BallParticleOptions.builder()
+                        .friction(maxFriction)
+                        .size(size)
+                        .color(1 + random.nextInt(40), 183 - random.nextInt(60), 165 + random.nextInt(60))
+                        .scalingOptions(3,0,60)
+                        .build();
+
+
+                level.addParticle(options,true,ppos.x,ppos.y,ppos.z,
+
+                        dir.x * zxspeed,
+                        -yspeed,
+                        dir.z * zxspeed
+                        );
+
+
+
             }
         }
     }
@@ -86,7 +135,7 @@ public class BossClientPackets {
 
                 BlockState state = level.getBlockState(ppos);
                 if (state.isAir()) continue;
-//                for (int g = 0;g < 1;g++){
+
 
                     Vec3 sppos = new Vec3(
                             c.x + random.nextFloat() * 2 - 1 - dir.x,

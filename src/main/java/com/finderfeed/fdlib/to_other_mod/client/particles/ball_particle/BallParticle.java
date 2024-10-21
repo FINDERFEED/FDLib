@@ -6,9 +6,11 @@ import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import org.jetbrains.annotations.Nullable;
@@ -63,6 +65,11 @@ public class BallParticle extends TextureSheetParticle {
     }
 
     @Override
+    protected int getLightColor(float pticks) {
+        return LightTexture.FULL_BRIGHT;
+    }
+
+    @Override
     public ParticleRenderType getRenderType() {
         return RENDER_TYPE;
     }
@@ -79,7 +86,6 @@ public class BallParticle extends TextureSheetParticle {
 
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
-            textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
             return bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 

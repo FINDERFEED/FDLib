@@ -15,9 +15,15 @@ public class BossUtil {
     public static final int CHESED_GET_BLOCKS_FROM_EARTH_EVENT = 1;
     public static final int RADIAL_EARTHQUAKE_PARTICLES = 2;
     public static final int ROCKFALL_PARTICLES = 3;
+    public static final int CHESED_RAY_EXPLOSION = 4;
 
 
 
+    public static void chesedRayExplosion(ServerLevel level,Vec3 pos,Vec3 direction,double radius){
+
+        posEvent(level,pos,CHESED_RAY_EXPLOSION,0,radius);
+
+    }
 
     public static void posEvent(ServerLevel level, Vec3 pos, int event,int data,double radius){
         PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new PosLevelEventPacket(pos,event,data));
