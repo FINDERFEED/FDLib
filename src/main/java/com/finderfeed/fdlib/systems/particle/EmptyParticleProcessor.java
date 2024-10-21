@@ -24,6 +24,7 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
     @Override
     public void processParticle(Particle particle) {
 
+
     }
 
     public static class Type implements ParticleProcessorType<EmptyParticleProcessor>{
