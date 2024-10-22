@@ -49,6 +49,7 @@ public class BallParticle extends TextureSheetParticle {
         this.gCol = options.color.g;
         this.bCol = options.color.b;
         this.alpha = options.color.a;
+        options.particleProcessor.init(this);
     }
 
     @Override

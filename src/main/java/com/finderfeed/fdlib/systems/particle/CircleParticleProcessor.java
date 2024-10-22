@@ -6,7 +6,9 @@ import com.finderfeed.fdlib.util.FDCodecs;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +20,20 @@ import org.joml.*;
 public class CircleParticleProcessor implements ParticleProcessor<CircleParticleProcessor> {
 
 
-    private Vec3 point;
-    private boolean forward;
-    private int circleCount;
+    private Vec3 point = null;
+    private boolean forward = true;
+    private boolean in = true;
+    private int circleCount = 1;
 
+    private Vec3 previousPoint = null;
     private Vec3 initialPoint = null;
     private Vector3f axis = null;
     private Vec3 oldSpeed = Vec3.ZERO;
 
-    public CircleParticleProcessor(Vec3 point,boolean forward,int circleCount){
+    public CircleParticleProcessor(Vec3 point,boolean forward,boolean in,int circleCount){
         this.point = point;
         this.forward = forward;
+        this.in = in;
         this.circleCount = circleCount;
     }
 
@@ -37,23 +42,44 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
         return FDParticleProcessors.CIRCLE_PARTICLE_PROCESSOR;
     }
 
+
+
+    @Override
+    public void init(Particle particle) {
+        initialPoint = new Vec3(particle.x,particle.y,particle.z);
+        Vec3 b = initialPoint.subtract(point);
+        Vec3 left = b.cross(new Vec3(0,1,0));
+        Vec3 axis = left.cross(b);
+        this.axis = new Vector3f((float)axis.x,(float)axis.y,(float)axis.z).normalize();
+        if (!in){
+            particle.setPos(point.x,point.y,point.z);
+            particle.xo = point.x;
+            particle.yo = point.y;
+            particle.zo = point.z;
+            previousPoint = point;
+        }else{
+            previousPoint = initialPoint;
+        }
+    }
+
+
     @Override
     public void processParticle(Particle particle) {
-        if (initialPoint == null){
-            initialPoint = new Vec3(particle.x,particle.y,particle.z);
-            Vec3 b = initialPoint.subtract(point);
-            Vec3 left = b.cross(new Vec3(0,1,0));
-            Vec3 axis = left.cross(b);
-            this.axis = new Vector3f((float)axis.x,(float)axis.y,(float)axis.z);
 
-        }
         if (particle.age > particle.lifetime) return;
 
         float p2 = particle.age / (float) particle.lifetime;
 
         double len = initialPoint.subtract(point).length();
 
-        double targetRad = p2 * len;
+
+        double targetRad;
+
+        if (in){
+            targetRad = len * (1 - p2);
+        }else{
+            targetRad = len * p2;
+        }
 
         float fullAngle = FDMathUtil.FPI * 2 * circleCount;
 
@@ -75,12 +101,15 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
                 p.y * targetRad,
                 p.z * targetRad
         );
+        Minecraft.getInstance().level.addParticle(ParticleTypes.END_ROD,true,targetPoint.x,targetPoint.y,targetPoint.z,0,0,0);
 
-        Vec3 speed = new Vec3(particle.x,particle.y,particle.z).subtract(targetPoint);
+        Vec3 speed = targetPoint.subtract(previousPoint);
 
-        particle.xd -= oldSpeed.x / (particle.friction);
-        particle.yd -= oldSpeed.y / (particle.friction);
-        particle.zd -= oldSpeed.z / (particle.friction);
+        previousPoint = targetPoint;
+
+        particle.xd -= oldSpeed.x;
+        particle.yd -= oldSpeed.y;
+        particle.zd -= oldSpeed.z;
 
         particle.xd += speed.x;
         particle.yd += speed.y;
@@ -90,11 +119,13 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
     }
 
 
+
     public static class Type implements ParticleProcessorType<CircleParticleProcessor>{
 
         public static final StreamCodec<FriendlyByteBuf,CircleParticleProcessor> STREAM_CODEC = StreamCodec.composite(
                 FDByteBufCodecs.VEC3,v->v.point,
                 ByteBufCodecs.BOOL,v->v.forward,
+                ByteBufCodecs.BOOL,v->v.in,
                 ByteBufCodecs.INT,v->v.circleCount,
                 CircleParticleProcessor::new
         );
@@ -102,6 +133,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
         public static final Codec<CircleParticleProcessor> CODEC = RecordCodecBuilder.create(p->p.group(
                 FDCodecs.VEC3.fieldOf("point").forGetter(v->v.point),
                 Codec.BOOL.fieldOf("forward").forGetter(v->v.forward),
+                Codec.BOOL.fieldOf("in").forGetter(v->v.in),
                 Codec.INT.fieldOf("circleCount").forGetter(v->v.circleCount)
         ).apply(p,CircleParticleProcessor::new));
 

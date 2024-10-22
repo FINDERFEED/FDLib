@@ -27,6 +27,11 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
 
     }
 
+    @Override
+    public void init(Particle particle) {
+
+    }
+
     public static class Type implements ParticleProcessorType<EmptyParticleProcessor>{
 
         public static final StreamCodec<FriendlyByteBuf,EmptyParticleProcessor> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, EmptyParticleProcessor>() {

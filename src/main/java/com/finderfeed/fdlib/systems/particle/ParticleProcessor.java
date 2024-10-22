@@ -65,6 +65,8 @@ public interface ParticleProcessor<T extends ParticleProcessor<T>> {
 
     void processParticle(Particle particle);
 
+    void init(Particle particle);
+
     private static <T extends ParticleProcessor<T>> void hackyEncode(FriendlyByteBuf buf,ParticleProcessor<?> processor,StreamCodec<FriendlyByteBuf,T> encoder){
         encoder.encode(buf,(T)processor);
     }

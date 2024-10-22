@@ -9,6 +9,8 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
+import com.finderfeed.fdlib.systems.particle.CircleParticleProcessor;
+import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
@@ -18,6 +20,7 @@ import com.finderfeed.fdlib.to_other_mod.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
@@ -158,7 +161,19 @@ public class ChesedEntity extends FDLivingEntity {
 
     public boolean rockfallAttack(AttackInstance instance){
 //        BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,30,0),new Vec3(0,-1,0),120);
-//        if (true) return true;
+
+        ((ServerLevel)level()).sendParticles(BallParticleOptions.builder()
+                        .particleProcessor(
+
+                                new CircleParticleProcessor(this.position().add(0,5,0),false,false,3)
+
+                        )
+                        .scalingOptions(0,60,0)
+                        .size(1)
+                .build(),this.position().x + 5,this.position().y,this.position().z + 5,1,0,0.05,0,0);
+
+
+        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 35;

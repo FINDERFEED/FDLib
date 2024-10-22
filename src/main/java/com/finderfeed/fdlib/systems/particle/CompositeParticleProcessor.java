@@ -34,6 +34,13 @@ public class CompositeParticleProcessor implements ParticleProcessor<CompositePa
         }
     }
 
+    @Override
+    public void init(Particle particle) {
+        for (ParticleProcessor<?> particleProcessor : processors){
+            particleProcessor.init(particle);
+        }
+    }
+
     public static class Type implements ParticleProcessorType<CompositeParticleProcessor> {
 
         private static Codec<List<ParticleProcessor<?>>> PARTICLE_PROCESSOR_LIST = Codec.list(ParticleProcessor.CODEC).fieldOf("processors").codec();
