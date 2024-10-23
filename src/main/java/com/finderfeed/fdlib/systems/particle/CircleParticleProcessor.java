@@ -101,7 +101,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
                 p.y * targetRad,
                 p.z * targetRad
         );
-        Minecraft.getInstance().level.addParticle(ParticleTypes.END_ROD,true,targetPoint.x,targetPoint.y,targetPoint.z,0,0,0);
+//        Minecraft.getInstance().level.addParticle(ParticleTypes.END_ROD,true,targetPoint.x,targetPoint.y,targetPoint.z,0,0,0);
 
         Vec3 speed = targetPoint.subtract(previousPoint);
 

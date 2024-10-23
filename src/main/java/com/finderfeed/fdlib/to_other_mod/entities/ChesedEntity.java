@@ -11,6 +11,7 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.systems.particle.CircleParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
+import com.finderfeed.fdlib.systems.particle.SetParticleSpeedProcessor;
 import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
@@ -160,20 +161,6 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean rockfallAttack(AttackInstance instance){
-//        BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,30,0),new Vec3(0,-1,0),120);
-
-        ((ServerLevel)level()).sendParticles(BallParticleOptions.builder()
-                        .particleProcessor(
-
-                                new CircleParticleProcessor(this.position().add(0,5,0),false,false,3)
-
-                        )
-                        .scalingOptions(0,60,0)
-                        .size(1)
-                .build(),this.position().x + 5,this.position().y,this.position().z + 5,1,0,0.05,0,0);
-
-
-        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 35;
@@ -183,14 +170,43 @@ public class ChesedEntity extends FDLivingEntity {
                             .setToNullTransitionTime(0)
                     .build());
 
-            if (tick == 45){
+            if (tick > 10 && tick < 30) {
+                int count = 3;
+
+                float angle = FDMathUtil.FPI * 2 / count;
+
+                Vec3 center = this.position();
+
+                for (int i = 0; i < count; i++) {
+
+                    float a = angle * i;
+
+                    Vec3 v = new Vec3(2,0,0).yRot(a);
+                    Vec3 ppos = this.position().add(v);
+
+
+                    ((ServerLevel) level()).sendParticles(BallParticleOptions.builder()
+                                    .size(0.5f)
+                                    .color(100 + random.nextInt(50), 255, 255)
+                                    .particleProcessor(new CompositeParticleProcessor(
+                                            new CircleParticleProcessor(center,true,true,2),
+                                            new SetParticleSpeedProcessor(new Vec3(0,0.2,0))
+                                    ))
+                                    .scalingOptions(10,10,0)
+                            .build(),ppos.x,ppos.y,ppos.z,1,0,0,0,0);
+
+
+
+
+                }
+            }else if (tick == 45){
                 Vec3 pos = this.position();
 
                 FDUtil.sendParticles((ServerLevel) level(),ChesedRayOptions.builder()
                                 .width(1f)
                                 .end(pos.add(0,height,0))
-                                .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
-                                .lightningColor(1 + random.nextInt(40), 183 - random.nextInt(60), 165 + random.nextInt(60))
+                                .lightningColor(90, 180, 255)
+                                .color(100, 255, 255)
                                 .stay(8)
                                 .in(2)
                                 .out(10)
@@ -209,7 +225,7 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
-                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
+//                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
                 BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
                 return true;
             }else if (tick >= 46){

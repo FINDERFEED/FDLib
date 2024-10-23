@@ -16,17 +16,17 @@ public class FDByteBufCodecs {
         @Override
         public Vec3 decode(ByteBuf buf) {
             return new Vec3(
-                    buf.readDouble(),
-                    buf.readDouble(),
-                    buf.readDouble()
+                    buf.readFloat(),
+                    buf.readFloat(),
+                    buf.readFloat()
             );
         }
 
         @Override
         public void encode(ByteBuf buf, Vec3 vec3) {
-            buf.writeDouble(vec3.x);
-            buf.writeDouble(vec3.y);
-            buf.writeDouble(vec3.z);
+            buf.writeFloat((float)vec3.x);
+            buf.writeFloat((float)vec3.y);
+            buf.writeFloat((float)vec3.z);
         }
     };
 

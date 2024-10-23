@@ -55,7 +55,7 @@ public class BossClientPackets {
             float rangle = FDMathUtil.FPI * 2f / maxCount / 2;
             for (int g = 0; g < maxParticlePerCount;g++){
                 Vec3 dir = new Vec3(1,0,0).yRot(angle + random.nextFloat() * rangle * 2 - rangle);
-                Vec3 ppos = pos.add(dir.multiply(0.5,0.5,0.5));
+                Vec3 ppos = pos.add(dir.multiply(1.5,1.5,1.5));
                 float p2 = g / (float) (maxParticlePerCount - 1);
 
                 float size = maxSize / 2 * (1 - p2) + maxSize / 2;
@@ -66,7 +66,7 @@ public class BossClientPackets {
                 BallParticleOptions options = BallParticleOptions.builder()
                         .friction(maxFriction)
                         .size(size)
-                        .color(1 + random.nextInt(40), 183 - random.nextInt(60), 165 + random.nextInt(60))
+                        .color(100 + random.nextInt(50), 255, 255)
                         .scalingOptions(3,0,50)
                         .build();
 
