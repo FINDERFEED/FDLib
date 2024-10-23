@@ -1,0 +1,8 @@
+{
+  "ray_attack": {
+    "sounds": [ "fdlib:ray_attack" ]
+  },
+  "rockfall": {
+    "sounds": [ "fdlib:rockfall" ]
+  }
+}
