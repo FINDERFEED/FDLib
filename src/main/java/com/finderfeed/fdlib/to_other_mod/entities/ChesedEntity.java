@@ -15,10 +15,7 @@ import com.finderfeed.fdlib.systems.particle.SetParticleSpeedProcessor;
 import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
-import com.finderfeed.fdlib.to_other_mod.BossUtil;
-import com.finderfeed.fdlib.to_other_mod.FDAnims;
-import com.finderfeed.fdlib.to_other_mod.BossEntities;
-import com.finderfeed.fdlib.to_other_mod.FDModels;
+import com.finderfeed.fdlib.to_other_mod.*;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
@@ -42,6 +39,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -178,12 +176,9 @@ public class ChesedEntity extends FDLivingEntity {
                 Vec3 center = this.position();
 
                 for (int i = 0; i < count; i++) {
-
                     float a = angle * i;
-
                     Vec3 v = new Vec3(2,0,0).yRot(a);
                     Vec3 ppos = this.position().add(v);
-
 
                     ((ServerLevel) level()).sendParticles(BallParticleOptions.builder()
                                     .size(0.5f)
@@ -194,9 +189,6 @@ public class ChesedEntity extends FDLivingEntity {
                                     ))
                                     .scalingOptions(10,10,0)
                             .build(),ppos.x,ppos.y,ppos.z,1,0,0,0,0);
-
-
-
 
                 }
             }else if (tick == 45){
@@ -225,15 +217,17 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
-//                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
+                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
                 BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
-                return true;
+                ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.CHESED_RAY.get(), SoundSource.HOSTILE,100f,1f);
+                ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.ROCKFALL.get(), SoundSource.AMBIENT,100f,1f);
             }else if (tick >= 46){
+
                 instance.nextStage();
             }
         }else if (stage == 1){
 
-            float duration = 200;
+            float duration = 400;
 
             this.spawnStonesAround(4,rad, this.position().add(0,height,0),true,false,FDEasings::easeOut);
 
@@ -371,9 +365,13 @@ public class ChesedEntity extends FDLivingEntity {
                     blockAttackProjectiles.add(projectile);
                     level().addFreshEntity(projectile);
                 }
+
+
             }
             return false;
         }else{
+
+
             if (attack.tick == 13){
                 BossUtil.posEvent((ServerLevel) level(),this.position().add(0,0.05,0),BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT,0,60);
             }

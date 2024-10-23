@@ -3,11 +3,8 @@ package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.init.FDEDataSerializers;
 import com.finderfeed.fdlib.init.FDParticles;
-import com.finderfeed.fdlib.to_other_mod.FDAnims;
+import com.finderfeed.fdlib.to_other_mod.*;
 import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
-import com.finderfeed.fdlib.to_other_mod.BossEntities;
-import com.finderfeed.fdlib.to_other_mod.FDItems;
-import com.finderfeed.fdlib.to_other_mod.FDModels;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -33,6 +30,7 @@ public class FDLib {
     public FDLib(IEventBus bus, ModContainer modContainer) {
         FDItems.ITEMS.register(bus);
         FDModels.INFOS.register(bus);
+        BossSounds.SOUNDS.register(bus);
         FDAnims.ANIMATIONS.register(bus);
         BossEntities.ENTITIES.register(bus);
         FDParticles.PARTICLES.register(bus);

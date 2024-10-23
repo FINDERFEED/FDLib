@@ -8,6 +8,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import org.joml.AxisAngle4f;
@@ -102,6 +103,12 @@ public class SonicParticle extends TextureSheetParticle {
         this.currentQuadSize = Mth.clamp(this.currentQuadSize + this.currentResizeSpeed,min,max);
         this.currentResizeSpeed += options.resizeAcceleration;
 
+    }
+
+
+    @Override
+    protected int getLightColor(float p_107249_) {
+        return LightTexture.FULL_BRIGHT;
     }
 
     @Override
