@@ -16,6 +16,7 @@ public class BossSounds {
 
     public static final Supplier<SoundEvent> CHESED_RAY = SOUNDS.register("ray_attack",()->SoundEvent.createVariableRangeEvent(ResourceLocation.tryBuild(FDLib.MOD_ID,"ray_attack")));
     public static final Supplier<SoundEvent> ROCKFALL = SOUNDS.register("rockfall",()->SoundEvent.createVariableRangeEvent(ResourceLocation.tryBuild(FDLib.MOD_ID,"rockfall")));
+    public static final Supplier<SoundEvent> RUMBLING = SOUNDS.register("rumbling",()->SoundEvent.createVariableRangeEvent(ResourceLocation.tryBuild(FDLib.MOD_ID,"rumbling")));
 
 
 }

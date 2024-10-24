@@ -4,5 +4,8 @@
   },
   "rockfall": {
     "sounds": [ "fdlib:rockfall" ]
+  },
+  "rumbling": {
+    "sounds": [ "fdlib:rumbling" ]
   }
 }

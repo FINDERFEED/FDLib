@@ -5,7 +5,9 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -16,6 +18,10 @@ public class FDClientPacketExecutables {
     public static void movePlayer(Vec3 movement){
         Player player = Minecraft.getInstance().player;
         player.setDeltaMovement(movement);
+    }
+
+    public static void playsoundInEars(SoundEvent event){
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(event,1));
     }
 
     public static void entityStartAnimationPacket(int entityId, String tickerName, AnimationTicker ticker){

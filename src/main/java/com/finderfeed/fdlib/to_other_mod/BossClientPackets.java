@@ -105,7 +105,7 @@ public class BossClientPackets {
                         tpos.z + v.z + random.nextFloat() - 0.5,
 
                         random.nextFloat() * 0.025 -  0.0125,
-                        -0.05 - random.nextFloat() * 0.05,
+                        -0.015 - random.nextFloat() * 0.015,
                         random.nextFloat() * 0.025 -  0.0125
                         );
 

@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.entities;
 
 import com.finderfeed.fdlib.FDHelpers;
+import com.finderfeed.fdlib.network.lib_packets.PlaySoundInEarsPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
@@ -49,6 +50,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
@@ -154,14 +156,15 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling...");
         }
-        return instance.tick >= 20;
+        return instance.tick >= 80;
     }
 
 
     public boolean rockfallAttack(AttackInstance instance){
+//        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
-        int height = 35;
+        int height = 32;
         int rad = 36;
         if (stage == 0){
             this.getSystem().startAnimation("ROCKFALL", AnimationTicker.builder(CHESED_ROCKFALL_CAST)
@@ -220,7 +223,8 @@ public class ChesedEntity extends FDLivingEntity {
                 BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
                 BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
                 ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.CHESED_RAY.get(), SoundSource.HOSTILE,100f,1f);
-                ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.ROCKFALL.get(), SoundSource.AMBIENT,100f,1f);
+                PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.ROCKFALL.get()));
+                PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.RUMBLING.get()));
             }else if (tick >= 46){
 
                 instance.nextStage();
@@ -272,7 +276,14 @@ public class ChesedEntity extends FDLivingEntity {
 
             Vec3 p = center.add(v);
 
-            ChesedFallingBlock.summon(level(), Blocks.STONE.defaultBlockState(),p);
+            BlockState state;
+            if (level().random.nextFloat() > 0.5){
+                state = Blocks.SCULK.defaultBlockState();
+            }else{
+                state = Blocks.DEEPSLATE.defaultBlockState();
+            }
+
+            ChesedFallingBlock.summon(level(), state,p);
         }
     }
 
