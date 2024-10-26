@@ -10,23 +10,29 @@ public class FDTagHelper {
 
 
     public static void saveVec3List(CompoundTag tag,String name, List<Vec3> vecs){
-        tag.putInt(name + "_size",vecs.size());
+        CompoundTag vec3list = new CompoundTag();
+
+        vec3list.putInt(name + "_size",vecs.size());
         for (int i = 0; i < vecs.size();i++){
             Vec3 v = vecs.get(i);
-            tag.putDouble(name + "_x_" + i,v.x);
-            tag.putDouble(name + "_y_" + i,v.y);
-            tag.putDouble(name + "_z_" + i,v.z);
+            vec3list.putDouble(name + "_x_" + i,v.x);
+            vec3list.putDouble(name + "_y_" + i,v.y);
+            vec3list.putDouble(name + "_z_" + i,v.z);
         }
+
+        tag.put(name,vec3list);
     }
 
     public static List<Vec3> loadVec3List(CompoundTag tag,String name){
         List<Vec3> l = new ArrayList<>();
-        int len = tag.getInt(name + "_size");
+        if (!tag.contains(name)) return new ArrayList<>();
+        CompoundTag vec3list = tag.getCompound(name);
+        int len = vec3list.getInt(name + "_size");
         for (int i = 0; i < len;i++){
             l.add(new Vec3(
-                    tag.getDouble(name + "_x_" + i),
-                    tag.getDouble(name + "_y_" + i),
-                    tag.getDouble(name + "_z_" + i)
+                    vec3list.getDouble(name + "_x_" + i),
+                    vec3list.getDouble(name + "_y_" + i),
+                    vec3list.getDouble(name + "_z_" + i)
             ));
         }
         return l;

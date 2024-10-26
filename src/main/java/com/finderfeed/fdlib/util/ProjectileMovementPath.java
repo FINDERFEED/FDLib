@@ -50,8 +50,9 @@ public class ProjectileMovementPath implements AutoSerializable {
         this.cycle = cycle;
     }
 
-    public void addPos(Vec3 pos){
+    public ProjectileMovementPath addPos(Vec3 pos){
         this.positions.add(pos);
+        return this;
     }
 
     public void tick(Entity entity){

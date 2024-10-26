@@ -34,9 +34,13 @@ public class Animation {
 
 
     public void applyAnimation(AnimationContext context,FDModel model,float elapsedTime,float partialTicks){
-        for (var entry : datas.entrySet()){
-            BoneAnimationData data = entry.getValue();
-            data.apply(model,context,elapsedTime,partialTicks);
+        try {
+            for (var entry : datas.entrySet()) {
+                BoneAnimationData data = entry.getValue();
+                data.apply(model, context, elapsedTime, partialTicks);
+            }
+        }catch (Exception e){
+            throw new RuntimeException("Error while applying animation: " + this.getName(),e);
         }
     }
 

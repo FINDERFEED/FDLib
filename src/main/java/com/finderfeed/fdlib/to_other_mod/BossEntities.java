@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.to_other_mod;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.electric_sphere.ChesedElectricSphereEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
 import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
@@ -56,6 +57,12 @@ public class BossEntities {
             .sized(1f,1f)
             .build("flying_block"));
 
+    public static final Supplier<EntityType<ChesedElectricSphereEntity>> CHESED_ELECTRIC_SPHERE = ENTITIES.register("chesed_electric_sphere",()->EntityType.Builder.of(
+            ChesedElectricSphereEntity::new, MobCategory.MISC
+    )
+            .sized(1f,1f)
+            .build("electric_sphere"));
+
     public static final Supplier<EntityType<RadialEarthquakeEntity>> RADIAL_EARTHQUAKE = ENTITIES.register("radial_earthquake",()->EntityType.Builder.of(
             RadialEarthquakeEntity::new, MobCategory.MISC
     )
@@ -66,6 +73,7 @@ public class BossEntities {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event){
         event.put(CHESED.get(), LivingEntity.createLivingAttributes().build());
+        event.put(CHESED_ELECTRIC_SPHERE.get(), LivingEntity.createLivingAttributes().build());
     }
 
 

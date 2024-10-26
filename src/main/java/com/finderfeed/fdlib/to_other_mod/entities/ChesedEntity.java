@@ -24,6 +24,7 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.Ches
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.electric_sphere.ChesedElectricSphereEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
 import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
@@ -60,7 +61,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.finderfeed.fdlib.to_other_mod.FDAnims.*;
+import static com.finderfeed.fdlib.to_other_mod.BossAnims.*;
 
 public class ChesedEntity extends FDLivingEntity {
 
@@ -77,15 +78,18 @@ public class ChesedEntity extends FDLivingEntity {
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
         super(type, level);
         if (serverModel == null) {
-            serverModel = new FDModel(FDModels.CHESED.get());
+            serverModel = new FDModel(BossModels.CHESED.get());
         }
         if (clientModel == null){
-            clientModel = new FDModel(FDModels.CHESED.get());
+            clientModel = new FDModel(BossModels.CHESED.get());
         }
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
-                    .addAttack(-1, AttackOptions.builder()
+                    .addAttack(-2, AttackOptions.builder()
                             .addAttack("nothing1",this::doNothing)
+                            .build())
+                    .addAttack(-1, AttackOptions.builder()
+                            .addAttack("electricSphereAttack",this::electricSphereAttack)
                             .build())
                     .addAttack(0, AttackOptions.builder()
                             .addAttack("rockfall",this::rockfallAttack)
@@ -154,14 +158,56 @@ public class ChesedEntity extends FDLivingEntity {
     public boolean doNothing(AttackInstance instance){
 
         if (instance.tick % 20 == 0) {
-            System.out.println("Idling...");
+            System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 80;
+        return instance.tick >= 30;
+    }
+
+    public boolean electricSphereAttack(AttackInstance instance){
+
+        var tick = instance.tick;
+        var stage = instance.stage;
+
+        if (stage == 0){
+
+            if (tick % 10 == 0){
+                this.spawnSpheresAround(25,tick / 10f * FDMathUtil.FPI / 9);
+            }
+
+
+            if (tick >= 200){
+                instance.nextStage();
+                return true;
+            }
+            return false;
+        }
+
+        return false;
+    }
+
+
+    private void spawnSpheresAround(int count,float angleOffset){
+
+        float angle = FDMathUtil.FPI * 2 / count;
+
+        for (int i = 0; i < count;i++){
+
+            Vec3 dir = new Vec3(1,0,0).yRot(i * angle + angleOffset);
+
+            Vec3 sppos = this.position().add(0,1,0).add(dir);
+            Vec3 endPos = sppos.add(dir.multiply(35,35,35));
+            ProjectileMovementPath path = new ProjectileMovementPath(100,false)
+                    .addPos(sppos)
+                    .addPos(endPos);
+
+            ChesedElectricSphereEntity sphereEntity = ChesedElectricSphereEntity.summon(level(),10,path);
+
+        }
     }
 
 
     public boolean rockfallAttack(AttackInstance instance){
-//        if (true) return true;
+        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 32;
@@ -546,7 +592,7 @@ public class ChesedEntity extends FDLivingEntity {
         oldRollPos = pos;
 
 
-        int rollTime = FDAnims.CHESED_ROLL.get().getAnimTime() + FDAnims.CHESED_ROLL_UP.get().getAnimTime();
+        int rollTime = BossAnims.CHESED_ROLL.get().getAnimTime() + BossAnims.CHESED_ROLL_UP.get().getAnimTime();
 
         if (attackTime >= rollTime){
             this.setRolling(false);

@@ -116,6 +116,7 @@ public class TagSerializationHelper {
                     }
                 }
                 serializable.autoLoad(t);
+                field.set(object,serializable);
             } else {
                 Class<?> clazz = field.getType();
                 if (FDTagDeserializers.DESERIALIZERS.containsKey(clazz)){

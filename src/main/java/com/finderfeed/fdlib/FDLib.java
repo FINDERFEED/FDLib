@@ -29,9 +29,9 @@ public class FDLib {
 
     public FDLib(IEventBus bus, ModContainer modContainer) {
         FDItems.ITEMS.register(bus);
-        FDModels.INFOS.register(bus);
+        BossModels.INFOS.register(bus);
         BossSounds.SOUNDS.register(bus);
-        FDAnims.ANIMATIONS.register(bus);
+        BossAnims.ANIMATIONS.register(bus);
         BossEntities.ENTITIES.register(bus);
         FDParticles.PARTICLES.register(bus);
         BossParticles.PARTICLES.register(bus);

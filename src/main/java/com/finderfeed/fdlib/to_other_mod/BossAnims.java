@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class FDAnims {
+public class BossAnims {
 
 
     public static DeferredRegister<Animation> ANIMATIONS = DeferredRegister.create(FDRegistries.ANIMATIONS, FDLib.MOD_ID);
@@ -41,6 +41,12 @@ public class FDAnims {
     });
     public static DeferredHolder<Animation,Animation> CHESED_ROCKFALL_CAST = ANIMATIONS.register("chesed_rockfall_cast", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"chesed"));
+    });
+    public static DeferredHolder<Animation,Animation> ELECTRIC_ORB_IDLE = ANIMATIONS.register("electric_orb_idle", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"electric_orb"));
+    });
+    public static DeferredHolder<Animation,Animation> ELECTRIC_ORB_SPAWN = ANIMATIONS.register("electric_orb_spawn", ()->{
+        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"electric_orb"));
     });
 
 }

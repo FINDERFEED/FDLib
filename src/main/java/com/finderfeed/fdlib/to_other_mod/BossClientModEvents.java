@@ -37,12 +37,18 @@ public class BossClientModEvents {
         event.registerEntityRenderer(BossEntities.CHESED.get(),
                 FDEntityRendererBuilder.builder()
                         .addLayer(FDRenderLayerOptions.builder()
-                                .model(FDModels.CHESED)
+                                .model(BossModels.CHESED)
                                 .renderType(RenderType.entityCutout(FDLib.location("textures/entities/chesed.png")))
                                 .build()
                         )
                         .build()
         );
+        event.registerEntityRenderer(BossEntities.CHESED_ELECTRIC_SPHERE.get(),FDEntityRendererBuilder.builder()
+                        .addLayer(FDRenderLayerOptions.builder()
+                                .model(BossModels.CHESED_ELECTRIC_SPHERE)
+                                .renderType(RenderType.entityCutout(FDLib.location("textures/entities/electric_orb.png")))
+                                .build())
+                .build());
         event.registerEntityRenderer(BossEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);
         event.registerEntityRenderer(BossEntities.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
         event.registerEntityRenderer(BossEntities.CHESED_FALLING_BLOCK.get(), ChesedFallingBlockRenderer::new);
