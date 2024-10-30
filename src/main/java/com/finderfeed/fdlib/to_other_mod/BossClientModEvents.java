@@ -14,6 +14,7 @@ import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBloc
 import com.finderfeed.fdlib.to_other_mod.projectiles.renderers.BlockProjectileRenderer;
 import com.finderfeed.fdlib.util.client.NullEntityRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -46,7 +47,13 @@ public class BossClientModEvents {
         event.registerEntityRenderer(BossEntities.CHESED_ELECTRIC_SPHERE.get(),FDEntityRendererBuilder.builder()
                         .addLayer(FDRenderLayerOptions.builder()
                                 .model(BossModels.CHESED_ELECTRIC_SPHERE)
-                                .renderType(RenderType.entityCutout(FDLib.location("textures/entities/electric_orb.png")))
+                                .transformation((entity,matrices,pticks)->{
+                                    float time = entity.tickCount + pticks;
+                                    float md = 16;
+                                    float scale = Mth.clamp(time / 20f,0,1) * ((float)Math.sin(time * 2) / md + (1 - 1 / md));
+                                    matrices.scale(scale,scale,scale);
+                                })
+                                .renderType(RenderType.entityTranslucentCull(FDLib.location("textures/entities/electric_orb.png")))
                                 .build())
                 .build());
         event.registerEntityRenderer(BossEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);

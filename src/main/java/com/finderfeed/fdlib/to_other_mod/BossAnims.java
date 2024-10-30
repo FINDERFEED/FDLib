@@ -45,8 +45,4 @@ public class BossAnims {
     public static DeferredHolder<Animation,Animation> ELECTRIC_ORB_IDLE = ANIMATIONS.register("electric_orb_idle", ()->{
         return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"electric_orb"));
     });
-    public static DeferredHolder<Animation,Animation> ELECTRIC_ORB_SPAWN = ANIMATIONS.register("electric_orb_spawn", ()->{
-        return new Animation(ResourceLocation.tryBuild(FDLib.MOD_ID,"electric_orb"));
-    });
-
 }

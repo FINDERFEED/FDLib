@@ -7,8 +7,11 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.F
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDLivingEntity;
 import com.finderfeed.fdlib.to_other_mod.BossAnims;
 import com.finderfeed.fdlib.to_other_mod.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
+import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
@@ -16,6 +19,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.AxisAngle4f;
+import org.joml.Math;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class ChesedElectricSphereEntity extends FDLivingEntity implements AutoSerializable {
 
@@ -56,10 +63,37 @@ public class ChesedElectricSphereEntity extends FDLivingEntity implements AutoSe
             }
             this.detectEntitiesAndExplode();
         }else{
-            this.getSystem().startAnimation("SPAWN", AnimationTicker.builder(BossAnims.ELECTRIC_ORB_SPAWN.get()).build());
+            this.idleParticles();
             this.getSystem().startAnimation("IDLE", AnimationTicker.builder(BossAnims.ELECTRIC_ORB_IDLE.get()).build());
         }
     }
+
+
+    private void idleParticles(){
+
+        if (tickCount < 10) return;
+        for (int i = 0; i < 1;i++) {
+            float offs = 0.25f;
+            Vec3 p1 = this.position().add( random.nextFloat() * 0.025 - 0.0125,offs, random.nextFloat() * 0.025 - 0.0125);
+            Vec3 p2 = this.position().add(0,this.getBbHeight() - offs,0);
+
+            Vec3 sp = this.getDeltaMovement();
+            level().addParticle(ArcLightningOptions.builder(BossParticles.ARC_LIGHTNING.get())
+                            .end(p2.x, p2.y, p2.z)
+                            .endSpeed(sp)
+                            .lifetime(2)
+                            .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
+                            .lightningSpread(0.25f)
+                            .width(0.1f)
+                            .segments(6)
+                            .circleOffset(0.25f)
+                            .build(),
+                    true, p1.x, p1.y, p1.z, sp.x, sp.y, sp.z
+            );
+        }
+
+    }
+
 
     private void detectEntitiesAndExplode(){
         var list = level().getEntitiesOfClass(LivingEntity.class,this.getBoundingBox(),living->{

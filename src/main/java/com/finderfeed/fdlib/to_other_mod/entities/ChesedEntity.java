@@ -160,7 +160,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 30;
+        return instance.tick >= 60;
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
