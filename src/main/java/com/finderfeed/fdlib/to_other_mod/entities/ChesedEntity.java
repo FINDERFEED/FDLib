@@ -66,6 +66,7 @@ import static com.finderfeed.fdlib.to_other_mod.BossAnims.*;
 public class ChesedEntity extends FDLivingEntity {
 
     public static EntityDataAccessor<Boolean> IS_ROLLING = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
+    public static EntityDataAccessor<Boolean> IS_LAUNCHING_ORBS = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
 
 
     public AttackChain chain;
@@ -153,6 +154,51 @@ public class ChesedEntity extends FDLivingEntity {
                 );
             }
         }
+
+
+        if (this.entityData.get(IS_LAUNCHING_ORBS)){
+
+            for (int i = 0; i <= 30;i++){
+                this.spawnOrbLaunchingParticle();
+            }
+
+        }
+
+    }
+
+    private void spawnOrbLaunchingParticle(){
+
+
+        Vec3 direction = new Vec3(1,0,0).yRot(random.nextFloat() * FDMathUtil.FPI * 2);
+
+        float rndHeight = random.nextFloat();
+        float heightMd = FDEasings.easeOut(1 - Math.abs(rndHeight * 2 - 1)) * 0.5f + 0.5f;
+
+        rndHeight *= 3;
+
+        Vec3 basePos = this.position().add(
+                0,
+                rndHeight,
+                0
+        );
+
+        Vec3 rotateFromPos = this.position().add(
+                direction.x * heightMd * 3,
+                rndHeight,
+                direction.z * heightMd * 3
+        );
+
+        BallParticleOptions options = BallParticleOptions.builder()
+                .particleProcessor(new CircleParticleProcessor(
+                        basePos,true,true,2
+                ))
+                .color(1 + random.nextInt(40), 183 + random.nextInt(60), 165 + random.nextInt(60))
+                .size(0.4f)
+                .scalingOptions(2,20,10)
+                .build();
+
+        level().addParticle(options,true,rotateFromPos.x,rotateFromPos.y,rotateFromPos.z,0,0,0);
+
     }
 
     public boolean doNothing(AttackInstance instance){
@@ -160,15 +206,54 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 60;
+        return instance.tick >= 20;
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
 
+        this.entityData.set(IS_LAUNCHING_ORBS,true);
+
         var tick = instance.tick;
         var stage = instance.stage;
 
-        if (stage == 0){
+        if (stage == 0) {
+
+            if (tick % 10 == 0) {
+                for (int i = 0; i < 4; i++) {
+                    Vec3 v = new Vec3(1, 0, 0).yRot(i * FDMathUtil.FPI / 2 + tick / 2f * FDMathUtil.FPI / 8);
+                    this.shootSphere(v);
+                }
+            }
+
+            if (tick > 200){
+                instance.nextStage();
+            }
+
+        }else if (stage == 1) {
+
+            if (tick % 15 == 0){
+
+                int amountOnArc = 5;
+
+                float rndOffs = random.nextFloat();
+
+                for (int i = -amountOnArc;i <= amountOnArc;i++){
+
+                    Vec3 v = new Vec3(1,0,0)
+                            .yRot(i / (float) amountOnArc * FDMathUtil.FPI / 8 + rndOffs * FDMathUtil.FPI);
+
+                    this.shootSphere(v,80);
+                    this.shootSphere(v.reverse(),80);
+
+                }
+
+
+            }
+
+            if (tick > 200){
+                instance.nextStage();
+            }
+        }else{
 
             if (tick % 10 == 0){
                 this.spawnSpheresAround(25,tick / 10f * FDMathUtil.FPI / 9);
@@ -176,7 +261,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
             if (tick >= 200){
-                instance.nextStage();
+                this.entityData.set(IS_LAUNCHING_ORBS,false);
                 return true;
             }
             return false;
@@ -194,15 +279,22 @@ public class ChesedEntity extends FDLivingEntity {
 
             Vec3 dir = new Vec3(1,0,0).yRot(i * angle + angleOffset);
 
-            Vec3 sppos = this.position().add(0,1,0).add(dir);
-            Vec3 endPos = sppos.add(dir.multiply(35,35,35));
-            ProjectileMovementPath path = new ProjectileMovementPath(100,false)
-                    .addPos(sppos)
-                    .addPos(endPos);
-
-            ChesedElectricSphereEntity sphereEntity = ChesedElectricSphereEntity.summon(level(),10,path);
-
+            this.shootSphere(dir);
         }
+    }
+
+    private void shootSphere(Vec3 direction){
+        this.shootSphere(direction,100);
+    }
+
+    private void shootSphere(Vec3 direction,int time){
+        direction = direction.normalize();
+        Vec3 sppos = this.position().add(0,1,0).add(direction);
+        Vec3 endPos = sppos.add(direction.multiply(37,37,37));
+        ProjectileMovementPath path = new ProjectileMovementPath(time,false)
+                .addPos(sppos)
+                .addPos(endPos);
+        ChesedElectricSphereEntity sphereEntity = ChesedElectricSphereEntity.summon(level(),10,path);
     }
 
 
@@ -831,6 +923,7 @@ public class ChesedEntity extends FDLivingEntity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(IS_ROLLING,false);
+        builder.define(IS_LAUNCHING_ORBS,false);
     }
 
     @Override
