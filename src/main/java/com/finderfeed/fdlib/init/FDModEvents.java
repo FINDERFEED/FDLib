@@ -12,6 +12,7 @@ import com.finderfeed.fdlib.systems.config.ReflectiveJsonConfig;
 import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.EmptyParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
