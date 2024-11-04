@@ -1,10 +1,14 @@
 package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.network.lib_packets.PlayerMovePacket;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterData;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterHandler;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterPacket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -33,6 +37,15 @@ public class FDHelpers {
 
 
     public static final Gson GSON = new GsonBuilder().create();
+
+
+    public static void addParticleEmitter(Level level, double radius, ParticleEmitterData data){
+        if (level instanceof ServerLevel serverLevel) {
+            PacketDistributor.sendToPlayersNear(serverLevel, null, data.position.x, data.position.y, data.position.z, radius, new ParticleEmitterPacket(data));
+        }else{
+            ParticleEmitterHandler.addParticleEmitter(data);
+        }
+    }
 
 
     public static void setServerPlayerSpeed(ServerPlayer player,Vec3 deltaMovement){

@@ -13,6 +13,8 @@ public class FDEmitterProcessorTypes {
 
     public static final EmitterProcessorType<CompositeEmitterProcessor> COMPOSITE = register(new CompositeEmitterProcessor.Type());
 
+    public static final EmitterProcessorType<CircleSpawnProcessor> CIRCLE_SPAWN_PROCESSOR = register(new CircleSpawnProcessor.Type());
+
     public static EmitterProcessorType<?> get(ResourceLocation location){
         return TYPES_REGISTRY.get(location.toString());
     }

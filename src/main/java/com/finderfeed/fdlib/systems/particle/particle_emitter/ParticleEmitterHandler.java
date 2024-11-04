@@ -19,6 +19,7 @@ public class ParticleEmitterHandler {
 
     @SubscribeEvent
     public static void tickEmitters(LevelTickEvent.Pre event){
+        if (!event.getLevel().isClientSide) return;
 
         var iterator = activeEmitters.listIterator();
 

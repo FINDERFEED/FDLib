@@ -38,10 +38,12 @@ public class ParticleEmitter {
 
         var types = data.particleTypes;
 
-        Particle newParticle = engine.createParticle(types.get(random.nextInt(types.size())),data.position.x,data.position.y,data.position.z,0,0,0);
-        if (newParticle != null){
-            activeParticles.add(newParticle);
-            data.processor.initParticle(newParticle);
+        for (int i = 0; i < data.particlesPerTick;i++) {
+            Particle newParticle = engine.createParticle(types.get(random.nextInt(types.size())), data.position.x, data.position.y, data.position.z, 0, 0, 0);
+            if (newParticle != null) {
+                activeParticles.add(newParticle);
+                data.processor.initParticle(newParticle);
+            }
         }
 
 

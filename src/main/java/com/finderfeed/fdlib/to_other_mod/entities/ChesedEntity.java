@@ -13,6 +13,8 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.systems.particle.CircleParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.SetParticleSpeedProcessor;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.CircleSpawnProcessor;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterData;
 import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
@@ -206,11 +208,12 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 20;
+        return instance.tick >= 100;
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
-
+        this.entityData.set(IS_LAUNCHING_ORBS,false);
+        if (true) return true;
         this.entityData.set(IS_LAUNCHING_ORBS,true);
 
         var tick = instance.tick;
@@ -299,7 +302,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean rockfallAttack(AttackInstance instance){
-        if (true) return true;
+//        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 32;
@@ -320,16 +323,16 @@ public class ChesedEntity extends FDLivingEntity {
                     float a = angle * i;
                     Vec3 v = new Vec3(2,0,0).yRot(a);
                     Vec3 ppos = this.position().add(v);
+                    FDUtil.sendParticles(((ServerLevel) level()),BallParticleOptions.builder()
+                            .size(0.5f)
+                            .color(100 + random.nextInt(50), 255, 255)
+                            .particleProcessor(new CompositeParticleProcessor(
+                                    new CircleParticleProcessor(center,true,true,2),
+                                    new SetParticleSpeedProcessor(new Vec3(0,0.2,0))
+                            ))
+                            .scalingOptions(10,10,0)
+                            .build(),ppos,height * 2);
 
-                    ((ServerLevel) level()).sendParticles(BallParticleOptions.builder()
-                                    .size(0.5f)
-                                    .color(100 + random.nextInt(50), 255, 255)
-                                    .particleProcessor(new CompositeParticleProcessor(
-                                            new CircleParticleProcessor(center,true,true,2),
-                                            new SetParticleSpeedProcessor(new Vec3(0,0.2,0))
-                                    ))
-                                    .scalingOptions(10,10,0)
-                            .build(),ppos.x,ppos.y,ppos.z,1,0,0,0,0);
 
                 }
             }else if (tick == 45){
@@ -358,11 +361,18 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
-                BossUtil.posEvent((ServerLevel) level(),this.position().add(0,height,0),BossUtil.ROCKFALL_PARTICLES,36,height * 2);
+                FDHelpers.addParticleEmitter(level(),height * 2, ParticleEmitterData.builder(ParticleTypes.FLAME)
+                                .addParticle(ParticleTypes.WHITE_SMOKE)
+                                .particlesPerTick(100)
+                                .position(this.position().add(0,height + 2,0))
+                                .lifetime(200)
+                                .processor(new CircleSpawnProcessor(new Vec3(0,-1,0),0.05f,0.1f,35))
+                        .build());
                 BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
                 ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.CHESED_RAY.get(), SoundSource.HOSTILE,100f,1f);
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.ROCKFALL.get()));
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.RUMBLING.get()));
+                if (true) return true;
             }else if (tick >= 46){
 
                 instance.nextStage();

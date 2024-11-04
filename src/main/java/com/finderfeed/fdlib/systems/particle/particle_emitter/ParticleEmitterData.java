@@ -53,27 +53,75 @@ public class ParticleEmitterData {
     public static final StreamCodec<FriendlyByteBuf,ParticleEmitterData> STREAM_CODEC = StreamCodec.composite(
             FDByteBufCodecs.VEC3,v->v.position,
             ByteBufCodecs.INT,v->v.lifetime,
+            ByteBufCodecs.INT,v->v.particlesPerTick,
             EmitterProcessor.STREAM_CODEC,v->v.processor,
             OPTIONS_CODEC,v->v.particleTypes,
-            (position,lifetime,processor,types)->{
+            (position,lifetime,particlesPerTick,processor,types)->{
                 ParticleEmitterData data = new ParticleEmitterData();
                 data.position = position;
                 data.lifetime = lifetime;
                 data.processor = processor;
                 data.particleTypes = types;
+                data.particlesPerTick = particlesPerTick;
                 return data;
             }
 
     );
 
-    public Vec3 position;
+    private ParticleEmitterData(){}
 
-    public int lifetime;
+    public Vec3 position = Vec3.ZERO;
 
-    public EmitterProcessor<?> processor;
+    public int particlesPerTick = 1;
 
-    public List<ParticleOptions> particleTypes;
+    public int lifetime = 20;
+
+    public EmitterProcessor<?> processor = new EmptyEmitterProcessor();
+
+    public List<ParticleOptions> particleTypes = new ArrayList<>();
+
+    public static Builder builder(ParticleOptions options){
+        return new Builder(options);
+    }
+
+    public static class Builder{
+
+        private ParticleEmitterData data = new ParticleEmitterData();
+
+        public Builder(ParticleOptions options){
+            this.data.particleTypes.add(options);
+        }
+
+        public Builder position(Vec3 v){
+            this.data.position = v;
+            return this;
+        }
+
+        public Builder lifetime(int lifetime){
+            this.data.lifetime = lifetime;
+            return this;
+        }
+
+        public Builder processor(EmitterProcessor<?> processor){
+            this.data.processor = processor;
+            return this;
+        }
+
+        public Builder particlesPerTick(int amount){
+            this.data.particlesPerTick = amount;
+            return this;
+        }
+
+        public Builder addParticle(ParticleOptions options){
+            this.data.particleTypes.add(options);
+            return this;
+        }
+
+        public ParticleEmitterData build(){
+            return data;
+        }
 
 
+    }
 
 }
