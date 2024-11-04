@@ -1,10 +1,12 @@
-package com.finderfeed.fdlib.systems.particle.particle_emitter;
+package com.finderfeed.fdlib.systems.particle.particle_emitter.processors;
 
-import com.finderfeed.fdlib.FDHelpers;
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessor;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessorType;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.FDEmitterProcessorTypes;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitter;
 import com.finderfeed.fdlib.util.FDByteBufCodecs;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
-import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Random;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class CircleSpawnProcessor implements EmitterProcessor<CircleSpawnProcessor> {

@@ -71,7 +71,7 @@ public class BossParticles {
         }
     });
 
-    public static final Supplier<ParticleType<BigSmokeParticleOptions>> BIS_SMOKE = PARTICLES.register("BIG_SMOKE",()-> new ParticleType<>(true) {
+    public static final Supplier<ParticleType<BigSmokeParticleOptions>> BIS_SMOKE = PARTICLES.register("big_smoke",()-> new ParticleType<>(true) {
         @Override
         public MapCodec<BigSmokeParticleOptions> codec() {
             return BigSmokeParticleOptions.MAP_CODEC;

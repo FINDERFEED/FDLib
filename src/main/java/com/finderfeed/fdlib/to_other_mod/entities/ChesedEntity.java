@@ -13,8 +13,9 @@ import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
 import com.finderfeed.fdlib.systems.particle.CircleParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.SetParticleSpeedProcessor;
-import com.finderfeed.fdlib.systems.particle.particle_emitter.CircleSpawnProcessor;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterData;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.processors.BoundToEntityProcessor;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.processors.CircleSpawnProcessor;
 import com.finderfeed.fdlib.systems.shake.DefaultShakePacket;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
@@ -23,6 +24,7 @@ import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
@@ -349,17 +351,17 @@ public class ChesedEntity extends FDLivingEntity {
                         .build(), pos.add(0,1,0),60);
                 PositionedScreenShakePacket.send((ServerLevel) level(),FDShakeData.builder()
                         .frequency(10)
-                        .amplitude(7f)
+                        .amplitude(10f)
                         .inTime(0)
                         .stayTime(0)
                         .outTime(10)
                         .build(),this.position().add(0,height,0),height * 2);
                 DefaultShakePacket.send((ServerLevel) level(),this.position(),60,FDShakeData.builder()
-                                .frequency(10)
-                                .amplitude(0.1f)
+                                .frequency(15)
+                                .amplitude(0.15f)
                                 .inTime(0)
                                 .stayTime(50)
-                                .outTime(50)
+                                .outTime(150)
                         .build());
 
 
@@ -370,6 +372,48 @@ public class ChesedEntity extends FDLivingEntity {
                 ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.CHESED_RAY.get(), SoundSource.HOSTILE,100f,1f);
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.ROCKFALL.get()));
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.RUMBLING.get()));
+
+                int count = 10 + random.nextInt(10);
+                float angle = FDMathUtil.FPI * 2 / count;
+
+                for (int i = 0; i < count;i++) {
+
+
+                    BlockState state = random.nextFloat() > 0.5f ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.SCULK.defaultBlockState();
+
+                    ChesedFallingBlock block = ChesedFallingBlock.summon(level(), state, this.position().add(0, height, 0));
+
+                    Vec3 v = new Vec3(random.nextFloat() * 0.025 + 0.2,0,0).yRot(angle * i + (random.nextFloat() * 2 - 1) * angle);
+
+                    block.setDeltaMovement(v.add(0,-random.nextFloat() * 0.5 - 0.25,0));
+
+                    float rnd = random.nextFloat() * 0.05f;
+
+                    FDHelpers.addParticleEmitter(level(), height * 2, ParticleEmitterData.builder(BigSmokeParticleOptions.builder()
+                                    .color(0.35f - rnd, 0.35f - rnd, 0.35f - rnd)
+                                    .lifetime(0, 0, 50)
+                                    .size(2f)
+                                    .build())
+                            .lifetime(200)
+                            .processor(new BoundToEntityProcessor(block.getId(), Vec3.ZERO))
+                            .position(this.position())
+                            .build());
+
+                    FDHelpers.addParticleEmitter(level(), height * 2, ParticleEmitterData.builder(BigSmokeParticleOptions.builder()
+                                    .color(0.25f, 0.25f, 0.25f)
+                                    .lifetime(0, 0, 100)
+                                    .size(1f)
+                                    .build())
+                            .lifetime(200)
+                                    .particlesPerTick(5)
+                            .processor(new CircleSpawnProcessor(new Vec3(0,-1,0),0.05f,0.1f,36))
+                            .position(this.position().add(0,height + 2,0))
+                            .build());
+
+
+                }
+
+
                 if (true) return true;
             }else if (tick >= 46){
 

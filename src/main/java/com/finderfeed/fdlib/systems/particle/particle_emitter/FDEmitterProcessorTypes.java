@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
+import com.finderfeed.fdlib.systems.particle.particle_emitter.processors.BoundToEntityProcessor;
+import com.finderfeed.fdlib.systems.particle.particle_emitter.processors.CircleSpawnProcessor;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -14,6 +16,8 @@ public class FDEmitterProcessorTypes {
     public static final EmitterProcessorType<CompositeEmitterProcessor> COMPOSITE = register(new CompositeEmitterProcessor.Type());
 
     public static final EmitterProcessorType<CircleSpawnProcessor> CIRCLE_SPAWN_PROCESSOR = register(new CircleSpawnProcessor.Type());
+
+    public static final EmitterProcessorType<BoundToEntityProcessor> BOUND_TO_ENTITY = register(new BoundToEntityProcessor.Type());
 
     public static EmitterProcessorType<?> get(ResourceLocation location){
         return TYPES_REGISTRY.get(location.toString());
