@@ -7,6 +7,7 @@ import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedAttackRayParticle;
+import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticle;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterRenderer;
 import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlockRenderer;
@@ -31,6 +32,7 @@ public class BossClientModEvents {
         event.registerSpecial(BossParticles.ARC_LIGHTNING.get(), new ArcLightningParticle.Factory());
         event.registerSpriteSet(BossParticles.SONIC_PARTICLE.get(), SonicParticle.Factory::new);
         event.registerSpriteSet(BossParticles.BALL_PARTICLE.get(), BallParticle.Factory::new);
+        event.registerSpriteSet(BossParticles.BIS_SMOKE.get(), BigSmokeParticle.Factory::new);
     }
 
     @SubscribeEvent

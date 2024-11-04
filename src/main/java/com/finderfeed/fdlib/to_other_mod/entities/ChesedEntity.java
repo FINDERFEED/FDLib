@@ -361,13 +361,11 @@ public class ChesedEntity extends FDLivingEntity {
                                 .stayTime(50)
                                 .outTime(50)
                         .build());
-                FDHelpers.addParticleEmitter(level(),height * 2, ParticleEmitterData.builder(ParticleTypes.FLAME)
-                                .addParticle(ParticleTypes.WHITE_SMOKE)
-                                .particlesPerTick(100)
-                                .position(this.position().add(0,height + 2,0))
-                                .lifetime(200)
-                                .processor(new CircleSpawnProcessor(new Vec3(0,-1,0),0.05f,0.1f,35))
-                        .build());
+
+
+
+
+
                 BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
                 ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.CHESED_RAY.get(), SoundSource.HOSTILE,100f,1f);
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.ROCKFALL.get()));

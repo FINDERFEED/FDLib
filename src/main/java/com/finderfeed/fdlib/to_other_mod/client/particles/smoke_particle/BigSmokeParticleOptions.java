@@ -1,0 +1,103 @@
+package com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle;
+
+import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
+import com.finderfeed.fdlib.to_other_mod.client.particles.AlphaOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
+import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.FDCodecs;
+import com.finderfeed.fdlib.util.FDColor;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+
+public class BigSmokeParticleOptions implements ParticleOptions {
+
+    public static final Codec<BigSmokeParticleOptions> CODEC = RecordCodecBuilder.create(p->p.group(
+            AlphaOptions.CODEC.fieldOf("inOutOptions").forGetter(v->v.intOut),
+            FDCodecs.COLOR.fieldOf("color").forGetter(v->v.color),
+            Codec.FLOAT.fieldOf("size").forGetter(v->v.size)
+    ).apply(p,(alpha,color,size)->{
+        BigSmokeParticleOptions d = new BigSmokeParticleOptions();
+        d.intOut = alpha;
+        d.color = color;
+        d.size = size;
+        return d;
+    }));
+
+    public static final MapCodec<BigSmokeParticleOptions> MAP_CODEC = CODEC.fieldOf("options");
+
+    public static final StreamCodec<FriendlyByteBuf,BigSmokeParticleOptions> STREAM_CODEC = StreamCodec.composite(
+            AlphaOptions.STREAM_CODEC,v->v.intOut,
+            FDByteBufCodecs.COLOR, v->v.color,
+            ByteBufCodecs.FLOAT,v->v.size,
+            (alpha,color,size)->{
+                BigSmokeParticleOptions d = new BigSmokeParticleOptions();
+                d.intOut = alpha;
+                d.color = color;
+                d.size = size;
+                return d;
+            }
+    );
+
+    public AlphaOptions intOut = new AlphaOptions();
+    public FDColor color = new FDColor(1f,1f,1f,1f);
+    public float size = 1;
+
+    public static Builder builder(){
+        return new Builder();
+    }
+
+    @Override
+    public ParticleType<?> getType() {
+        return BossParticles.BIS_SMOKE.get();
+    }
+
+    public static class Builder{
+
+        private BigSmokeParticleOptions options = new BigSmokeParticleOptions();
+
+        public Builder lifetime(int in,int stay,int out){
+            this.options.intOut.inTime = in;
+            this.options.intOut.stayTime = stay;
+            this.options.intOut.outTime = out;
+            return this;
+        }
+
+        public Builder size(float size){
+            this.options.size = size;
+            return this;
+        }
+
+        public Builder color(int r, int g, int b, int a){
+            return this.color(new FDColor(r/255f,g/255f,b/255f,a/255f));
+        }
+
+        public Builder color(int r, int g, int b){
+            return this.color(new FDColor(r/255f,g/255f,b/255f,1));
+        }
+
+        public Builder color(float r, float g, float b){
+            return this.color(new FDColor(r,g,b,1));
+        }
+
+        public Builder color(float r, float g, float b, float a){
+            return this.color(new FDColor(r,g,b,a));
+        }
+
+        public Builder color(FDColor color){
+            this.options.color = color;
+            return this;
+        }
+
+        public BigSmokeParticleOptions build(){
+            return options;
+        }
+
+    }
+
+}

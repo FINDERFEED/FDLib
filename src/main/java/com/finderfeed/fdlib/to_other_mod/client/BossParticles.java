@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
@@ -67,6 +68,18 @@ public class BossParticles {
         @Override
         public StreamCodec<? super RegistryFriendlyByteBuf, BallParticleOptions> streamCodec() {
             return BallParticleOptions.STREAM_CODEC;
+        }
+    });
+
+    public static final Supplier<ParticleType<BigSmokeParticleOptions>> BIS_SMOKE = PARTICLES.register("BIG_SMOKE",()-> new ParticleType<>(true) {
+        @Override
+        public MapCodec<BigSmokeParticleOptions> codec() {
+            return BigSmokeParticleOptions.MAP_CODEC;
+        }
+
+        @Override
+        public StreamCodec<? super RegistryFriendlyByteBuf, BigSmokeParticleOptions> streamCodec() {
+            return BigSmokeParticleOptions.STREAM_CODEC;
         }
     });
 
