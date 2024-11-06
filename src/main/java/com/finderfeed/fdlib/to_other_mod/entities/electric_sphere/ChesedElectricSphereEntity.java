@@ -115,7 +115,7 @@ public class ChesedElectricSphereEntity extends FDLivingEntity implements AutoSe
     }
 
     private void explode(){
-        var list = level().getEntitiesOfClass(LivingEntity.class,this.getBoundingBox().inflate(1,1,1),living->{
+        var list = level().getEntitiesOfClass(LivingEntity.class,this.getBoundingBox().inflate(0.2,0.2,0.2),living->{
             return !(living instanceof ChesedElectricSphereEntity) && !(living instanceof ChesedEntity);
         });
 

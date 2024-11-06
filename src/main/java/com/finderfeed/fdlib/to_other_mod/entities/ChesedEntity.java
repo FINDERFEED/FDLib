@@ -90,11 +90,14 @@ public class ChesedEntity extends FDLivingEntity {
         }
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
-                    .addAttack(-2, AttackOptions.builder()
+                    .addAttack(-3, AttackOptions.builder()
                             .addAttack("nothing1",this::doNothing)
                             .build())
-                    .addAttack(-1, AttackOptions.builder()
+                    .addAttack(-2, AttackOptions.builder()
                             .addAttack("electricSphereAttack",this::electricSphereAttack)
+                            .build())
+                    .addAttack(0,AttackOptions.builder()
+                            .addAttack("nothing",this::doNothing)
                             .build())
                     .addAttack(0, AttackOptions.builder()
                             .addAttack("rockfall",this::rockfallAttack)
@@ -210,18 +213,24 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 100;
+        return instance.tick >= 150;
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
-        this.entityData.set(IS_LAUNCHING_ORBS,false);
-        if (true) return true;
-        this.entityData.set(IS_LAUNCHING_ORBS,true);
-
+//        if (true) return true;
         var tick = instance.tick;
         var stage = instance.stage;
-
         if (stage == 0) {
+
+            if (tick == 0) {
+                this.getSystem().startAnimation("CAST", AnimationTicker.builder(CHESED_CAST)
+                        .setToNullTransitionTime(0)
+                        .build());
+            }else if (tick > 15) {
+                this.entityData.set(IS_LAUNCHING_ORBS, true);
+                instance.nextStage();
+            }
+        }else if (stage == 1) {
 
             if (tick % 10 == 0) {
                 for (int i = 0; i < 4; i++) {
@@ -234,7 +243,7 @@ public class ChesedEntity extends FDLivingEntity {
                 instance.nextStage();
             }
 
-        }else if (stage == 1) {
+        }else if (stage == 2) {
 
             if (tick % 15 == 0){
 
@@ -284,7 +293,7 @@ public class ChesedEntity extends FDLivingEntity {
 
             Vec3 dir = new Vec3(1,0,0).yRot(i * angle + angleOffset);
 
-            this.shootSphere(dir);
+            this.shootSphere(dir,150);
         }
     }
 
@@ -399,22 +408,20 @@ public class ChesedEntity extends FDLivingEntity {
                             .position(this.position())
                             .build());
 
-                    FDHelpers.addParticleEmitter(level(), height * 2, ParticleEmitterData.builder(BigSmokeParticleOptions.builder()
-                                    .color(0.25f, 0.25f, 0.25f)
-                                    .lifetime(0, 0, 100)
-                                    .size(1f)
-                                    .build())
-                            .lifetime(200)
-                                    .particlesPerTick(5)
-                            .processor(new CircleSpawnProcessor(new Vec3(0,-1,0),0.05f,0.1f,36))
-                            .position(this.position().add(0,height + 2,0))
-                            .build());
-
 
                 }
 
+                FDHelpers.addParticleEmitter(level(), height * 2, ParticleEmitterData.builder(BigSmokeParticleOptions.builder()
+                                .color(0.25f, 0.25f, 0.25f)
+                                .lifetime(0, 0, 100)
+                                .size(1f)
+                                .build())
+                        .lifetime(200)
+                        .particlesPerTick(20)
+                        .processor(new CircleSpawnProcessor(new Vec3(0,-1,0),0.05f,0.1f,36))
+                        .position(this.position().add(0,height + 2,0))
+                        .build());
 
-                if (true) return true;
             }else if (tick >= 46){
 
                 instance.nextStage();
