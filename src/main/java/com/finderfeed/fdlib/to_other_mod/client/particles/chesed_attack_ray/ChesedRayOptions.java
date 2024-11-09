@@ -93,6 +93,14 @@ public class ChesedRayOptions implements ParticleOptions {
             rayOptions.rayOptions.outTime = out;
             return this;
         }
+
+        public Builder time(int in,int stay,int out){
+            rayOptions.rayOptions.inTime = in;
+            rayOptions.rayOptions.stayTime = stay;
+            rayOptions.rayOptions.outTime = out;
+            return this;
+        }
+
         public Builder stay(int stay){
             rayOptions.rayOptions.stayTime = stay;
             return this;

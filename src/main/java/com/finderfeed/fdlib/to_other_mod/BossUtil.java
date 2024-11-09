@@ -20,8 +20,15 @@ public class BossUtil {
 
 
     public static void chesedRayExplosion(ServerLevel level,Vec3 pos,Vec3 direction,double radius){
+        direction = direction.normalize();
 
-        posEvent(level,pos,CHESED_RAY_EXPLOSION,0,radius);
+        int dx = (int)Math.round((direction.x + 1) / 2 * 0xff);
+        int dy = (int)Math.round((direction.y + 1) / 2 * 0xff);
+        int dz = (int)Math.round((direction.z + 1) / 2 * 0xff);
+
+        int data = (dx << 16) + (dy << 8) + dz;
+
+        posEvent(level,pos,CHESED_RAY_EXPLOSION,data,radius);
 
     }
 

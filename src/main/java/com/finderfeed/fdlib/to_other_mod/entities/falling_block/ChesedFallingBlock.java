@@ -41,12 +41,16 @@ public class ChesedFallingBlock extends FDProjectile {
         super(type, level);
     }
 
-    public static ChesedFallingBlock summon(Level level,BlockState state,Vec3 pos){
+    public static ChesedFallingBlock summon(Level level,BlockState state,Vec3 pos,Vec3 speed){
         ChesedFallingBlock block = new ChesedFallingBlock(BossEntities.CHESED_FALLING_BLOCK.get(),level);
         block.setPos(pos);
+        block.setDeltaMovement(speed);
         block.setBlockState(state);
         level.addFreshEntity(block);
         return block;
+    }
+    public static ChesedFallingBlock summon(Level level,BlockState state,Vec3 pos){
+        return summon(level,state,pos,Vec3.ZERO);
     }
 
     @Override

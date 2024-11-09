@@ -7,12 +7,15 @@ import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
 import com.finderfeed.fdlib.util.client.FDBlockParticleOptions;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,21 @@ public class BossClientPackets {
     }
 
     public static void rayExplosion(Vec3 pos,int data){
+
+        int dx = data >> 16;
+        int dy = (data & 0x00ff00) >> 8;
+        int dz = data & 0x0000ff;
+
+        Vec3 direction = new Vec3(
+                (dx / (double) 0xff) * 2 - 1,
+                (dy / (double) 0xff) * 2 - 1,
+                (dz / (double) 0xff) * 2 - 1
+        );
+
+        Matrix4f mt = new Matrix4f();
+        FDRenderUtil.applyMovementMatrixRotations(mt,direction);
+
+
         Level level = Minecraft.getInstance().level;
         int maxCount = 10;
         int maxParticlePerCount = 15;

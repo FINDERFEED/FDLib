@@ -50,11 +50,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Math;
 import org.joml.Matrix4fStack;
@@ -78,6 +80,7 @@ public class ChesedEntity extends FDLivingEntity {
     private static FDModel clientModel;
     private Vec3 oldRollPos;
     private boolean playIdle = true;
+    private boolean lookingAtTarget = true;
 
 
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
@@ -91,7 +94,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
                     .addAttack(-3, AttackOptions.builder()
-                            .addAttack("nothing1",this::doNothing)
+                            .addAttack("rayAttack",this::rayAttack)
                             .build())
                     .addAttack(-2, AttackOptions.builder()
                             .addAttack("electricSphereAttack",this::electricSphereAttack)
@@ -213,11 +216,98 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 150;
+        return instance.tick >= 20;
+    }
+
+    public boolean rayAttack(AttackInstance instance){
+
+        int tick = instance.tick;
+        int stage = instance.stage;
+
+        if (stage == 0) {
+            int rayAttackTick = 35;
+            if (tick == 0) {
+
+                this.getSystem().startAnimation("ATTACK", AnimationTicker.builder(CHESED_ATTACK)
+                                .setToNullTransitionTime(0)
+                        .build());
+
+            }else if (tick > 10 && tick < rayAttackTick) {
+                var c = this.getModelPartPosition(this,"core",serverModel);
+                Vec3 center = new Vec3(c.x,c.y,c.z).add(this.position());
+                for (int i = 0; i < 10;i++) {
+                    Vec3 pos = center.add(new Vec3(
+                                    random.nextFloat() * 2 - 1,
+                                    random.nextFloat() * 2 - 1,
+                                    random.nextFloat() * 2 - 1
+                            ).normalize().multiply(1.2,1.2,1.2));
+                    Vec3 speed = center.subtract(pos).normalize().multiply(0.05,0.05,0.05);
+                    BallParticleOptions options = BallParticleOptions.builder()
+                            .friction(1.8f)
+                            .size(0.3f)
+                            .scalingOptions(0, 1, 4)
+                            .color(100 + random.nextInt(50), 255, 255)
+                            .particleProcessor(new SetParticleSpeedProcessor(speed))
+                            .build();
+                    FDUtil.sendParticles((ServerLevel) level(),options,pos,60);
+                }
+            } else if (tick == rayAttackTick){
+
+                Vec3 look = this.getLookAngle();
+                Vec3 p = this.position().add(0,1.3,0).add(look.reverse());
+                Vec3 end = p.add(look.multiply(60,60,60));
+                ClipContext clipContext = new ClipContext(p,end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
+                var result = level().clip(clipContext);
+                end = result.getLocation();
+
+                ChesedRayOptions options = ChesedRayOptions.builder()
+                        .time(0,15,5)
+                        .lightningColor(90, 180, 255)
+                        .color(100, 255, 255)
+                        .end(end)
+                        .width(0.8f)
+                        .build();
+                FDUtil.sendParticles((ServerLevel) level(),options,p,60);
+
+                Vec3 reversedLook = look.reverse();
+
+                Vector3f v = new Vector3f(0,1,0).cross((float)reversedLook.x,(float)reversedLook.y,(float)reversedLook.z);
+
+                for (int i = 0; i < 30;i++){
+
+                    BlockState state = random.nextFloat() > 0.5 ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.SCULK.defaultBlockState();
+
+                    Vector3f add = v.rotateAxis(FDMathUtil.FPI * 2 * random.nextFloat(),(float)reversedLook.x,(float)reversedLook.y,(float)reversedLook.z,new Vector3f());
+                    float rd = random.nextFloat() * 0.5f;
+                    ChesedFallingBlock block = ChesedFallingBlock.summon(level(),state,end,reversedLook.add(
+                            add.x * rd,
+                            add.y * rd,
+                            add.z * rd
+                    ).normalize().multiply(2 - rd,2 - rd,2 - rd));
+
+                    float rnd = random.nextFloat() * 0.05f;
+
+                    FDHelpers.addParticleEmitter(level(), 120, ParticleEmitterData.builder(BigSmokeParticleOptions.builder()
+                                    .color(0.35f - rnd, 0.35f - rnd, 0.35f - rnd)
+                                    .lifetime(0, 0, 50)
+                                    .size(2f)
+                                    .build())
+                            .lifetime(200)
+                            .processor(new BoundToEntityProcessor(block.getId(), Vec3.ZERO))
+                            .position(this.position())
+                            .build());
+
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
-//        if (true) return true;
+        if (true) return true;
         var tick = instance.tick;
         var stage = instance.stage;
         if (stage == 0) {
@@ -313,7 +403,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean rockfallAttack(AttackInstance instance){
-//        if (true) return true;
+        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 32;
