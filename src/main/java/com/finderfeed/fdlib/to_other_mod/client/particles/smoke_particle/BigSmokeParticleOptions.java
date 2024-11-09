@@ -20,12 +20,14 @@ public class BigSmokeParticleOptions implements ParticleOptions {
     public static final Codec<BigSmokeParticleOptions> CODEC = RecordCodecBuilder.create(p->p.group(
             AlphaOptions.CODEC.fieldOf("inOutOptions").forGetter(v->v.intOut),
             FDCodecs.COLOR.fieldOf("color").forGetter(v->v.color),
-            Codec.FLOAT.fieldOf("size").forGetter(v->v.size)
-    ).apply(p,(alpha,color,size)->{
+            Codec.FLOAT.fieldOf("size").forGetter(v->v.size),
+            Codec.FLOAT.fieldOf("friction").forGetter(v->v.friction)
+    ).apply(p,(alpha,color,size,friction)->{
         BigSmokeParticleOptions d = new BigSmokeParticleOptions();
         d.intOut = alpha;
         d.color = color;
         d.size = size;
+        d.friction = friction;
         return d;
     }));
 
@@ -35,11 +37,13 @@ public class BigSmokeParticleOptions implements ParticleOptions {
             AlphaOptions.STREAM_CODEC,v->v.intOut,
             FDByteBufCodecs.COLOR, v->v.color,
             ByteBufCodecs.FLOAT,v->v.size,
-            (alpha,color,size)->{
+            ByteBufCodecs.FLOAT,v->v.friction,
+            (alpha,color,size,friction)->{
                 BigSmokeParticleOptions d = new BigSmokeParticleOptions();
                 d.intOut = alpha;
                 d.color = color;
                 d.size = size;
+                d.friction = friction;
                 return d;
             }
     );
@@ -47,6 +51,7 @@ public class BigSmokeParticleOptions implements ParticleOptions {
     public AlphaOptions intOut = new AlphaOptions();
     public FDColor color = new FDColor(1f,1f,1f,1f);
     public float size = 1;
+    public float friction = 1;
 
     public static Builder builder(){
         return new Builder();
@@ -70,6 +75,12 @@ public class BigSmokeParticleOptions implements ParticleOptions {
 
         public Builder size(float size){
             this.options.size = size;
+            return this;
+        }
+
+
+        public Builder friction(float friction){
+            this.options.friction = friction;
             return this;
         }
 

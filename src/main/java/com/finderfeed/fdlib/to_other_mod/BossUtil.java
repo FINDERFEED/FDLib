@@ -19,14 +19,26 @@ public class BossUtil {
 
 
 
-    public static void chesedRayExplosion(ServerLevel level,Vec3 pos,Vec3 direction,double radius){
-        direction = direction.normalize();
+    public static void chesedRayExplosion(ServerLevel level,Vec3 pos,Vec3 direction,double radius,int particlesCount,float sizeModifier){
+        if (particlesCount >= 0xf) throw new RuntimeException("Cannot encode more than 16 particles count");
+        if (sizeModifier > 1) throw new RuntimeException("Cannot encode size modifier > 1");
 
+        direction = direction.normalize();
         int dx = (int)Math.round((direction.x + 1) / 2 * 0xff);
         int dy = (int)Math.round((direction.y + 1) / 2 * 0xff);
         int dz = (int)Math.round((direction.z + 1) / 2 * 0xff);
 
+
+
         int data = (dx << 16) + (dy << 8) + dz;
+
+        particlesCount = particlesCount << 24;
+        data += particlesCount;
+
+        int size = Math.round(sizeModifier * 0xf);
+        size = size << 28;
+
+        data += size;
 
         posEvent(level,pos,CHESED_RAY_EXPLOSION,data,radius);
 

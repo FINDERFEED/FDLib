@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +45,10 @@ public class BossClientPackets {
 
     public static void rayExplosion(Vec3 pos,int data){
 
-        int dx = data >> 16;
-        int dy = (data & 0x00ff00) >> 8;
-        int dz = data & 0x0000ff;
+        int dx = (data & 0x00ff0000) >> 16;
+        int dy = (data & 0x0000ff00) >> 8;
+        int dz = data & 0x000000ff;
+
 
         Vec3 direction = new Vec3(
                 (dx / (double) 0xff) * 2 - 1,
@@ -57,14 +59,16 @@ public class BossClientPackets {
         Matrix4f mt = new Matrix4f();
         FDRenderUtil.applyMovementMatrixRotations(mt,direction);
 
+        float sizeMod = ((data & 0xf0000000) >> 28) / (float)0xf;
+
 
         Level level = Minecraft.getInstance().level;
-        int maxCount = 10;
+        int maxCount = (data & 0x0f000000) >> 24;
         int maxParticlePerCount = 15;
         float maxVerticalSpeed = 5f;
         float maxHorizontalSpeed = maxVerticalSpeed / 4f;
         float maxFriction = 0.7f;
-        float maxSize = 2.5f;
+        float maxSize = 2.5f * sizeMod;
 
         for (int i = 0; i < maxCount;i++){
 
@@ -72,8 +76,12 @@ public class BossClientPackets {
             float angle = p * FDMathUtil.FPI * 2;
             float rangle = FDMathUtil.FPI * 2f / maxCount / 2;
             for (int g = 0; g < maxParticlePerCount;g++){
-                Vec3 dir = new Vec3(1,0,0).yRot(angle + random.nextFloat() * rangle * 2 - rangle);
-                Vec3 ppos = pos.add(dir.multiply(1.5,1.5,1.5));
+                Vector3f dir = new Vector3f(1,0,0).rotateY(angle + random.nextFloat() * rangle * 2 - rangle);
+
+                Vector3f additionPos = new Vector3f(dir);
+                mt.transformPosition(additionPos);
+
+                Vector3f ppos = new Vector3f((float)pos.x + additionPos.x,(float)pos.y + additionPos.y,(float)pos.z + additionPos.z);
                 float p2 = g / (float) (maxParticlePerCount - 1);
 
                 float size = maxSize / 2 * (1 - p2) + maxSize / 2;
@@ -88,13 +96,18 @@ public class BossClientPackets {
                         .scalingOptions(3,0,50)
                         .build();
 
+                Vector3f I______Am_Speed = new Vector3f(
+                        dir.x * zxspeed,
+                        yspeed,
+                        dir.z * zxspeed
+                );
+                mt.transformPosition(I______Am_Speed);
 
                 level.addParticle(options,true,ppos.x,ppos.y,ppos.z,
-
-                        dir.x * zxspeed,
-                        -yspeed,
-                        dir.z * zxspeed
-                        );
+                        I______Am_Speed.x,
+                        I______Am_Speed.y,
+                        I______Am_Speed.z
+                );
 
 
 

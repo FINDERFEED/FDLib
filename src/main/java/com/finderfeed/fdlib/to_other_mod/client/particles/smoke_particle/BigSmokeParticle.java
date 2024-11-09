@@ -41,6 +41,7 @@ public class BigSmokeParticle extends TextureSheetParticle {
         this.lifetime = options.intOut.fullTime();
         this.maxQuadSize = options.size;
         this.oQuadSize = quadSize;
+        this.friction = options.friction;
     }
 
 

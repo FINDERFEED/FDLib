@@ -251,7 +251,7 @@ public class ChesedEntity extends FDLivingEntity {
                             .build();
                     FDUtil.sendParticles((ServerLevel) level(),options,pos,60);
                 }
-            } else if (tick == rayAttackTick){
+            } else if (tick == rayAttackTick) {
 
                 Vec3 look = this.getLookAngle();
                 Vec3 p = this.position().add(0,1.3,0).add(look.reverse());
@@ -271,8 +271,11 @@ public class ChesedEntity extends FDLivingEntity {
 
                 Vec3 reversedLook = look.reverse();
 
-                Vector3f v = new Vector3f(0,1,0).cross((float)reversedLook.x,(float)reversedLook.y,(float)reversedLook.z);
 
+
+
+
+                Vector3f v = new Vector3f(0,1,0).cross((float)reversedLook.x,(float)reversedLook.y,(float)reversedLook.z);
                 for (int i = 0; i < 30;i++){
 
                     BlockState state = random.nextFloat() > 0.5 ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.SCULK.defaultBlockState();
@@ -298,8 +301,13 @@ public class ChesedEntity extends FDLivingEntity {
                             .build());
 
                 }
-
-                return true;
+            }else if (tick > rayAttackTick){
+                Vec3 look = this.getLookAngle();
+                Vec3 reversedLook = look.reverse();
+                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,1.3,0),reversedLook,100,5,0.25f);
+                if (tick > rayAttackTick + 20){
+                    return true;
+                }
             }
         }
 
@@ -467,7 +475,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
 
-                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120);
+                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,height,0),new Vec3(0,-1,0),120,10,1);
                 ((ServerLevel)level()).playSound(null,this.getX(),this.getY() + height,this.getZ(), BossSounds.CHESED_RAY.get(), SoundSource.HOSTILE,100f,1f);
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.ROCKFALL.get()));
                 PacketDistributor.sendToPlayersTrackingEntity(this,new PlaySoundInEarsPacket(BossSounds.RUMBLING.get()));
