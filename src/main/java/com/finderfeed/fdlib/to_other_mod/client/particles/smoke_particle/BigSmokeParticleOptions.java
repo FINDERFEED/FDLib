@@ -20,10 +20,12 @@ public class BigSmokeParticleOptions implements ParticleOptions {
     public static final Codec<BigSmokeParticleOptions> CODEC = RecordCodecBuilder.create(p->p.group(
             AlphaOptions.CODEC.fieldOf("inOutOptions").forGetter(v->v.intOut),
             FDCodecs.COLOR.fieldOf("color").forGetter(v->v.color),
+            Codec.FLOAT.fieldOf("minSpeed").forGetter(v->v.minSpeed),
             Codec.FLOAT.fieldOf("size").forGetter(v->v.size),
             Codec.FLOAT.fieldOf("friction").forGetter(v->v.friction)
-    ).apply(p,(alpha,color,size,friction)->{
+    ).apply(p,(alpha,color,minSpeed,size,friction)->{
         BigSmokeParticleOptions d = new BigSmokeParticleOptions();
+        d.minSpeed = minSpeed;
         d.intOut = alpha;
         d.color = color;
         d.size = size;
@@ -36,13 +38,15 @@ public class BigSmokeParticleOptions implements ParticleOptions {
     public static final StreamCodec<FriendlyByteBuf,BigSmokeParticleOptions> STREAM_CODEC = StreamCodec.composite(
             AlphaOptions.STREAM_CODEC,v->v.intOut,
             FDByteBufCodecs.COLOR, v->v.color,
+            ByteBufCodecs.FLOAT,v->v.minSpeed,
             ByteBufCodecs.FLOAT,v->v.size,
             ByteBufCodecs.FLOAT,v->v.friction,
-            (alpha,color,size,friction)->{
+            (alpha,color,minSpeed,size,friction)->{
                 BigSmokeParticleOptions d = new BigSmokeParticleOptions();
                 d.intOut = alpha;
                 d.color = color;
                 d.size = size;
+                d.minSpeed = minSpeed;
                 d.friction = friction;
                 return d;
             }
@@ -50,6 +54,7 @@ public class BigSmokeParticleOptions implements ParticleOptions {
 
     public AlphaOptions intOut = new AlphaOptions();
     public FDColor color = new FDColor(1f,1f,1f,1f);
+    public float minSpeed = 0;
     public float size = 1;
     public float friction = 1;
 
@@ -75,6 +80,11 @@ public class BigSmokeParticleOptions implements ParticleOptions {
 
         public Builder size(float size){
             this.options.size = size;
+            return this;
+        }
+
+        public Builder minSpeed(float minSpeed){
+            this.options.minSpeed = minSpeed;
             return this;
         }
 

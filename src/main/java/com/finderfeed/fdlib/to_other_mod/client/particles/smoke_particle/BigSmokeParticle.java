@@ -42,6 +42,7 @@ public class BigSmokeParticle extends TextureSheetParticle {
         this.maxQuadSize = options.size;
         this.oQuadSize = quadSize;
         this.friction = options.friction;
+        this.hasPhysics = false;
     }
 
 
@@ -53,6 +54,14 @@ public class BigSmokeParticle extends TextureSheetParticle {
 
     @Override
     public void tick() {
+
+        double l = Math.sqrt(xd * xd + yd * yd + zd * zd);
+
+        if (l < options.minSpeed){
+            this.xd = xd / l * options.minSpeed;
+            this.yd = yd / l * options.minSpeed;
+            this.zd = zd / l * options.minSpeed;
+        }
 
         this.oQuadSize = cQuadSize;
         this.cQuadSize = maxQuadSize * this.easingFunction.apply(age);

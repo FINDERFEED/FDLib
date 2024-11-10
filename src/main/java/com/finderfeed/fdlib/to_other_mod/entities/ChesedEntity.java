@@ -273,6 +273,16 @@ public class ChesedEntity extends FDLivingEntity {
 
 
 
+                BossUtil.chesedRaySmoke((ServerLevel) level(),end,reversedLook,120);
+
+
+                PositionedScreenShakePacket.send((ServerLevel) level(),FDShakeData.builder()
+                        .frequency(5)
+                        .amplitude(5f)
+                        .inTime(0)
+                        .stayTime(0)
+                        .outTime(5)
+                        .build(),end,120);
 
 
                 Vector3f v = new Vector3f(0,1,0).cross((float)reversedLook.x,(float)reversedLook.y,(float)reversedLook.z);
@@ -283,17 +293,17 @@ public class ChesedEntity extends FDLivingEntity {
                     Vector3f add = v.rotateAxis(FDMathUtil.FPI * 2 * random.nextFloat(),(float)reversedLook.x,(float)reversedLook.y,(float)reversedLook.z,new Vector3f());
                     float rd = random.nextFloat() * 0.5f;
                     ChesedFallingBlock block = ChesedFallingBlock.summon(level(),state,end,reversedLook.add(
-                            add.x * rd,
+                            add.x * rd * 2,
                             add.y * rd,
-                            add.z * rd
-                    ).normalize().multiply(2 - rd,2 - rd,2 - rd));
+                            add.z * rd * 2
+                    ).normalize().multiply(0.5,2.4 - rd,0.5));
 
                     float rnd = random.nextFloat() * 0.05f;
 
                     FDHelpers.addParticleEmitter(level(), 120, ParticleEmitterData.builder(BigSmokeParticleOptions.builder()
                                     .color(0.35f - rnd, 0.35f - rnd, 0.35f - rnd)
-                                    .lifetime(0, 0, 50)
-                                    .size(2f)
+                                    .lifetime(0, 0, 25)
+                                    .size(1.5f)
                                     .build())
                             .lifetime(200)
                             .processor(new BoundToEntityProcessor(block.getId(), Vec3.ZERO))
@@ -301,10 +311,8 @@ public class ChesedEntity extends FDLivingEntity {
                             .build());
 
                 }
+                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,1.3,0),reversedLook,100,15,0.5f);
             }else if (tick > rayAttackTick){
-                Vec3 look = this.getLookAngle();
-                Vec3 reversedLook = look.reverse();
-                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,1.3,0),reversedLook,100,5,0.25f);
                 if (tick > rayAttackTick + 20){
                     return true;
                 }

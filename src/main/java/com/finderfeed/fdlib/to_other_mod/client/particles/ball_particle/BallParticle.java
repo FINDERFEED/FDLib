@@ -72,6 +72,38 @@ public class BallParticle extends TextureSheetParticle {
     }
 
     @Override
+    protected float getU0() {
+        var v = super.getU0();
+        ParticleEngine engine = Minecraft.getInstance().particleEngine;
+        int w = engine.textureAtlas.width;
+        return v + 1 / (float) w;
+    }
+
+    @Override
+    protected float getU1() {
+        var v = super.getU1();
+        ParticleEngine engine = Minecraft.getInstance().particleEngine;
+        int w = engine.textureAtlas.width;
+        return v - 1 / (float) w;
+    }
+
+    @Override
+    protected float getV0() {
+        var v = super.getV0();
+        ParticleEngine engine = Minecraft.getInstance().particleEngine;
+        int w = engine.textureAtlas.height;
+        return v + 1 / (float) w;
+    }
+
+    @Override
+    protected float getV1() {
+        var v = super.getV1();
+        ParticleEngine engine = Minecraft.getInstance().particleEngine;
+        int w = engine.textureAtlas.height;
+        return v - 1 / (float) w;
+    }
+
+    @Override
     public ParticleRenderType getRenderType() {
         return RENDER_TYPE;
     }

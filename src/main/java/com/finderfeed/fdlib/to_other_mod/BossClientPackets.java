@@ -1,9 +1,11 @@
 package com.finderfeed.fdlib.to_other_mod;
 
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
+import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
+import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.client.FDBlockParticleOptions;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
@@ -40,6 +42,61 @@ public class BossClientPackets {
             case BossUtil.CHESED_RAY_EXPLOSION -> {
                 rayExplosion(pos,data);
             }
+            case BossUtil.CHESED_RAY_ATTACK_SMOKE -> {
+                rayAttackSmoke(pos,data);
+            }
+        }
+    }
+
+    public static void rayAttackSmoke(Vec3 pos,int data){
+        Vec3 directionVector = FDUtil.decodeDirection(data);
+        Matrix4f mt = new Matrix4f(); FDRenderUtil.applyMovementMatrixRotations(mt,directionVector);
+
+        int camount = 20;
+        float angle = FDMathUtil.FPI * 2 / camount;
+
+        int ramount = 5;
+
+        Level level = Minecraft.getInstance().level;
+
+        for (int i = 0; i < camount;i++){
+
+
+
+            for (int k = 0;k < ramount;k++){
+                Vector3f direction = new Vector3f(1,0,0).rotateY(i * angle + (random.nextFloat() * 2 - 1) * angle / 2);
+                mt.transformPosition(direction);
+
+                float strength = k * 0.95f + (random.nextFloat() * 2 - 1) * 0.35f;
+                float friction = 0.65f;
+
+                Vec3 speed = new Vec3(
+                        direction.x * strength,
+                        direction.y * strength,
+                        direction.z * strength
+                ).add(directionVector.multiply(0.15 + 1 * random.nextFloat(),0.15 + 1 * random.nextFloat(),0.15 + 1 * random.nextFloat()));
+
+                int cr = random.nextInt(50);
+
+                BigSmokeParticleOptions options = BigSmokeParticleOptions.builder()
+                        .size(5f)
+                        .friction(friction)
+                        .minSpeed(0.025f)
+                        .color(50 + cr,50 + cr,50 + cr)
+                        .lifetime(0,20,50)
+                        .build();
+
+                level.addParticle(options,true,
+                        pos.x + direction.x,
+                        pos.y + direction.y,
+                        pos.z + direction.z,
+                        speed.x,
+                        speed.y,
+                        speed.z
+                );
+
+
+            }
         }
     }
 
@@ -59,11 +116,11 @@ public class BossClientPackets {
         Matrix4f mt = new Matrix4f();
         FDRenderUtil.applyMovementMatrixRotations(mt,direction);
 
-        float sizeMod = ((data & 0xf0000000) >> 28) / (float)0xf;
+        float sizeMod = ((data >> 28) & 0xf) / (float)0xf;
 
 
         Level level = Minecraft.getInstance().level;
-        int maxCount = (data & 0x0f000000) >> 24;
+        int maxCount = ((data >> 24) & 0x0f);
         int maxParticlePerCount = 15;
         float maxVerticalSpeed = 5f;
         float maxHorizontalSpeed = maxVerticalSpeed / 4f;
@@ -102,7 +159,6 @@ public class BossClientPackets {
                         dir.z * zxspeed
                 );
                 mt.transformPosition(I______Am_Speed);
-
                 level.addParticle(options,true,ppos.x,ppos.y,ppos.z,
                         I______Am_Speed.x,
                         I______Am_Speed.y,
