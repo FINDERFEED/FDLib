@@ -7,5 +7,8 @@
   },
   "rumbling": {
     "sounds": [ "fdlib:rumbling" ]
+  },
+  "lightning_attack": {
+    "sounds": [ "fdlib:lightning_attack" ]
   }
 }

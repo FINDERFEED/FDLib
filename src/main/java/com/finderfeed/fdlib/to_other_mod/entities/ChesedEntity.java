@@ -274,6 +274,7 @@ public class ChesedEntity extends FDLivingEntity {
 
 
                 BossUtil.chesedRaySmoke((ServerLevel) level(),end,reversedLook,120);
+                ((ServerLevel)level()).playSound(null,end.x,end.y,end.z, BossSounds.CHESED_LIGHTNING_RAY.get(), SoundSource.HOSTILE,100f,0.8f);
 
 
                 PositionedScreenShakePacket.send((ServerLevel) level(),FDShakeData.builder()
