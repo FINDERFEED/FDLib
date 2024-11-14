@@ -36,7 +36,9 @@ import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -46,6 +48,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -81,6 +85,8 @@ public class ChesedEntity extends FDLivingEntity {
     private Vec3 oldRollPos;
     private boolean playIdle = true;
     private boolean lookingAtTarget = true;
+    private LivingEntity target;
+    private boolean doBlinding = true;
 
 
     public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
@@ -135,6 +141,22 @@ public class ChesedEntity extends FDLivingEntity {
             }else{
                 system.stopAnimation("IDLE");
             }
+            if (level().getGameTime() % 10 == 0) {
+                this.blindCombatants();
+            }
+
+            if (this.getTarget() != null) {
+                this.checkTarget(this.getTarget());
+                if (this.lookingAtTarget) {
+                    this.lookAtTarget(this.getTarget());
+                }else{
+                    this.lookAt(EntityAnchorArgument.Anchor.EYES,this.getEyePosition().add(this.getLookAngle()));
+                }
+            }else{
+                if (level().getGameTime() % 20 == 0){
+                    this.changeTarget();
+                }
+            }
         }else{
             if (this.isRolling()){
                 this.handleClientRolling();
@@ -144,13 +166,86 @@ public class ChesedEntity extends FDLivingEntity {
         }
     }
 
+
+    public List<Player> getCombatants(boolean includeCreativeAndSpectator){
+        float radius = this.enrageRadius();
+        List<Player> combatants = level().getEntitiesOfClass(Player.class,new AABB(-radius,-2,-radius,radius,40,radius).move(this.position()),(player)->{
+            return player.position().distanceTo(this.position()) <= radius && (includeCreativeAndSpectator || !(player.isCreative() || player.isSpectator()));
+        });
+        return combatants;
+    }
+
+    private void checkTarget(LivingEntity target){
+
+        if (target.isDeadOrDying()){
+            this.changeTarget();
+            return;
+        }else if (target.position().distanceTo(this.position()) > this.enrageRadius()){
+            this.changeTarget();
+            return;
+        }
+
+
+        if (target instanceof Player player){
+            if (player.isCreative() || player.isSpectator()){
+                this.changeTarget();
+                return;
+            }
+        }
+
+
+    }
+
+    private void changeTarget(){
+        List<Player> combatants = this.getCombatants(false);
+        if (combatants.isEmpty()){
+            this.setTarget(null);
+        }else{
+            this.setTarget(combatants.get(random.nextInt(combatants.size())));
+        }
+    }
+
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    public void setTarget(LivingEntity target) {
+        this.target = target;
+    }
+
+    private void blindCombatants(){
+        var combatants = this.getCombatants(true);
+
+        for (Player player : combatants){
+
+            Vec3 lookAngle = player.getLookAngle();
+            Vec3 b = player.position().subtract(this.position()).normalize();
+            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION,400,0,true,true));
+            if (!(player.isCreative() || player.isSpectator())) {
+                if (doBlinding) {
+                    if (lookAngle.dot(b) > 0.05) {
+                        player.addEffect(new MobEffectInstance(BossEffects.CHESED_GAZE, 200, 0, true, true));
+                    } else {
+                        player.removeEffect(BossEffects.CHESED_GAZE);
+                    }
+                }
+            }
+
+        }
+
+    }
+
     private void idleParticles(){
         if (this.level().getGameTime() % 2 == 0){
+            float rad = 2;
+            if (this.entityData.get(IS_LAUNCHING_ORBS)){
+                rad = 5;
+            }
             var pos = this.getModelPartPosition(this,"core", clientModel).add((float) this.getX(), (float) this.getY(), (float) this.getZ());
             float baseAngle = -(float)Math.toRadians(this.yBodyRot) + FDMathUtil.FPI / 4;
             float randomRange = FDMathUtil.FPI * 2 - FDMathUtil.FPI / 2;
             for (int i = 0; i < 2;i++) {
-                var end = pos.add(new Vector3f(0, 0, 2).rotateY(baseAngle + randomRange * random.nextFloat()), new Vector3f()).add(0, -(pos.y - (float) this.getY()), 0);
+                var end = pos.add(new Vector3f(0, 0, rad).rotateY(baseAngle + randomRange * random.nextFloat()), new Vector3f()).add(0, -(pos.y - (float) this.getY()), 0);
                 level().addParticle(ArcLightningOptions.builder(BossParticles.ARC_LIGHTNING.get())
                                 .end(end.x, end.y, end.z)
                                 .lifetime(2)
@@ -216,7 +311,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 20;
+        return instance.tick >= 60;
     }
 
     public boolean rayAttack(AttackInstance instance){
@@ -224,7 +319,15 @@ public class ChesedEntity extends FDLivingEntity {
         int tick = instance.tick;
         int stage = instance.stage;
 
-        if (stage == 0) {
+        if (stage == 0){
+            this.changeTarget();
+        }
+
+        int localStage = stage % 3;
+
+        if (localStage == 1) {
+            lookingAtTarget = false;
+
             int rayAttackTick = 35;
             if (tick == 0) {
 
@@ -254,7 +357,7 @@ public class ChesedEntity extends FDLivingEntity {
             } else if (tick == rayAttackTick) {
 
                 Vec3 look = this.getLookAngle();
-                Vec3 p = this.position().add(0,1.3,0).add(look.reverse());
+                Vec3 p = this.getCenter().add(look.reverse());
                 Vec3 end = p.add(look.multiply(60,60,60));
                 ClipContext clipContext = new ClipContext(p,end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
                 var result = level().clip(clipContext);
@@ -312,19 +415,38 @@ public class ChesedEntity extends FDLivingEntity {
                             .build());
 
                 }
-                BossUtil.chesedRayExplosion((ServerLevel) level(),this.position().add(0,1.3,0),reversedLook,100,15,0.5f);
+                BossUtil.chesedRayExplosion((ServerLevel) level(),end,reversedLook,100,15,0.75f);
             }else if (tick > rayAttackTick){
-                if (tick > rayAttackTick + 20){
-                    return true;
+                if (tick > rayAttackTick + 30){
+                    instance.nextStage();
+                    return false;
                 }
             }
+        }else if (localStage == 0) {
+            lookingAtTarget = true;
+            if (this.getTarget() != null) {
+                if (isLookingStraightAtEntity(this.getTarget(), 0.05)) {
+                    instance.nextStage();
+                    lookingAtTarget = false;
+                }
+            }
+        }else if (localStage == 2){
+            float rnd = random.nextFloat();
+            float p = stage / (6f * 3);
+            float ch = FDMathUtil.normalDistribution(p,0,0.43f);
+            if (rnd > ch){
+                lookingAtTarget = true;
+                return true;
+            }
+            instance.nextStage();
         }
 
         return false;
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
-        if (true) return true;
+        lookingAtTarget = true;
+//        if (true) return true;
         var tick = instance.tick;
         var stage = instance.stage;
         if (stage == 0) {
@@ -376,13 +498,15 @@ public class ChesedEntity extends FDLivingEntity {
             }
         }else{
 
-            if (tick % 10 == 0){
-                this.spawnSpheresAround(25,tick / 10f * FDMathUtil.FPI / 9);
-            }
+            if (tick < 200) {
+                if (tick % 10 == 0) {
+                    this.spawnSpheresAround(25, tick / 10f * FDMathUtil.FPI / 9);
+                }
 
 
-            if (tick >= 200){
+            }else if (tick < 350){
                 this.entityData.set(IS_LAUNCHING_ORBS,false);
+            }else{
                 return true;
             }
             return false;
@@ -420,7 +544,8 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean rockfallAttack(AttackInstance instance){
-        if (true) return true;
+        lookingAtTarget = true;
+//        if (true) return true;
         int stage = instance.stage;
         int tick = instance.tick;
         int height = 32;
@@ -523,7 +648,7 @@ public class ChesedEntity extends FDLivingEntity {
                                 .lifetime(0, 0, 100)
                                 .size(1f)
                                 .build())
-                        .lifetime(200)
+                        .lifetime(400)
                         .particlesPerTick(20)
                         .processor(new CircleSpawnProcessor(new Vec3(0,-1,0),0.05f,0.1f,36))
                         .position(this.position().add(0,height + 2,0))
@@ -593,7 +718,8 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean earthquakeAttack(AttackInstance instance){
-        if (true) return true;
+        lookingAtTarget = false;
+//        if (true) return true;
         int t = instance.tick;
         int radius = 40;
         if (t < 6) {
@@ -655,7 +781,8 @@ public class ChesedEntity extends FDLivingEntity {
     private List<ChesedBlockProjectile> blockAttackProjectiles = new ArrayList<>();
 
     public boolean blockAttack(AttackInstance attack){
-        if (true) return true;
+        lookingAtTarget = true;
+//        if (true) return true;
         float height = 8;
         int timeTillAttack = 60;
         if (blockAttackProjectiles.isEmpty()){
@@ -669,6 +796,7 @@ public class ChesedEntity extends FDLivingEntity {
                 for (int i = 0; i < count; i++) {
                     float angle = this.getInitProjectileRotation(i, count);
                     ChesedBlockProjectile projectile = new ChesedBlockProjectile(BossEntities.BLOCK_PROJECTILE.get(), level());
+                    projectile.setBlockState(random.nextFloat() > 0.5 ? Blocks.SCULK.defaultBlockState() : Blocks.DEEPSLATE.defaultBlockState());
                     projectile.setDropParticlesTime(timeTillAttack / 2);
                     var path = this.createRotationPath(angle, -2,height, 30, timeTillAttack / 2, false);
                     var next = this.createRotationPath(angle, height,height, 30, timeTillAttack / 2, true);
@@ -690,7 +818,8 @@ public class ChesedEntity extends FDLivingEntity {
             if (attack.tick == 13){
                 BossUtil.posEvent((ServerLevel) level(),this.position().add(0,0.05,0),BossUtil.CHESED_GET_BLOCKS_FROM_EARTH_EVENT,0,60);
             }
-            Player player = level().getNearestPlayer(this,100);
+            LivingEntity player = this.getTarget();
+
             if (player == null) return false;
             if (blockAttackProjectiles.isEmpty()) return true;
             if (attack.tick >= timeTillAttack && attack.tick % 8 == 0){
@@ -765,7 +894,9 @@ public class ChesedEntity extends FDLivingEntity {
 
 
     public boolean roll(AttackInstance instance){
-        if (true) return true;
+        lookingAtTarget = false;
+        doBlinding = false;
+//        if (true) return true;
         int tick = instance.tick;
         var stage = instance.stage;
         if (tick == 0 && stage == 0){
@@ -814,6 +945,7 @@ public class ChesedEntity extends FDLivingEntity {
                 this.handleRollEarthShatters(tick, pos);
             }
         }else if (stage == 2){
+            doBlinding = true;
             this.setRolling(false);
             system.stopAnimation("ROLL_UP");
             system.startAnimation("ROLL_UP_END",AnimationTicker.builder(CHESED_ROLL_UP_JUST_END)
@@ -832,6 +964,7 @@ public class ChesedEntity extends FDLivingEntity {
             system.stopAnimation("ROLL_UP_END");
             system.stopAnimation("ROLL_AROUND");
             system.stopAnimation("ROLLING");
+            doBlinding = true;
             return true;
         }
         return false;
@@ -1084,6 +1217,32 @@ public class ChesedEntity extends FDLivingEntity {
         oldRollPos = pos;
     }
 
+    private void lookAtTarget(LivingEntity target){
+        Vec3 pos = this.getLookAtPos(target);
+        this.lookAt(EntityAnchorArgument.Anchor.EYES,pos);
+    }
+
+    private Vec3 getLookAtPos(LivingEntity target){
+        Vec3 pos = target.position().add(0,target.getBbHeight() / 2,0);
+        return pos;
+    }
+
+    private boolean isLookingStraightAtEntity(LivingEntity entity,double accuracy){
+        Vec3 look = this.getLookAngle();
+        Vec3 lookAt = this.getLookAtPos(entity);
+        Vec3 center = this.getEyePosition();
+        Vec3 b = lookAt.subtract(center).normalize();
+        double v = look.dot(b);
+        return v >= (1 - accuracy);
+    }
+
+    private Vec3 getCenter(){
+        return this.position().add(0,1.3,0);
+    }
+
+    private float enrageRadius(){
+        return 39;
+    }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

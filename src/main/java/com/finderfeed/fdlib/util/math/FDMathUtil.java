@@ -165,4 +165,13 @@ public class FDMathUtil {
                 x3 * (-3*t3 + 3*t2) +
                 x4 * t3;
     }
+
+    // the one that peak goes on y = 1 is o = 0, m = ~0.399
+    public static float normalDistribution(float x,float m,float o){
+        float fc = 1 / org.joml.Math.sqrt(o * o * FDMathUtil.FPI * 2);
+        float st = (float)Math.pow(x - m,2) / (2 * o * o);
+        float mt = (float)Math.exp(-st);
+        return fc * mt;
+
+    }
 }

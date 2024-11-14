@@ -34,6 +34,7 @@ public class FDLib {
         BossAnims.ANIMATIONS.register(bus);
         BossEntities.ENTITIES.register(bus);
         FDParticles.PARTICLES.register(bus);
+        BossEffects.MOB_EFFECTS.register(bus);
         BossParticles.PARTICLES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
