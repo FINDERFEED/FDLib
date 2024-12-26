@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity;
 
 
 import com.finderfeed.fdlib.network.FDPacket;

@@ -1,11 +1,10 @@
-package com.finderfeed.fdlib.to_other_mod;
+package com.finderfeed.fdlib.to_other_mod.init;
 
 import com.finderfeed.fdlib.FDLib;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 

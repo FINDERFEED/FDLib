@@ -9,9 +9,11 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallPart
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedAttackRayParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticle;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterRenderer;
-import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlockRenderer;
-import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntityRenderer;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterRenderer;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block.ChesedFallingBlockRenderer;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.flying_block_entity.FlyingBlockEntityRenderer;
+import com.finderfeed.fdlib.to_other_mod.init.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.init.BossModels;
 import com.finderfeed.fdlib.to_other_mod.projectiles.renderers.BlockProjectileRenderer;
 import com.finderfeed.fdlib.util.client.NullEntityRenderer;
 import net.minecraft.client.renderer.RenderType;

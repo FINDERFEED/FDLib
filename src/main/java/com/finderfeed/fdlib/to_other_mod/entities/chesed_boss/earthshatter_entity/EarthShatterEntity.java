@@ -1,6 +1,6 @@
-package com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity;
 
-import com.finderfeed.fdlib.to_other_mod.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.init.BossEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;

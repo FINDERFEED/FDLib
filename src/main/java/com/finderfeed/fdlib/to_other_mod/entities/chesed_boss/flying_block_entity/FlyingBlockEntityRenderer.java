@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.flying_block_entity;
 
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;

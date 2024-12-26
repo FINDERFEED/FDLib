@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod.entities;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss;
 
 import com.finderfeed.fdlib.FDHelpers;
 import com.finderfeed.fdlib.network.lib_packets.PlaySoundInEarsPacket;
@@ -26,11 +26,12 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallPart
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
-import com.finderfeed.fdlib.to_other_mod.entities.electric_sphere.ChesedElectricSphereEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
-import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.electric_sphere.ChesedElectricSphereEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block.ChesedFallingBlock;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.radial_earthquake.RadialEarthquakeEntity;
+import com.finderfeed.fdlib.to_other_mod.init.*;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
@@ -38,7 +39,6 @@ import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -71,7 +71,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.finderfeed.fdlib.to_other_mod.BossAnims.*;
+import static com.finderfeed.fdlib.to_other_mod.init.BossAnims.*;
 
 public class ChesedEntity extends FDLivingEntity {
 

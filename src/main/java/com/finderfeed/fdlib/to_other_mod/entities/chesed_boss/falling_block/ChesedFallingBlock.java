@@ -1,16 +1,12 @@
-package com.finderfeed.fdlib.to_other_mod.entities.falling_block;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block;
 
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
-import com.finderfeed.fdlib.to_other_mod.BossEntities;
-import com.finderfeed.fdlib.to_other_mod.BossUtil;
-import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
+import com.finderfeed.fdlib.to_other_mod.init.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.ChesedEntity;
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
 import com.finderfeed.fdlib.util.FDProjectile;
-import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -19,17 +15,14 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 

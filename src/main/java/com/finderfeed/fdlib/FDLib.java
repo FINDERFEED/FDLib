@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.to_other_mod.*;
 import com.finderfeed.fdlib.init.FDCommandArgumentTypes;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
+import com.finderfeed.fdlib.to_other_mod.init.*;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 

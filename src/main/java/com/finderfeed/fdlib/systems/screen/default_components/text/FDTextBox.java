@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.systems.screen.FDScreen;
 import com.finderfeed.fdlib.systems.screen.ValueComponent;
 import com.finderfeed.fdlib.systems.screen.annotations.FDScale;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

@@ -1,16 +1,11 @@
-package com.finderfeed.fdlib.to_other_mod;
+package com.finderfeed.fdlib.to_other_mod.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.effects.ChesedGazeEffect;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import java.util.function.Supplier;
 
 public class BossEffects {
 

@@ -2,8 +2,8 @@ package com.finderfeed.fdlib.to_other_mod;
 
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticleOptions;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
 import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.client.FDBlockParticleOptions;
@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

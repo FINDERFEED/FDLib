@@ -1,12 +1,12 @@
-package com.finderfeed.fdlib.to_other_mod;
+package com.finderfeed.fdlib.to_other_mod.init;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.electric_sphere.ChesedElectricSphereEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.falling_block.ChesedFallingBlock;
-import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.radial_earthquake.RadialEarthquakeEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.ChesedEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.electric_sphere.ChesedElectricSphereEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block.ChesedFallingBlock;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.flying_block_entity.FlyingBlockEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.radial_earthquake.RadialEarthquakeEntity;
 import com.finderfeed.fdlib.to_other_mod.projectiles.ChesedBlockProjectile;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;

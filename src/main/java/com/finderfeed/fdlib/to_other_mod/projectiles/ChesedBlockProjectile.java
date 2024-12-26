@@ -2,10 +2,10 @@ package com.finderfeed.fdlib.to_other_mod.projectiles;
 
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
-import com.finderfeed.fdlib.to_other_mod.BossEntities;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterEntity;
-import com.finderfeed.fdlib.to_other_mod.entities.earthshatter_entity.EarthShatterSettings;
-import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
+import com.finderfeed.fdlib.to_other_mod.init.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterSettings;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.to_other_mod.packets.SlamParticlesPacket;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.FDProjectile;

@@ -1,6 +1,5 @@
-package com.finderfeed.fdlib.to_other_mod.entities.falling_block;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block;
 
-import com.finderfeed.fdlib.to_other_mod.entities.flying_block_entity.FlyingBlockEntity;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -13,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class ChesedFallingBlockRenderer extends EntityRenderer<ChesedFallingBlock> {

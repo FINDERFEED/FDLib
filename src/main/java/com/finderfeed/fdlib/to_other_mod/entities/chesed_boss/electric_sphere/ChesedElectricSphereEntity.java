@@ -1,28 +1,21 @@
-package com.finderfeed.fdlib.to_other_mod.entities.electric_sphere;
+package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.electric_sphere;
 
 import com.finderfeed.fdlib.nbt.AutoSerializable;
 import com.finderfeed.fdlib.nbt.SerializableField;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDEntity;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDLivingEntity;
-import com.finderfeed.fdlib.to_other_mod.BossAnims;
-import com.finderfeed.fdlib.to_other_mod.BossEntities;
+import com.finderfeed.fdlib.to_other_mod.init.BossAnims;
+import com.finderfeed.fdlib.to_other_mod.init.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.client.BossParticles;
 import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningOptions;
-import com.finderfeed.fdlib.to_other_mod.entities.ChesedEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.ChesedEntity;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
-import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.AxisAngle4f;
-import org.joml.Math;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 public class ChesedElectricSphereEntity extends FDLivingEntity implements AutoSerializable {
 

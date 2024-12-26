@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.to_other_mod;
+package com.finderfeed.fdlib.to_other_mod.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.FDRegistries;

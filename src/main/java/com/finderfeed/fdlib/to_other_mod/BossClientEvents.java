@@ -1,11 +1,11 @@
 package com.finderfeed.fdlib.to_other_mod;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.to_other_mod.init.BossEffects;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
