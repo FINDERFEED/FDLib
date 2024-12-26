@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.hud.bossbars.packets;
 
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
+import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -28,7 +29,7 @@ public class RemovePlayerFromBossBarPacket extends FDPacket {
 
     @Override
     public void clientAction(IPayloadContext context) {
-
+        FDBossbars.removeBossBar(uuid);
     }
 
     @Override

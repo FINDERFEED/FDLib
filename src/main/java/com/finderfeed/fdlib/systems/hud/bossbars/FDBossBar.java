@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.systems.hud.bossbars;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.UUID;
 
 public abstract class FDBossBar {
@@ -13,7 +15,10 @@ public abstract class FDBossBar {
         this.entityId = entityId;
     }
 
-    public abstract void render();
+    /**
+     * Return the height of boss bar
+     */
+    public abstract float render(PoseStack matrices,float partialTicks);
 
     public abstract void tick();
 
