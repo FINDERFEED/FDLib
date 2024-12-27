@@ -39,6 +39,9 @@ public class FDLib {
         BossParticles.PARTICLES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
+
+        BossBars.BOSS_BARS.register(bus);
+
     }
 
 

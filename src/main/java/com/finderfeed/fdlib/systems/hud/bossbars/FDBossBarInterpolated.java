@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.hud.bossbars;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 
 import java.util.UUID;
@@ -15,34 +16,41 @@ public abstract class FDBossBarInterpolated extends FDBossBar {
     private int interpolationTime;
     private int currentInterpolationTime = 0;
 
+
     public FDBossBarInterpolated(UUID uuid, int entityId, int interpolationTime) {
         super(uuid, entityId);
         this.interpolationTime = interpolationTime;
     }
 
-
     @Override
-    public void tick() {
+    public float render(GuiGraphics graphics, float partialTicks) {
         if (currentInterpolationTime > 0){
-            float p = FDEasings.easeOut(1 - currentInterpolationTime / (float) interpolationTime);
+            float p = FDEasings.easeIn(Mth.clamp(currentInterpolationTime - partialTicks,0,interpolationTime) / (float) interpolationTime);
             this.interpolatedPercentage = FDMathUtil.lerp(this.getPercentage(),this.oldPercentage,p);
         }else{
             oldPercentage = this.getPercentage();
             interpolatedPercentage = this.getPercentage();
         }
+        return this.renderInterpolatedBossBar(graphics,partialTicks,interpolatedPercentage);
+    }
+
+    public abstract float renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage);
+
+    @Override
+    public void tick() {
         currentInterpolationTime = Mth.clamp(currentInterpolationTime - 1,0,interpolationTime);
     }
 
 
     @Override
     public void setPercentage(float percentage) {
-        if (currentInterpolationTime > 0){
-            oldPercentage = this.getInterpolatedPercentage();
-
-
-        }else{
+        if (percentage != this.getPercentage()) {
+            if (currentInterpolationTime > 0) {
+                oldPercentage = this.getInterpolatedPercentage();
+            } else {
+                oldPercentage = this.getPercentage();
+            }
             currentInterpolationTime = interpolationTime;
-            oldPercentage = this.getPercentage();
         }
         super.setPercentage(percentage);
     }

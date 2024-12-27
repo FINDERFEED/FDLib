@@ -11,13 +11,13 @@ import java.util.UUID;
 public class ChesedBossBar extends FDBossBarInterpolated {
 
     public ChesedBossBar(UUID uuid, int entityId) {
-        super(uuid, entityId,300);
+        super(uuid, entityId,10);
     }
 
     @Override
-    public float render(GuiGraphics graphics, float partialTicks) {
+    public float renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage) {
 
-        FDRenderUtil.fill(graphics.pose(),-200,0,400 * this.getInterpolatedPercentage(),40,1f,0f,0f,1f);
+        FDRenderUtil.fill(graphics.pose(),-200,0,400 * interpolatedPercentage,40,1f,0f,0f,1f);
 
         return 40;
     }

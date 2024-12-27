@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-@RegisterFDPacket("fdlib:set_boss_bar_progress")
+@RegisterFDPacket("fdlib:boss_bar_event")
 public class BossBarEventPacket extends FDPacket {
 
     private UUID uuid;

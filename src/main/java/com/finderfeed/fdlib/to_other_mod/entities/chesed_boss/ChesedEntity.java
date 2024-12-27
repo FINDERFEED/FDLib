@@ -101,6 +101,9 @@ public class ChesedEntity extends FDLivingEntity {
         }
         if (!level.isClientSide) {
             chain = new AttackChain(level.random)
+                    .addAttack(-5,AttackOptions.builder()
+                            .addAttack("nothing",this::doNothing)
+                            .build())
                     .addAttack(-3, AttackOptions.builder()
                             .addAttack("rayAttack",this::rayAttack)
                             .build())
@@ -314,7 +317,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 60;
+        return instance.tick >= 1000000;
     }
 
     public boolean rayAttack(AttackInstance instance){
