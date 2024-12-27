@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class FDServerBossBar {
 
-    private DeferredHolder<FDBossBarFactory<?>,FDBossBarFactory<?>> bossBarHolder;
+    private DeferredHolder<FDBossBarFactory<?>,?> bossBarHolder;
     private UUID uuid;
     private Entity entity;
     private Set<ServerPlayer> players = new HashSet<>();
@@ -24,13 +24,13 @@ public class FDServerBossBar {
     /**
      * If entity context is needed on client
      */
-    public FDServerBossBar(DeferredHolder<FDBossBarFactory<?>,FDBossBarFactory<?>> holder,Entity entity){
+    public FDServerBossBar(DeferredHolder<FDBossBarFactory<?>,?> holder,Entity entity){
         this.uuid = entity.getUUID();
         this.entity = entity;
         this.bossBarHolder = holder;
     }
 
-    public FDServerBossBar(DeferredHolder<FDBossBarFactory<?>,FDBossBarFactory<?>> holder){
+    public FDServerBossBar(DeferredHolder<FDBossBarFactory<?>,?> holder){
         this.uuid = UUID.randomUUID();
         this.entity = null;
         this.bossBarHolder = holder;
@@ -71,7 +71,7 @@ public class FDServerBossBar {
         return percentage;
     }
 
-    public DeferredHolder<FDBossBarFactory<?>, FDBossBarFactory<?>> getBossBarHolder() {
+    public DeferredHolder<FDBossBarFactory<?>, ?> getBossBarHolder() {
         return bossBarHolder;
     }
 }

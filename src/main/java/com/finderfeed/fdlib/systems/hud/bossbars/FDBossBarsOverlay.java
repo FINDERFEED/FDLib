@@ -29,7 +29,7 @@ public class FDBossBarsOverlay implements LayeredDraw.Layer {
 
         for (FDBossBar bossBar : FDBossbars.BOSS_BARS.values()){
 
-            float height = bossBar.render(matrices,pticks);
+            float height = bossBar.render(graphics,pticks);
             matrices.translate(0,height,0);
 
         }

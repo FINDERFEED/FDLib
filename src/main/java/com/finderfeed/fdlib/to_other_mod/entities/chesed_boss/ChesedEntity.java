@@ -10,6 +10,7 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackOptions;
+import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import com.finderfeed.fdlib.systems.particle.CircleParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.SetParticleSpeedProcessor;
@@ -78,6 +79,7 @@ public class ChesedEntity extends FDLivingEntity {
     public static EntityDataAccessor<Boolean> IS_ROLLING = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
     public static EntityDataAccessor<Boolean> IS_LAUNCHING_ORBS = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
 
+    public FDServerBossBar bossBar = new FDServerBossBar(BossBars.CHESED_BOSS_BAR,this);
 
     public AttackChain chain;
     private static FDModel serverModel;
@@ -131,6 +133,7 @@ public class ChesedEntity extends FDLivingEntity {
     @Override
     public void tick() {
         super.tick();
+        this.bossBar.setPercentage(this.getHealth() / this.getMaxHealth());
         AnimationSystem system = this.getSystem();
         system.setVariable("variable.radius",600);
         system.setVariable("variable.angle",270);
@@ -1269,6 +1272,18 @@ public class ChesedEntity extends FDLivingEntity {
         super.load(tag);
     }
 
+    @Override
+    public void startSeenByPlayer(ServerPlayer player) {
+        super.startSeenByPlayer(player);
+        this.bossBar.addPlayer(player);
+    }
+
+    @Override
+    public void stopSeenByPlayer(ServerPlayer player) {
+        super.stopSeenByPlayer(player);
+        this.bossBar.removePlayer(player);
+    }
+
     public void setRolling(boolean state){
         this.entityData.set(IS_ROLLING,state);
     }
@@ -1286,4 +1301,6 @@ public class ChesedEntity extends FDLivingEntity {
     public boolean shouldRenderAtSqrDistance(double p_19883_) {
         return true;
     }
+
+
 }

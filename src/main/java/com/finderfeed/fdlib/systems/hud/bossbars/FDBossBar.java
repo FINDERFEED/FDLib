@@ -1,6 +1,10 @@
 package com.finderfeed.fdlib.systems.hud.bossbars;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
@@ -18,7 +22,7 @@ public abstract class FDBossBar {
     /**
      * Return the height of boss bar
      */
-    public abstract float render(PoseStack matrices,float partialTicks);
+    public abstract float render(GuiGraphics graphics, float partialTicks);
 
     public abstract void tick();
 
@@ -45,5 +49,16 @@ public abstract class FDBossBar {
      */
     public int getEntityId() {
         return entityId;
+    }
+
+    public <T extends Entity> T getEntity() {
+
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return null;
+
+        Entity entity = level.getEntity(this.entityId);
+        if (entity == null) return null;
+
+        return (T)entity;
     }
 }
