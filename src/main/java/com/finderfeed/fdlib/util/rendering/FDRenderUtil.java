@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.util.rendering;
 
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
+import com.finderfeed.fdlib.init.FDCoreShaders;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -107,6 +108,29 @@ public class FDRenderUtil {
 
         BufferUploader.drawWithShader(builder.build());
     }
+
+    public static void renderShader(PoseStack matrices,float x,float y,float xw,float yw,float r,float g,float b,float a,float xuvStretch,float yuvStretch){
+        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+        RenderSystem.enableBlend();
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
+        Matrix4f m = matrices.last().pose();
+
+        float xuvs = 0;
+        float xuvend = xuvStretch;
+
+        float yuvs = 0;
+        float yuvend = yuvStretch;
+
+        builder.addVertex(m,x,y + yw,0).setUv(xuvs,yuvend).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y + yw,0).setUv(xuvend,yuvend).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y,0).setUv(xuvend,yuvs).setColor(r,g,b,a);
+        builder.addVertex(m,x,y,0).setUv(xuvs,yuvs).setColor(r,g,b,a);
+
+
+        BufferUploader.drawWithShader(builder.build());
+    }
+
+
 
     public static void fill(RenderType type,PoseStack matrices, float x, float y, float xw, float yw, float r, float g, float b, float a){
         MultiBufferSource.BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
