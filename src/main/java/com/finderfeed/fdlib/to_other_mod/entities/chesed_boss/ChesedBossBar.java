@@ -20,26 +20,30 @@ public class ChesedBossBar extends FDBossBarInterpolated {
     @Override
     public float renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage) {
 
-        FDRenderUtil.fill(graphics.pose(),-200,0,400 * interpolatedPercentage,40,1f,0f,0f,1f);
+        float xw = 400;
+        float yw = 10;
+        FDRenderUtil.fill(graphics.pose(),-200,0,xw * interpolatedPercentage,yw,1f,0f,0f,1f);
 
         float t = (time + partialTicks) / 200f;
 
 
-        float xw = 400 * interpolatedPercentage;
-        float yw = 40;
+        float offs = 20;
 
+        FDRenderUtil.Scissor.pushScissors(graphics.pose(),-200,0,xw * interpolatedPercentage,yw);
         FDShaderRenderer.start(graphics,FDCoreShaders.NOISE)
                 .position(-200,0,0)
                 .setResolution(xw,yw)
-                .setUVSpan(0.1f,1)
+                .setUVSpan(0.05f,1)
                 .setRightColor(1,1,1,0.75f)
-                .setLeftColor(1,1,1,0f)
-                .setShaderUniform("size",400,yw)
+                .setLeftColor(1,1,1,0.1f)
+                .setShaderUniform("size",xw,yw)
                 .setShaderUniform("xyOffset",-t,0)
-                .setShaderUniform("sections",20)
+                .setShaderUniform("sections",30)
                 .setShaderUniform("octaves",4)
                 .setShaderUniform("time",t)
                 .end();
+        FDRenderUtil.Scissor.popScissors();
+
 
 
         return 40;

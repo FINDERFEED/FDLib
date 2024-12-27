@@ -316,6 +316,12 @@ public class FDRenderUtil {
             FDRenderUtil.scissor(instance.x,instance.y,instance.x2 - instance.x,instance.y2 - instance.y);
         }
 
+        public static void pushScissors(PoseStack poseStack,float x,float y,float wx,float wy){
+            Matrix4f m = poseStack.last().pose();
+            Vector3f pos = m.transformPosition(x,y,0,new Vector3f());
+            pushScissors(pos.x,pos.y,wx,wy);
+        }
+
         public static void popScissors(){
             if (activeScissors.isEmpty()){
                 RenderSystem.disableScissor();
