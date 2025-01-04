@@ -50,7 +50,7 @@ public class ChesedBossBar extends FDBossBarInterpolated {
                 .position(hpPosX,hpPosY,0)
                 .setResolution(hpW,5)
                 .setUVSpan(0.5f,1)
-                .setUpColor(0.1f,0.4f,0.4f,0f)
+                .setUpColor(0.1f,0.5f,0.5f,0f)
                 .setDownColor(0.1f,0.8f,0.8f,0.8f)
                 .setShaderUniform("size",hpW,5)
                 .setShaderUniform("xyOffset",0,t)
