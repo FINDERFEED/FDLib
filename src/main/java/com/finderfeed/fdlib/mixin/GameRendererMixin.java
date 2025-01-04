@@ -2,15 +2,21 @@ package com.finderfeed.fdlib.mixin;
 
 
 import com.finderfeed.fdlib.ClientMixinHandler;
+import com.finderfeed.fdlib.to_other_mod.BossClientEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -31,7 +37,17 @@ public class GameRendererMixin {
         ClientMixinHandler.beforeLevel();
     }
 
+    @Inject(method = "getNightVisionScale",at = @At("RETURN"), cancellable = true)
+    private static void nightVisionScale(LivingEntity entity, float pticks, CallbackInfoReturnable<Float> cir){
+        Player player = Minecraft.getInstance().player;
+        if (player != null && player.hasEffect(MobEffects.NIGHT_VISION)) {
+            float value = cir.getReturnValue();
 
+            float percent = 1 - BossClientEvents.getChesedGazePercent(pticks);
+
+            cir.setReturnValue(value * percent);
+        }
+    }
 
 
 }

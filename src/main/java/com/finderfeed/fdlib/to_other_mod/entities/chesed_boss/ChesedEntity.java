@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDLivingEntity;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDMob;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackInstance;
@@ -54,6 +55,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -74,7 +77,7 @@ import java.util.function.Function;
 
 import static com.finderfeed.fdlib.to_other_mod.init.BossAnims.*;
 
-public class ChesedEntity extends FDLivingEntity {
+public class ChesedEntity extends FDMob {
 
     public static EntityDataAccessor<Boolean> IS_ROLLING = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
     public static EntityDataAccessor<Boolean> IS_LAUNCHING_ORBS = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
@@ -91,8 +94,9 @@ public class ChesedEntity extends FDLivingEntity {
     private boolean doBlinding = true;
 
 
-    public ChesedEntity(EntityType<? extends LivingEntity> type, Level level) {
+    public ChesedEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
+
         if (serverModel == null) {
             serverModel = new FDModel(BossModels.CHESED.get());
         }
@@ -135,6 +139,9 @@ public class ChesedEntity extends FDLivingEntity {
 
     @Override
     public void tick() {
+        if (!this.isRolling()) {
+            this.setYRot(yHeadRot);
+        }
         super.tick();
         this.bossBar.setPercentage(this.getHealth() / this.getMaxHealth());
         AnimationSystem system = this.getSystem();
@@ -317,7 +324,7 @@ public class ChesedEntity extends FDLivingEntity {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 1000000;
+        return instance.tick >= 20;
     }
 
     public boolean rayAttack(AttackInstance instance){
@@ -431,7 +438,7 @@ public class ChesedEntity extends FDLivingEntity {
         }else if (localStage == 0) {
             lookingAtTarget = true;
             if (this.getTarget() != null) {
-                if (isLookingStraightAtEntity(this.getTarget(), 0.05)) {
+                if (isLookingStraightAtEntity(this.getTarget(), 0.00001)) {
                     instance.nextStage();
                     lookingAtTarget = false;
                 }
@@ -1225,7 +1232,7 @@ public class ChesedEntity extends FDLivingEntity {
 
     private void lookAtTarget(LivingEntity target){
         Vec3 pos = this.getLookAtPos(target);
-        this.lookAt(EntityAnchorArgument.Anchor.EYES,pos);
+        this.getLookControl().setLookAt(pos);
     }
 
     private Vec3 getLookAtPos(LivingEntity target){
@@ -1306,4 +1313,8 @@ public class ChesedEntity extends FDLivingEntity {
     }
 
 
+    @Override
+    public int getHeadRotSpeed() {
+        return 10;
+    }
 }

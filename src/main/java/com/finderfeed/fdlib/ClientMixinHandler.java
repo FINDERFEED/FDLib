@@ -21,6 +21,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
@@ -51,6 +52,11 @@ public class ClientMixinHandler {
             }
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onLogoff(ClientPlayerNetworkEvent.LoggingOut event){
+        SHAKES.clear();
     }
 
     private static boolean renderShake = true;

@@ -54,8 +54,7 @@ public class BossClientEvents {
 
         if (chesedGazeEffectTick != 0) {
             chesedGazeEffectTickMax = 20;
-            float time = (float) Mth.lerp(event.getPartialTick(),chesedGazeEffectTickO,chesedGazeEffectTick);
-            float p = FDEasings.easeOut(time / chesedGazeEffectTickMax);
+            float p = getChesedGazePercent(event.getPartialTick());
 
 
             float r = event.getRed();
@@ -84,8 +83,7 @@ public class BossClientEvents {
             levelTime /= 120;
 
 
-            float time = (float) Mth.lerp(event.getPartialTick(),chesedGazeEffectTickO,chesedGazeEffectTick);
-            float p = FDEasings.easeOut(time / chesedGazeEffectTickMax);
+            float p = getChesedGazePercent(event.getPartialTick());
 
 
 
@@ -103,6 +101,12 @@ public class BossClientEvents {
             event.setNearPlaneDistance(nearPlaneDistance);
 
         }
+    }
+
+    public static float getChesedGazePercent(double pticks){
+        float time = (float) Mth.lerp(pticks,chesedGazeEffectTickO,chesedGazeEffectTick);
+        float p = FDEasings.easeOut(time / chesedGazeEffectTickMax);
+        return p;
     }
 
 
