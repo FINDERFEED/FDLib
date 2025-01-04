@@ -81,6 +81,16 @@ public class FDShaderRenderer {
         return this;
     }
 
+
+
+    public FDShaderRenderer setDownColor(float r,float g,float b,float a){
+        return this.setDownLeftColor(r,g,b,a).setDownRightColor(r,g,b,a);
+    }
+    public FDShaderRenderer setUpColor(float r,float g,float b,float a){
+        return this.setUpLeftColor(r,g,b,a).setUpRightColor(r,g,b,a);
+    }
+
+
     public FDShaderRenderer setRightColor(float r,float g,float b,float a){
         return this.setUpRightColor(r,g,b,a).setDownRightColor(r,g,b,a);
     }

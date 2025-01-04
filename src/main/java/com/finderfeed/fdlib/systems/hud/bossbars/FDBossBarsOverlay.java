@@ -24,7 +24,7 @@ public class FDBossBarsOverlay implements LayeredDraw.Layer {
 
         matrices.pushPose();
 
-        float baseOffset = 10;
+        float baseOffset = 3;
         matrices.translate(width/2,baseOffset,0);
 
         for (FDBossBar bossBar : FDBossbars.BOSS_BARS.values()){

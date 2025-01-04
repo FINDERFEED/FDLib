@@ -233,7 +233,7 @@ public class ChesedEntity extends FDMob {
 
             Vec3 lookAngle = player.getLookAngle();
             Vec3 b = player.position().subtract(this.position()).normalize();
-            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION,400,0,true,true));
+            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION,400,0,true,false));
             if (!(player.isCreative() || player.isSpectator())) {
                 if (doBlinding) {
                     if (lookAngle.dot(b) > 0.05) {
@@ -324,7 +324,7 @@ public class ChesedEntity extends FDMob {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 20;
+        return instance.tick >= 1000000;
     }
 
     public boolean rayAttack(AttackInstance instance){
