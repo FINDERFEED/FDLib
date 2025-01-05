@@ -2,7 +2,8 @@ package com.finderfeed.fdlib.systems.screen.screen_particles;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
-import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,34 +26,30 @@ import java.util.List;
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT)
 public class FDScreenParticleEngine {
 
-    private static HashMap<ParticleRenderType, List<FDScreenParticle>> PARTICLES = new HashMap<>();
+    private static HashMap<ParticleRenderType, List<FDScreenParticle>> SCREEN_PARTICLES = new HashMap<>();
+    private static HashMap<ParticleRenderType, List<FDScreenParticle>> OVERLAY_PARTICLES = new HashMap<>();
 
 
     @SubscribeEvent
     public static void renderScreenEvent(ScreenEvent.Render.Post event){
-        render(event.getGuiGraphics(),event.getPartialTick());
+        render(SCREEN_PARTICLES,event.getGuiGraphics(),event.getPartialTick());
     }
 
     @SubscribeEvent
     public static void onGuiRender(RenderGuiEvent.Post event){
-        if (Minecraft.getInstance().screen == null){
-            GuiGraphics graphics = event.getGuiGraphics();
-
-            int layerCount = Minecraft.getInstance().gui.getLayerCount() + 1;
-
-            graphics.pose().pushPose();
-            graphics.pose().translate(0,0, GuiLayerManager.Z_SEPARATION * layerCount);
-
-            render(graphics,event.getPartialTick().getGameTimeDeltaPartialTick(true));
-
-            graphics.pose().popPose();
-        }
+        GuiGraphics graphics = event.getGuiGraphics();
+        int layerCount = Minecraft.getInstance().gui.getLayerCount();
+        graphics.pose().pushPose();
+        graphics.pose().translate(0,0, GuiLayerManager.Z_SEPARATION * layerCount);
+        render(OVERLAY_PARTICLES,graphics,event.getPartialTick().getGameTimeDeltaPartialTick(true));
+        graphics.pose().popPose();
     }
 
 
     @SubscribeEvent
     public static void clientTickEvent(ClientTickEvent.Pre event){
-        tickParticles();
+        tickParticles(OVERLAY_PARTICLES);
+        tickParticles(SCREEN_PARTICLES);
     }
 
     @SubscribeEvent
@@ -66,14 +63,15 @@ public class FDScreenParticleEngine {
         clearParticles();
     }
 
-    private static void render(GuiGraphics graphics,float partialTicks){
+    private static void render(HashMap<ParticleRenderType, List<FDScreenParticle>> particles,GuiGraphics graphics,float partialTicks){
 
-        graphics.drawCenteredString(Minecraft.getInstance().font,"Zhopa",10,10,0xffffff);
 
-        Tesselator tesselator = Tesselator.getInstance();
+        Tesselator tesselator = RenderSystem.renderThreadTesselator();
         TextureManager manager = Minecraft.getInstance().getTextureManager();
 
-        for (var entry : PARTICLES.entrySet()){
+
+
+        for (var entry : particles.entrySet()){
             var list = entry.getValue();
             if (list.isEmpty()) continue;
 
@@ -86,6 +84,8 @@ public class FDScreenParticleEngine {
                 particle.render(graphics,builder,partialTicks);
             }
 
+            BufferUploader.drawWithShader(builder.build());
+
             if (renderType instanceof FDParticleRenderType fdParticleRenderType){
                 fdParticleRenderType.end();
             }
@@ -94,8 +94,8 @@ public class FDScreenParticleEngine {
     }
 
 
-    public static void tickParticles(){
-        for (var entry : PARTICLES.entrySet()){
+    public static void tickParticles(HashMap<ParticleRenderType, List<FDScreenParticle>> particles){
+        for (var entry : particles.entrySet()){
             Iterator<FDScreenParticle> iter = entry.getValue().iterator();
             while (iter.hasNext()){
                 FDScreenParticle particle = iter.next();
@@ -109,16 +109,26 @@ public class FDScreenParticleEngine {
     }
 
     public static void clearParticles(){
-        PARTICLES.clear();
+        SCREEN_PARTICLES.clear();
     }
 
 
-    public static void addParticle(FDScreenParticle particle){
+    public static void addScreenParticle(FDScreenParticle particle){
         ParticleRenderType renderType = particle.getParticleRenderType();
-        PARTICLES.computeIfAbsent(renderType,type->{
+        SCREEN_PARTICLES.computeIfAbsent(renderType, type->{
             LinkedList<FDScreenParticle> particles = new LinkedList<>();
             return particles;
         }).add(particle);
+        particle.onAddedToEngine();
+    }
+
+    public static void addOverlayParticle(FDScreenParticle particle){
+        ParticleRenderType renderType = particle.getParticleRenderType();
+        OVERLAY_PARTICLES.computeIfAbsent(renderType, type->{
+            LinkedList<FDScreenParticle> particles = new LinkedList<>();
+            return particles;
+        }).add(particle);
+        particle.onAddedToEngine();
     }
 
 }

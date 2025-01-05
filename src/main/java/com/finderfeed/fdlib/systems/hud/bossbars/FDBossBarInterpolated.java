@@ -23,7 +23,7 @@ public abstract class FDBossBarInterpolated extends FDBossBar {
     }
 
     @Override
-    public float render(GuiGraphics graphics, float partialTicks) {
+    public void render(GuiGraphics graphics, float partialTicks) {
         if (currentInterpolationTime > 0){
             float p = FDEasings.easeIn(Mth.clamp(currentInterpolationTime - partialTicks,0,interpolationTime) / (float) interpolationTime);
             this.interpolatedPercentage = FDMathUtil.lerp(this.getPercentage(),this.oldPercentage,p);
@@ -31,10 +31,10 @@ public abstract class FDBossBarInterpolated extends FDBossBar {
             oldPercentage = this.getPercentage();
             interpolatedPercentage = this.getPercentage();
         }
-        return this.renderInterpolatedBossBar(graphics,partialTicks,interpolatedPercentage);
+        this.renderInterpolatedBossBar(graphics,partialTicks,interpolatedPercentage);
     }
 
-    public abstract float renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage);
+    public abstract void renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage);
 
     @Override
     public void tick() {

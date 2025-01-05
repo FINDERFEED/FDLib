@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -24,6 +25,11 @@ public class FDBossbars {
             bossBar.tick();
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onLogoff(ClientPlayerNetworkEvent.LoggingOut event){
+        BOSS_BARS.clear();
     }
 
     public static void removeBossBar(UUID uuid){

@@ -1,7 +1,5 @@
 package com.finderfeed.fdlib.systems.screen.screen_particles;
 
-import com.finderfeed.fdlib.util.rendering.FDEasings;
-import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.particle.ParticleRenderType;
@@ -33,7 +31,7 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
 
     private boolean removed = false;
 
-    private int lifetime;
+    private int lifetime = 60;
     private int age;
 
 
@@ -101,8 +99,19 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
         this.ya = ya;
         return (T) this;
     }
+
+    public T setSpeed(double xd,double yd){
+        this.xd = xd;
+        this.yd = yd;
+        return (T) this;
+    }
+
     public T setAcceleration(Vector2f v){
         return this.setAcceleration(v.x,v.y);
+    }
+
+    public T setSpeed(Vector2f v){
+        return this.setSpeed(v.x,v.y);
     }
 
     public T setFriction(double friction){
@@ -110,8 +119,13 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
         return (T) this;
     }
 
-    public T sendToEngine(){
-        FDScreenParticleEngine.addParticle(this);
+    public T sendToScreen(){
+        FDScreenParticleEngine.addScreenParticle(this);
+        return (T) this;
+    }
+
+    public T sendToOverlay(){
+        FDScreenParticleEngine.addOverlayParticle(this);
         return (T) this;
     }
 
@@ -189,5 +203,9 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
 
     public void setRemoved(boolean removed) {
         this.removed = removed;
+    }
+
+    public void onAddedToEngine(){
+
     }
 }

@@ -21,12 +21,13 @@ import java.util.function.Function;
  * </p>
  * <p>
  * Example:
- * You have 2 areas of length 2 and 3 and call apply(4.5).
+ * You have 3 areas of length 1 1 and 3 and call apply(4.5).
  * </p>
  * <p>
- * 0--2---5
- * 4.5 is in the range of the second area and gives then it will give your specified function the local percentage of this area completion:
- * (4.5 - 2 [the value where current area started]) [current area completion length] / 3 [length of current area] = 0.5 [area completion percentage]
+ * 0-1-1---5
+ * 4.5 is in the range of the third area and it will give your specified function the local percentage of this area completion:
+ * (4.5 - 2 [the accumulated value where current area started]) [current area completion length] / 3 [length of current area] = 0.5 [area completion percentage]
+ * This area completion percentage is the supplied to your specified function on the area.
  * </p>
  * <p>
  * What you give in "apply" method is the "coordinate" on area axis,

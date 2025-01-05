@@ -3,9 +3,14 @@ package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarInterpolated;
 import com.finderfeed.fdlib.init.FDCoreShaders;
+import com.finderfeed.fdlib.systems.screen.screen_particles.FDTexturedSParticle;
+import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
+import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.finderfeed.fdlib.util.rendering.FDShaderRenderer;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
@@ -24,7 +29,7 @@ public class ChesedBossBar extends FDBossBarInterpolated {
 
     //198 (192) 45 (50)
     @Override
-    public float renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage) {
+    public void renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage) {
 
         PoseStack matrices = graphics.pose();
 
@@ -60,13 +65,23 @@ public class ChesedBossBar extends FDBossBarInterpolated {
                 .end();
         FDRenderUtil.Scissor.popScissors();
 
-        return 50;
     }
 
     @Override
     public void tick() {
         super.tick();
         time++;
+
+        Window window = Minecraft.getInstance().getWindow();
+
+        float w = window.getGuiScaledWidth();
+        float h = window.getGuiScaledHeight();
+
+    }
+
+    @Override
+    public float height() {
+        return 50;
     }
 
     @Override

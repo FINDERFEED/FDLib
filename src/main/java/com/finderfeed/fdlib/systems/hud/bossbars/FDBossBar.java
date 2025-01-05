@@ -22,9 +22,11 @@ public abstract class FDBossBar {
     /**
      * Return the height of boss bar
      */
-    public abstract float render(GuiGraphics graphics, float partialTicks);
+    public abstract void render(GuiGraphics graphics, float partialTicks);
 
     public abstract void tick();
+
+    public abstract float height();
 
     /**
      * Just to communicate with bossbar from server.
