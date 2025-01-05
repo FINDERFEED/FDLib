@@ -11,9 +11,12 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -25,18 +28,41 @@ import java.util.function.Function;
 
 public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
 
-    private float maxQuadSize = 1f;
+
+
+
+    private float u0 = 0;
+    private float v0 = 0;
+    private float u1 = 1;
+    private float v1 = 1;
+    private float maxQuadSize = 10f;
     private float currentQuadSize;
     private float quadSizeO;
     private ComplexEasingFunction scalingFunction = ComplexEasingFunction.builder().build();
     private ParticleRenderType renderType;
 
-    public FDTexturedSParticle(ParticleRenderType renderType){
-        this.renderType = renderType;
+    /**
+     * Well, not a factory but a cache. Look into FDRenderUtil.ScreenParticleRenderTypes.
+     */
+    public FDTexturedSParticle(Function<ResourceLocation, ? extends ParticleRenderType> factory, ResourceLocation location){
+
+        ParticleEngine engine = Minecraft.getInstance().particleEngine;
+        var atlas = engine.textureAtlas;
+        var atlasSprite = atlas.getTextures().get(location);
+
+        if (atlasSprite != null){
+            this.u0 = atlasSprite.getU0();
+            this.v0 = atlasSprite.getV0();
+            this.u1 = atlasSprite.getU1();
+            this.v1 = atlasSprite.getV1();
+            this.renderType = factory.apply(atlas.location());
+        }else{
+            this.renderType = factory.apply(location);
+        }
     }
 
-    public static FDTexturedSParticle create(ParticleRenderType renderType){
-        return new FDTexturedSParticle(renderType);
+    public static FDTexturedSParticle create(Function<ResourceLocation, ? extends ParticleRenderType> factory, ResourceLocation location){
+        return new FDTexturedSParticle(factory,location);
     }
 
     @Override
@@ -56,15 +82,10 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
 
         Matrix4f m = matrices.last().pose();
 
-        vertex.addVertex(m,-halfQuadSize,-halfQuadSize,0).setUv(this.getU0(),this.getV0()).setColor(1f,1f,1f,1f);
-        vertex.addVertex(m,-halfQuadSize,halfQuadSize,0).setUv(this.getU0(),this.getV1()).setColor(1f,1f,1f,1f);
-        vertex.addVertex(m,halfQuadSize,halfQuadSize,0).setUv(this.getU1(),this.getV1()).setColor(1f,1f,1f,1f);
-        vertex.addVertex(m,halfQuadSize,-halfQuadSize,0).setUv(this.getU1(),this.getV0()).setColor(1f,1f,1f,1f);
-
-        vertex.addVertex(m,halfQuadSize,-halfQuadSize,0).setUv(this.getU1(),this.getV0()).setColor(1f,1f,1f,1f);
-        vertex.addVertex(m,halfQuadSize,halfQuadSize,0).setUv(this.getU1(),this.getV1()).setColor(1f,1f,1f,1f);
-        vertex.addVertex(m,-halfQuadSize,halfQuadSize,0).setUv(this.getU0(),this.getV1()).setColor(1f,1f,1f,1f);
-        vertex.addVertex(m,-halfQuadSize,-halfQuadSize,0).setUv(this.getU0(),this.getV0()).setColor(1f,1f,1f,1f);
+        vertex.addVertex(m,-halfQuadSize,-halfQuadSize,0).setUv(this.getU0(),this.getV0()).setColor(getR(),getG(),getB(),getA());
+        vertex.addVertex(m,-halfQuadSize,halfQuadSize,0).setUv(this.getU0(),this.getV1()).setColor(getR(),getG(),getB(),getA());
+        vertex.addVertex(m,halfQuadSize,halfQuadSize,0).setUv(this.getU1(),this.getV1()).setColor(getR(),getG(),getB(),getA());
+        vertex.addVertex(m,halfQuadSize,-halfQuadSize,0).setUv(this.getU1(),this.getV0()).setColor(getR(),getG(),getB(),getA());
 
 
 
@@ -125,7 +146,11 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
     }
 
     public float getCurrentQuadSize(float partialTicks){
-        return Mth.lerp(partialTicks,quadSizeO, currentQuadSize);
+        if (quadSizeO < currentQuadSize) {
+            return Mth.lerp(partialTicks, quadSizeO, currentQuadSize);
+        }else{
+            return Mth.lerp(1 - partialTicks, quadSizeO,currentQuadSize);
+        }
     }
 
     @Override
@@ -144,68 +169,20 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
 
     //override for atlases
     public float getU0(){
-        return 0;
+        return u0;
     }
 
     public float getV0(){
-        return 0;
+        return v0;
     }
 
     public float getU1(){
-        return 1;
+        return u1;
     }
 
     public float getV1(){
-        return 1;
+        return v1;
     }
 
-    private static final Function<ResourceLocation, FDParticleRenderType> TEXTURES_BLUR_ADDITIVE = Util.memoize((location)->{
-        return new FDParticleRenderType() {
-            @Override
-            public void end() {
-                Minecraft.getInstance().getTextureManager().getTexture(location).restoreLastBlurMipmap();
-            }
 
-            @Nullable
-            @Override
-            public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
-
-
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-
-                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-                RenderSystem.setShaderTexture(0, location);
-                Minecraft.getInstance().getTextureManager().getTexture(location).setBlurMipmap(true,true);
-
-                return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            }
-        };
-    });
-
-    private static final Function<ResourceLocation, FDParticleRenderType> TEXTURES_DEFAULT = Util.memoize((location)->{
-        return new FDParticleRenderType() {
-            @Override
-            public void end() {
-            }
-
-            @Nullable
-            @Override
-            public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-                RenderSystem.setShaderTexture(0, location);
-                return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            }
-        };
-    });
-
-    public static FDParticleRenderType createSimpleRenderType(ResourceLocation texture){
-        return TEXTURES_DEFAULT.apply(texture);
-    }
-
-    public static FDParticleRenderType createBlurRenderType(ResourceLocation texture){
-        return TEXTURES_BLUR_ADDITIVE.apply(texture);
-    }
 }

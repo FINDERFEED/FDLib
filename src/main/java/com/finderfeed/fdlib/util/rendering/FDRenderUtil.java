@@ -1,10 +1,10 @@
 package com.finderfeed.fdlib.util.rendering;
 
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
-import com.finderfeed.fdlib.init.FDCoreShaders;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Function;
 
 public class FDRenderUtil {
 
@@ -410,67 +411,56 @@ public class FDRenderUtil {
                 return tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
             }
         };
+    }
 
-//        public static final ParticleRenderType ADDITIVE_TRANSLUCENT = new ParticleRenderType() {
-//
-//            @Override
-//            public void begin(BufferBuilder builder, TextureManager mmanager) {
-//                if (Minecraft.useShaderTransparency()){
-//                    Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-//                }
-//                RenderSystem.depthMask(false);
-//                RenderSystem.enableBlend();
-//                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE);
-//                ClientHelpers.bindText(TextureAtlas.LOCATION_PARTICLES);
-//                builder.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
-//            }
-//
-//            @Override
-//            public void end(Tesselator tesselator) {
-//                tesselator.end();
-//                if (Minecraft.useShaderTransparency()){
-//                    Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
-//                    Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
-//                }
-//                RenderSystem.disableBlend();
-//                RenderSystem.depthMask(true);
-//            }
-//
-//            @Override
-//            public String toString() {
-//                return "solarcraft:additive";
-//            }
-//        };
-//
-//        public static final ParticleRenderType NORMAL_TRANSLUCENT = new ParticleRenderType() {
-//            @Override
-//            public void begin(BufferBuilder builder, TextureManager mmanager) {
-//                if (Minecraft.useShaderTransparency()){
-//                    Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-//                }
-//                RenderSystem.depthMask(false);
-//                RenderSystem.enableBlend();
-//                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
-//                ClientHelpers.bindText(TextureAtlas.LOCATION_PARTICLES);
-//                builder.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
-//            }
-//
-//            @Override
-//            public void end(Tesselator tesselator) {
-//                tesselator.end();
-//                if (Minecraft.useShaderTransparency()){
-//                    Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
-//                    Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
-//                }
-//                RenderSystem.disableBlend();
-//                RenderSystem.depthMask(true);
-//            }
-//
-//            @Override
-//            public String toString() {
-//                return "solarcraft:normal";
-//            }
-//        };
+    /**
+     * ParticleRenderTypesScreen. Yeah, strange name but keeps it shorter.
+     */
+    public static class ParticleRenderTypesS {
+
+
+        public static final Function<ResourceLocation, FDParticleRenderType> TEXTURES_BLUR_ADDITIVE = Util.memoize((location)->{
+            return new FDParticleRenderType() {
+                @Override
+                public void end() {
+                    Minecraft.getInstance().getTextureManager().getTexture(location).restoreLastBlurMipmap();
+                }
+
+                @Nullable
+                @Override
+                public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+
+
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+
+                    RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                    RenderSystem.setShaderTexture(0, location);
+                    Minecraft.getInstance().getTextureManager().getTexture(location).setBlurMipmap(true,true);
+
+                    return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+                }
+            };
+        });
+
+        public static final Function<ResourceLocation, FDParticleRenderType> TEXTURES_DEFAULT = Util.memoize((location)->{
+            return new FDParticleRenderType() {
+                @Override
+                public void end() {
+                }
+
+                @Nullable
+                @Override
+                public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                    RenderSystem.setShaderTexture(0, location);
+                    return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+                }
+            };
+        });
+
     }
 
 }

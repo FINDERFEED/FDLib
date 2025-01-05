@@ -4,8 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarInterpolated;
 import com.finderfeed.fdlib.init.FDCoreShaders;
 import com.finderfeed.fdlib.systems.screen.screen_particles.FDTexturedSParticle;
-import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
-import com.finderfeed.fdlib.util.rendering.FDEasings;
+import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticle;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.finderfeed.fdlib.util.rendering.FDShaderRenderer;
 import com.mojang.blaze3d.platform.Window;
@@ -14,9 +13,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Random;
 import java.util.UUID;
 
 public class ChesedBossBar extends FDBossBarInterpolated {
+
+    private static final Random r = new Random();
 
     public static final ResourceLocation TEXTURE = ResourceLocation.tryBuild(FDLib.MOD_ID,"textures/boss_bars/chesed_boss_bar.png");
 
@@ -76,6 +78,44 @@ public class ChesedBossBar extends FDBossBarInterpolated {
 
         float w = window.getGuiScaledWidth();
         float h = window.getGuiScaledHeight();
+
+
+        if (time % 4 == 0) {
+            float randomOffset = r.nextFloat() * 200 - 100;
+            float randomOffset2 = r.nextFloat() * 200 - 100;
+            float x = w / 2 + randomOffset;
+            float x2 = w / 2 + randomOffset2;
+            float y = 22;
+            FDTexturedSParticle.create(FDRenderUtil.ParticleRenderTypesS.TEXTURES_BLUR_ADDITIVE, BallParticle.LOCATION)
+                    .setPos(x, y, true)
+                    .setMaxQuadSize(3.5f)
+                    .setSpeed(0, -0.1)
+                    .setFriction(0.99f)
+                    .setColor(
+                            0.1f + r.nextFloat() * 0.1f - 0.05f,
+                            0.8f + r.nextFloat() * 0.1f - 0.05f,
+                            0.8f + r.nextFloat() * 0.1f - 0.05f,
+                            0.8f
+                    )
+                    .setLifetime(30)
+                    .setDefaultScaleInOut()
+                    .sendToOverlay();
+            FDTexturedSParticle.create(FDRenderUtil.ParticleRenderTypesS.TEXTURES_BLUR_ADDITIVE, BallParticle.LOCATION)
+                    .setPos(x2, y + 7, true)
+                    .setMaxQuadSize(3.5f)
+                    .setSpeed(0, 0.1)
+                    .setFriction(0.99f)
+                    .setColor(
+                            0.1f + r.nextFloat() * 0.1f - 0.05f,
+                            0.8f + r.nextFloat() * 0.1f - 0.05f,
+                            0.8f + r.nextFloat() * 0.1f - 0.05f,
+                            0.8f
+                    )
+                    .setLifetime(30)
+                    .setDefaultScaleInOut()
+                    .sendToOverlay();
+        }
+
 
     }
 

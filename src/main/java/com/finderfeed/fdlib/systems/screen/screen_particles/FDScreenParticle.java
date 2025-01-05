@@ -23,6 +23,11 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
     private double xa;
     private double ya;
 
+    private float r;
+    private float g;
+    private float b;
+    private float a;
+
     private float roll;
     private float oRoll;
     private float rollSpeed;
@@ -119,6 +124,14 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
         return (T) this;
     }
 
+    public T setColor(float r,float g,float b,float a){
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+        return (T) this;
+    }
+
     public T sendToScreen(){
         FDScreenParticleEngine.addScreenParticle(this);
         return (T) this;
@@ -127,6 +140,22 @@ public abstract class FDScreenParticle<T extends FDScreenParticle<T>> {
     public T sendToOverlay(){
         FDScreenParticleEngine.addOverlayParticle(this);
         return (T) this;
+    }
+
+    public float getA() {
+        return a;
+    }
+
+    public float getB() {
+        return b;
+    }
+
+    public float getG() {
+        return g;
+    }
+
+    public float getR() {
+        return r;
     }
 
     public double getX(float partialTicks){

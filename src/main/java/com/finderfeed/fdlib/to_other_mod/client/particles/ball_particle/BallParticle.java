@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle;
 
+import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
 import com.finderfeed.fdlib.util.math.ComplexEasingFunction;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
@@ -14,10 +15,13 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 public class BallParticle extends TextureSheetParticle {
+
+    public static final ResourceLocation LOCATION = ResourceLocation.tryBuild(FDLib.MOD_ID,"ball_particle");
 
     private BallParticleOptions options;
     private ComplexEasingFunction scalingFunction;
