@@ -68,8 +68,8 @@ public class ChesedBossBar extends FDBossBarInterpolated {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tick(float topOffset) {
+        super.tick(topOffset);
         time++;
 
         Window window = Minecraft.getInstance().getWindow();

@@ -37,7 +37,7 @@ public abstract class FDBossBarInterpolated extends FDBossBar {
     public abstract void renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage);
 
     @Override
-    public void tick() {
+    public void tick(float topOffset) {
         currentInterpolationTime = Mth.clamp(currentInterpolationTime - 1,0,interpolationTime);
     }
 

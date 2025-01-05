@@ -24,7 +24,7 @@ public abstract class FDBossBar {
      */
     public abstract void render(GuiGraphics graphics, float partialTicks);
 
-    public abstract void tick();
+    public abstract void tick(float topOffset);
 
     public abstract float height();
 

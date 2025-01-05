@@ -21,8 +21,11 @@ public class FDBossbars {
     public static void tick(PlayerTickEvent.Pre event){
         if (!event.getEntity().level().isClientSide) return;
 
+        float offs = FDBossBarsOverlay.calculateBossBarsOffset();
+
         for (FDBossBar bossBar : BOSS_BARS.values()){
-            bossBar.tick();
+            bossBar.tick(offs);
+            offs += bossBar.height();
         }
 
     }

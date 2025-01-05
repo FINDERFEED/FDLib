@@ -9,7 +9,7 @@ import net.minecraft.client.gui.LayeredDraw;
 
 public class FDBossBarsOverlay implements LayeredDraw.Layer {
 
-
+    public static final float BASE_BOSS_BAR_TOP_OFFSET = 3;
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltraTracker) {
@@ -24,7 +24,7 @@ public class FDBossBarsOverlay implements LayeredDraw.Layer {
 
         matrices.pushPose();
 
-        float baseOffset = 3;
+        float baseOffset = calculateBossBarsOffset();
         matrices.translate(width/2,baseOffset,0);
 
         for (FDBossBar bossBar : FDBossbars.BOSS_BARS.values()){
@@ -36,4 +36,9 @@ public class FDBossBarsOverlay implements LayeredDraw.Layer {
 
         matrices.popPose();
     }
+
+    public static float calculateBossBarsOffset(){
+        return BASE_BOSS_BAR_TOP_OFFSET;
+    }
+
 }
