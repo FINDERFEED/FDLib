@@ -85,4 +85,11 @@ public class ClientMixinHandler {
         SHAKES.add(new ScreenShakeInstance(shake));
     }
 
+
+    public static void onGameRenderEnd(DeltaTracker deltaTracker,boolean someBoolean){
+
+
+
+    }
+
 }

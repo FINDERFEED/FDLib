@@ -139,7 +139,7 @@ public class ChesedEntity extends FDMob {
 
     @Override
     public void tick() {
-        if (!this.isRolling()) {
+        if (!this.isRolling() && !level().isClientSide) {
             this.setYRot(yHeadRot);
         }
         super.tick();

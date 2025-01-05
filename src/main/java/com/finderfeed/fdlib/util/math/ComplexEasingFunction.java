@@ -6,7 +6,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-
+/**
+ * <p>
+ * This class is for chaining different easing functions. For example if you want an ease in followed by ease out.
+ * Though you need to mind that each time the next easing function starts you are given a 0 - 1 range so in example you will
+ * need to reverse the ease out function, so it starts at 1 and ends at 0.
+ * </p>
+ *
+ * <p>
+ * How does it work:
+ * You add areas with lengths, and it places it one after another.
+ * On each area you need to specify the function. The given value in Function<Float,Float> is a value from 0 to 1 -
+ * a local percentage of area "completion".
+ * </p>
+ * <p>
+ * Example:
+ * You have 2 areas of length 2 and 3 and call apply(4.5).
+ * </p>
+ * <p>
+ * 0--2---5
+ * 4.5 is in the range of the second area and gives then it will give your specified function the local percentage of this area completion:
+ * (4.5 - 2 [the value where current area started]) [current area completion length] / 3 [length of current area] = 0.5 [area completion percentage]
+ * </p>
+ * <p>
+ * What you give in "apply" method is the "coordinate" on area axis,
+ * it means that if for example you have 3 areas of lengths 1 2 and 3 the whole length will be 6 and you should
+ * give apply method a value between 0 and 6.
+ * </p>
+ * <p>
+ * P.S. You can also add an area with a ComplexEasingFunction BUT it will consume not the area completion percent but current area completion length!
+ * </p>
+ *
+ */
 public class ComplexEasingFunction implements Function<Float,Float> {
 
     private List<EasingArea> areas = new ArrayList<>();

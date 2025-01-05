@@ -21,6 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
+    @Inject(method = "render",at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V",shift = At.Shift.BEFORE))
+    public void render(DeltaTracker deltaTracker, boolean smth, CallbackInfo ci){
+        ClientMixinHandler.onGameRenderEnd(deltaTracker,smth);
+    }
+
     @Inject(method = "bobHurt",at = @At("HEAD"))
     public void bobHurt(PoseStack matrices, float pticks, CallbackInfo ci){
         ClientMixinHandler.bobHurt(matrices,pticks);
