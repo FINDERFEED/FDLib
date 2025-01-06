@@ -1,6 +1,5 @@
 package com.finderfeed.fdlib.systems.entity.action_chain;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandomList;
 import org.jetbrains.annotations.NotNull;
@@ -9,67 +8,59 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class AttackOptions implements Iterable<Attack> {
+public class AttackOptions implements Iterable<AttackDefinition> {
 
-    private WeightedRandomList<Attack> list;
+    private WeightedRandomList<AttackDefinition> weightedRandomList;
 
-    protected AttackOptions nextAttack = null;
+    private AttackOptions nextAttackOptions = null;
 
-    public AttackOptions(String name,AttackExecutor executor){
-        list = WeightedRandomList.create(new Attack(name,executor,1));
+    public AttackOptions(List<AttackDefinition> attackDefinitions, AttackOptions next){
+        this.nextAttackOptions = next;
+        this.weightedRandomList = WeightedRandomList.create(attackDefinitions);
     }
 
-    private AttackOptions(){
+    public AttackDefinition getAttack(RandomSource source){
+        return weightedRandomList.getRandom(source).get();
     }
 
-
-    public Attack getAttack(RandomSource source){
-        return this.list.getRandom(source).get();
+    public AttackOptions getNextAttackOptions() {
+        return nextAttackOptions;
     }
 
-    public AttackOptions getNextAttack() {
-        return nextAttack;
+    @NotNull
+    @Override
+    public Iterator<AttackDefinition> iterator() {
+        return weightedRandomList.unwrap().iterator();
     }
 
     public static Builder builder(){
-        return new Builder();
+        return new AttackOptions.Builder();
     }
 
-    @Override
-    public @NotNull Iterator<Attack> iterator() {
-        return list.unwrap().iterator();
-    }
 
-    public static class Builder{
+    public static class Builder {
 
-        private List<Attack> attacks = new ArrayList<>();
+        private List<AttackDefinition> attackDefinitions = new ArrayList<>();
+        private AttackOptions nextAttackOptions = null;
 
-        private AttackOptions nextAttack = null;
-
-        public Builder addAttack(String name,int weight,AttackExecutor executor){
-            this.attacks.add(new Attack(name,executor,weight));
+        public Builder addAttack(int weight, String executorName){
+            this.attackDefinitions.add(new AttackDefinition(executorName,weight));
             return this;
         }
 
-        public Builder addAttack(String name,AttackExecutor executor){
-            this.attacks.add(new Attack(name,executor,1));
+        public Builder addAttack(String executorName){
+            this.attackDefinitions.add(new AttackDefinition(executorName,1));
             return this;
         }
 
-        public Builder setNextAttack(AttackOptions next){
-            this.nextAttack = next;
+        public Builder setNextAttack(AttackOptions options){
+            this.nextAttackOptions = options;
             return this;
         }
 
         public AttackOptions build(){
-            AttackOptions options = new AttackOptions();
-            options.list = WeightedRandomList.create(attacks);
-            options.nextAttack = nextAttack;
-            return options;
+            return new AttackOptions(attackDefinitions,nextAttackOptions);
         }
 
-
     }
-
-
 }

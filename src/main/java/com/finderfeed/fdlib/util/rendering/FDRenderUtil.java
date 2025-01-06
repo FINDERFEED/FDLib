@@ -423,6 +423,8 @@ public class FDRenderUtil {
             return new FDParticleRenderType() {
                 @Override
                 public void end() {
+                    RenderSystem.disableBlend();
+                    RenderSystem.defaultBlendFunc();
                     Minecraft.getInstance().getTextureManager().getTexture(location).restoreLastBlurMipmap();
                 }
 
@@ -447,6 +449,8 @@ public class FDRenderUtil {
             return new FDParticleRenderType() {
                 @Override
                 public void end() {
+                    RenderSystem.disableBlend();
+                    RenderSystem.defaultBlendFunc();
                 }
 
                 @Nullable

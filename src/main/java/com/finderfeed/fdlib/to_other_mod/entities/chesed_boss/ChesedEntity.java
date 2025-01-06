@@ -70,6 +70,7 @@ import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,35 +105,35 @@ public class ChesedEntity extends FDMob {
             clientModel = new FDModel(BossModels.CHESED.get());
         }
         if (!level.isClientSide) {
+
+            AttackOptions rayOrBlocks = AttackOptions.builder()
+                    .addAttack("ray")
+                    .addAttack("blocks")
+                    .build();
+
             chain = new AttackChain(level.random)
-                    .addAttack(-5,AttackOptions.builder()
-                            .addAttack("nothing",this::doNothing)
+                    .registerAttack("nothing",this::doNothing)
+                    .registerAttack("ray",this::rayAttack) //0 and in the middle
+                    .registerAttack("blocks",this::blockAttack) //in the middle
+                    .registerAttack("roll",this::roll) //after all
+                    .registerAttack("equake",this::earthquakeAttack) // 1
+                    .registerAttack("rockfall",this::rockfallAttack) // 1
+                    .registerAttack("esphere",this::electricSphereAttack) // 1
+                    .addAttack(0, "ray")
+                    .addAttack(1,AttackOptions.builder()
+                            .addAttack("esphere")
+                            .setNextAttack(rayOrBlocks)
                             .build())
-                    .addAttack(-3, AttackOptions.builder()
-                            .addAttack("rayAttack",this::rayAttack)
+                    .addAttack(1,AttackOptions.builder()
+                            .addAttack("rockfall")
+                            .setNextAttack(rayOrBlocks)
                             .build())
-                    .addAttack(-2, AttackOptions.builder()
-                            .addAttack("electricSphereAttack",this::electricSphereAttack)
+                    .addAttack(1,AttackOptions.builder()
+                            .addAttack("equake")
+                            .setNextAttack(rayOrBlocks)
                             .build())
-                    .addAttack(0,AttackOptions.builder()
-                            .addAttack("nothing",this::doNothing)
-                            .build())
-                    .addAttack(0, AttackOptions.builder()
-                            .addAttack("rockfall",this::rockfallAttack)
-                            .build())
-                    .addAttack(1, AttackOptions.builder()
-                            .addAttack("earthquake",this::earthquakeAttack)
-                            .build())
-                    .addAttack(2, AttackOptions.builder()
-                            .addAttack("block",this::blockAttack)
-                            .build())
-                    .addAttack(3, AttackOptions.builder()
-                            .addAttack("roll",this::roll)
-                            .build())
-                    .addAttack(4, AttackOptions.builder()
-                            .addAttack("nothing",this::doNothing)
-                            .build())
-            ;
+                    .addAttack(2,"roll");
+
         }
     }
 
@@ -324,7 +325,7 @@ public class ChesedEntity extends FDMob {
         if (instance.tick % 20 == 0) {
             System.out.println("Idling... " + instance.tick);
         }
-        return instance.tick >= 1000000;
+        return instance.tick >= 100;
     }
 
     public boolean rayAttack(AttackInstance instance){

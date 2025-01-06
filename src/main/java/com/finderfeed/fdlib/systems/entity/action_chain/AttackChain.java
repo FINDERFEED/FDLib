@@ -8,11 +8,11 @@ import java.util.*;
 
 public class AttackChain {
 
-    private HashMap<String,Attack> registeredAttacks = new HashMap<>();
+    private HashMap<String,AttackExecutor> registeredAttackExecutors = new HashMap<>();
 
-    private List<Pair<Integer,AttackOptions>> attacks = new ArrayList<>();
+    private List<Pair<Integer,AttackOptions>> attackOptions = new ArrayList<>();
 
-    private Queue<AttackInstance> chain = new ArrayDeque<>();
+    private Queue<String> chain = new ArrayDeque<>();
 
     private AttackInstance currentAttack = null;
 
@@ -22,117 +22,136 @@ public class AttackChain {
         this.source = source;
     }
 
-    public AttackChain addAttack(int priority,AttackOptions options){
-        this.addToList(priority,options);
+    public AttackChain registerAttack(String name, AttackExecutor executor){
+        this.registeredAttackExecutors.put(name,executor);
         return this;
     }
 
+    public AttackChain addAttack(int priority, AttackOptions options){
+        this.attackOptions.add(new Pair<>(priority,options));
+        this.attackOptions.sort(Comparator.comparingInt(Pair::getFirst));
+        return this;
+    }
+
+    public AttackChain addAttack(int priority,String attack){
+        return this.addAttack(priority, AttackOptions.builder()
+                        .addAttack(attack)
+                .build());
+    }
 
     public void tick(){
         if (this.chain.isEmpty() && currentAttack == null){
             this.buildQueue();
+        } else {
+            if (currentAttack != null) {
+                //i know this looks VERY VERY strange but hey, it works!
+                int previousStage = currentAttack.stage;
+                if (currentAttack.attack.execute(currentAttack)){
+                    currentAttack = null;
+                    this.pollAndExecuteAttack();
+                }else{
+                    if (currentAttack.stage == previousStage){
+                        currentAttack.tick++;
+                    }
+                }
+            } else {
+                this.pollAndExecuteAttack();
+            }
         }
-        if (currentAttack != null){
-            int previousStage = currentAttack.stage;
-            if (currentAttack.attack.getExecutor().execute(currentAttack)){
-                this.currentAttack = null;
+    }
+
+    //polls an attack, executes it once, if its immediately finished polls next and does this until attack is not
+    //executed immediately or whole chain is drain, then goes to next tick
+    private void pollAndExecuteAttack(){
+        while (currentAttack == null && !this.chain.isEmpty()) {
+            String executorName = this.chain.poll();
+            AttackExecutor executor = this.registeredAttackExecutors.get(executorName);
+            if (executor == null) {
+                throw new RuntimeException("Attack not registered: " + executorName);
+            }
+            this.currentAttack = new AttackInstance(executorName,executor);
+            if (currentAttack.attack.execute(currentAttack)) {
+                currentAttack = null;
             }else{
-                if (currentAttack.stage == previousStage) {
+                //if executed and haven't ended - we check if the stage remained the same, if yes - one tick is accounted
+                if (currentAttack.stage == 0) {
                     currentAttack.tick++;
                 }
             }
-        }else{
-            AttackInstance attack = this.chain.poll();
-            this.currentAttack = attack;
         }
     }
 
-    private void buildQueue(){
-        int num = attacks.get(0).getFirst();
-        Queue<AttackInstance> queue = new ArrayDeque<>();
-        List<Pair<AttackOptions,AttackInstance>> attacksToAdd = new ArrayList<>();
-        for (int i = 0; i < attacks.size();i++){
-            var pair = this.attacks.get(i);
-            if (pair.getFirst() != num){
-                num = pair.getFirst();
-                i--;
-                this.addAttacks(queue,attacksToAdd);
-                continue;
-            }else{
-                AttackOptions options = pair.getSecond();
-                attacksToAdd.add(new Pair<>(options,new AttackInstance(options.getAttack(this.source))));
+
+    public void buildQueue(){
+        this.chain.clear();
+
+        List<AttackOptions> samePriority = new ArrayList<>();
+        int currentValue = attackOptions.get(0).getFirst();
+
+        for (Pair<Integer, AttackOptions> pair : attackOptions) {
+            if (pair.getFirst() == currentValue) {
+                samePriority.add(pair.getSecond());
+            } else {
+                //adding the attacks to queue
+                this.addSamePriorityOptionsToQueue(samePriority);
+                //setting the current priority value to current thing in the queue
+                samePriority.add(pair.getSecond());
+                currentValue = pair.getFirst();
             }
         }
-        this.addAttacks(queue,attacksToAdd);
-        this.chain = queue;
+
+        this.addSamePriorityOptionsToQueue(samePriority);
     }
 
-    private void addAttacks(Queue<AttackInstance> queue,List<Pair<AttackOptions,AttackInstance>> attacksToAdd){
-        while (!attacksToAdd.isEmpty()){
-            int rnd = source.nextInt(attacksToAdd.size());
-
-            var p = attacksToAdd.get(rnd);
-            AttackInstance attack = p.getSecond();
-            AttackOptions options = p.getFirst();
-            queue.offer(attack);
-
-            AttackOptions next = options.nextAttack;
-            while (next != null){
-                AttackInstance instance = new AttackInstance(next.getAttack(source));
-                queue.offer(instance);
-                next = next.nextAttack;
+    private void addSamePriorityOptionsToQueue(List<AttackOptions> samePriority){
+        while (!samePriority.isEmpty()){
+            int rndid = source.nextInt(samePriority.size());
+            AttackOptions options = samePriority.get(rndid);
+            while (options != null){
+                this.chain.offer(options.getAttack(source).getName());
+                options = options.getNextAttackOptions();
             }
-
-            attacksToAdd.remove(rnd);
+            samePriority.remove(rndid);
         }
     }
 
 
-    private void addToList(int priority,AttackOptions attack){
-        this.attacks.add(new Pair<>(priority,attack));
-        this.attacks.sort(Comparator.comparingInt(Pair::getFirst));
-        AttackOptions options = attack;
-        while (options != null){
-            for (Attack a : options){
-                this.registeredAttacks.put(a.getName(),a);
-            }
-            options = attack.nextAttack;
-        }
-    }
+
+
 
     public AttackInstance getCurrentAttack() {
         return currentAttack;
     }
 
     public void load(CompoundTag tag){
-        this.chain = new ArrayDeque<>();
-        try {
-            int idx = 0;
-            while (tag.contains("attack_" + idx)) {
-                AttackInstance instance = new AttackInstance(this.registeredAttacks.get(tag.getString("attack_" + idx++)));
-                this.chain.offer(instance);
-            }
-            if (tag.contains("currentAttack")) {
-                this.currentAttack = new AttackInstance(
-                        this.registeredAttacks.get(tag.getString("currentAttack"))
-                );
-                this.currentAttack.tick = tag.getInt("currentAttackTick");
-                this.currentAttack.stage = tag.getInt("currentAttackStage");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            this.chain = new ArrayDeque<>();
-            this.currentAttack = null;
+
+        int index = 0;
+        while (tag.contains("attack_" + index)){
+            this.chain.offer(tag.getString("attack_" + index));
+            index++;
         }
+
+        if (tag.contains("currentAttack")){
+            String name = tag.getString("currentAttack");
+            int tick = tag.getInt("currentAttackTick");
+            int stage = tag.getInt("currentAttackStage");
+            AttackExecutor executor = this.registeredAttackExecutors.get(name);
+            AttackInstance instance = new AttackInstance(name,executor);
+            instance.tick = tick;
+            instance.stage = stage;
+            this.currentAttack = instance;
+        }
+
     }
 
     public void save(CompoundTag tag){
-        int idx = 0;
-        for (AttackInstance instance : this.chain){
-            tag.putString("attack_"+idx,instance.attack.getName());
+        int index = 0;
+        for (String s : this.chain){
+            tag.putString("attack_" + index++,s);
         }
-        if (currentAttack != null){
-            tag.putString("currentAttack",currentAttack.attack.getName());
+
+        if (this.currentAttack != null){
+            tag.putString("currentAttack", currentAttack.name);
             tag.putInt("currentAttackTick",currentAttack.tick);
             tag.putInt("currentAttackStage",currentAttack.stage);
         }
