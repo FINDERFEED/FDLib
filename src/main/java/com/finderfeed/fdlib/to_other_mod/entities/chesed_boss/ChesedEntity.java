@@ -91,13 +91,15 @@ public class ChesedEntity extends FDMob {
     private Vec3 oldRollPos;
     private boolean playIdle = true;
     private boolean lookingAtTarget = true;
+
     private LivingEntity target;
+    private Vec3 previousTargetPos;
+
     private boolean doBlinding = true;
 
 
     public ChesedEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
-
         if (serverModel == null) {
             serverModel = new FDModel(BossModels.CHESED.get());
         }
@@ -161,10 +163,13 @@ public class ChesedEntity extends FDMob {
 
             if (this.getTarget() != null) {
                 this.checkTarget(this.getTarget());
-                if (this.lookingAtTarget) {
-                    this.lookAtTarget(this.getTarget());
-                }else{
-                    this.lookAt(EntityAnchorArgument.Anchor.EYES,this.getEyePosition().add(this.getLookAngle()));
+                if (this.getTarget() != null) {
+                    if (this.lookingAtTarget) {
+                        this.lookAtTarget(this.getTarget());
+                    } else {
+                        this.lookAt(EntityAnchorArgument.Anchor.EYES, this.getEyePosition().add(this.getLookAngle()));
+                    }
+                    previousTargetPos = target.position();
                 }
             }else{
                 if (level().getGameTime() % 20 == 0){
@@ -225,6 +230,9 @@ public class ChesedEntity extends FDMob {
 
     public void setTarget(LivingEntity target) {
         this.target = target;
+        if (target != null) {
+            this.previousTargetPos = target.position();
+        }
     }
 
     private void blindCombatants(){
@@ -340,7 +348,6 @@ public class ChesedEntity extends FDMob {
         int localStage = stage % 3;
 
         if (localStage == 1) {
-            lookingAtTarget = false;
 
             int rayAttackTick = 35;
             if (tick == 0) {
@@ -350,6 +357,13 @@ public class ChesedEntity extends FDMob {
                         .build());
 
             }else if (tick > 10 && tick < rayAttackTick) {
+
+                if (tick < rayAttackTick - 6){
+                    lookingAtTarget = true;
+                }else{
+                    lookingAtTarget = false;
+                }
+
                 var c = this.getModelPartPosition(this,"core",serverModel);
                 Vec3 center = new Vec3(c.x,c.y,c.z).add(this.position());
                 for (int i = 0; i < 10;i++) {
@@ -369,7 +383,7 @@ public class ChesedEntity extends FDMob {
                     FDUtil.sendParticles((ServerLevel) level(),options,pos,60);
                 }
             } else if (tick == rayAttackTick) {
-
+                lookingAtTarget = false;
                 Vec3 look = this.getLookAngle();
                 Vec3 p = this.getCenter().add(look.reverse());
                 Vec3 end = p.add(look.multiply(60,60,60));
@@ -439,7 +453,7 @@ public class ChesedEntity extends FDMob {
         }else if (localStage == 0) {
             lookingAtTarget = true;
             if (this.getTarget() != null) {
-                if (isLookingStraightAtEntity(this.getTarget(), 0.00001)) {
+                if (isLookingStraightAtEntity(this.getTarget(), 0.01)) {
                     instance.nextStage();
                     lookingAtTarget = false;
                 }
@@ -796,9 +810,10 @@ public class ChesedEntity extends FDMob {
 
     public boolean blockAttack(AttackInstance attack){
         lookingAtTarget = true;
-//        if (true) return true;
         float height = 8;
-        int timeTillAttack = 60;
+        int blocksUpTime = 30;
+        int blocksCycleTime = 30;
+        int timeTillAttack = 40;
         if (blockAttackProjectiles.isEmpty()){
             if (!this.trySearchProjectiles()) {
                 this.getSystem().startAnimation("blockAttack", AnimationTicker.builder(CHESED_CAST)
@@ -811,9 +826,9 @@ public class ChesedEntity extends FDMob {
                     float angle = this.getInitProjectileRotation(i, count);
                     ChesedBlockProjectile projectile = new ChesedBlockProjectile(BossEntities.BLOCK_PROJECTILE.get(), level());
                     projectile.setBlockState(random.nextFloat() > 0.5 ? Blocks.SCULK.defaultBlockState() : Blocks.DEEPSLATE.defaultBlockState());
-                    projectile.setDropParticlesTime(timeTillAttack / 2);
-                    var path = this.createRotationPath(angle, -2,height, 30, timeTillAttack / 2, false);
-                    var next = this.createRotationPath(angle, height,height, 30, timeTillAttack / 2, true);
+                    projectile.setDropParticlesTime(blocksUpTime);
+                    var path = this.createRotationPath(angle, -2,height, 30, blocksUpTime, false);
+                    var next = this.createRotationPath(angle, height,height, 30, blocksCycleTime, true);
 
                     path.setNext(next);
                     projectile.noPhysics = true;
@@ -1237,7 +1252,15 @@ public class ChesedEntity extends FDMob {
     }
 
     private Vec3 getLookAtPos(LivingEntity target){
-        Vec3 pos = target.position().add(0,target.getBbHeight() / 2,0);
+
+        Vec3 v = target.position().subtract(previousTargetPos)
+                .normalize()
+                .multiply(2,2,2);
+
+        Vec3 pos = target.position().add(0,target.getBbHeight() / 2,0)
+                .add(v);
+
+
         return pos;
     }
 

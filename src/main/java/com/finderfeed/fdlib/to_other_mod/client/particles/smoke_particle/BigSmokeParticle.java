@@ -38,6 +38,8 @@ public class BigSmokeParticle extends TextureSheetParticle {
                 .addArea(options.intOut.outTime,FDEasings::reversedLinear)
                 .build();
         quadSize = this.easingFunction.apply(0) * options.size;
+        cQuadSize = quadSize;
+        oQuadSize = quadSize;
         this.lifetime = options.intOut.fullTime();
         this.maxQuadSize = options.size;
         this.oQuadSize = quadSize;

@@ -91,4 +91,5 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         }
         return super.shouldRender(entity, frustum, x, y, z);
     }
+
 }

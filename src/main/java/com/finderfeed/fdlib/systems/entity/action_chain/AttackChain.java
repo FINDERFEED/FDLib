@@ -3,7 +3,10 @@ package com.finderfeed.fdlib.systems.entity.action_chain;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class AttackChain {
@@ -20,6 +23,25 @@ public class AttackChain {
 
     public AttackChain(RandomSource source){
         this.source = source;
+    }
+
+    public AttackChain registerInClassAttacks(Class<? extends Entity> entityClass){
+        for (Method method : entityClass.getDeclaredMethods()){
+            Attack attack = method.getAnnotation(Attack.class);
+            if (attack != null){
+                method.setAccessible(true);
+                this.registerAttack(attack.value(), (instance)->{
+                    try {
+                        return (boolean) method.invoke(instance);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    } catch (InvocationTargetException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        }
+        return this;
     }
 
     public AttackChain registerAttack(String name, AttackExecutor executor){

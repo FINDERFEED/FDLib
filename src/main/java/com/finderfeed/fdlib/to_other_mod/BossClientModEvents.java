@@ -41,6 +41,9 @@ public class BossClientModEvents {
     public static void addRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(BossEntities.CHESED.get(),
                 FDEntityRendererBuilder.builder()
+                        .shouldRender(((entity, frustum, x, y, z) -> {
+                            return true;
+                        }))
                         .addLayer(FDRenderLayerOptions.builder()
                                 .model(BossModels.CHESED)
                                 .renderType(RenderType.entityCutout(FDLib.location("textures/entities/chesed.png")))
