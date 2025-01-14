@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallPart
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedAttackRayParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticle;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.chesed_crystal.ChesedCrystalEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterRenderer;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block.ChesedFallingBlockRenderer;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.flying_block_entity.FlyingBlockEntityRenderer;
@@ -16,6 +17,7 @@ import com.finderfeed.fdlib.to_other_mod.init.BossEntities;
 import com.finderfeed.fdlib.to_other_mod.init.BossModels;
 import com.finderfeed.fdlib.to_other_mod.projectiles.renderers.BlockProjectileRenderer;
 import com.finderfeed.fdlib.util.client.NullEntityRenderer;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
@@ -63,6 +65,21 @@ public class BossClientModEvents {
                                 .renderType(RenderType.entityTranslucentCull(FDLib.location("textures/entities/electric_orb.png")))
                                 .build())
                 .build());
+        event.registerEntityRenderer(BossEntities.CHESED_CRYSTAL.get(),FDEntityRendererBuilder.builder()
+                        .shouldRender(((entity, frustum, x, y, z) -> true))
+                        .addLayer(FDRenderLayerOptions.builder()
+                                .model(BossModels.CHESED_CRYSTAL)
+                                .renderCondition((entity -> true))
+                                .transformation(((entity, stack, partialTicks) -> {
+
+                                    stack.mulPose(FDRenderUtil.rotationDegrees(FDRenderUtil.YP(),entity.getId() * 42.343f));
+                                    FDRenderUtil.applyMovementMatrixRotations(stack,((ChesedCrystalEntity)entity).getCrystalFacingDirection());
+                                    stack.scale(3.2f,3,3.2f);
+                                }))
+                                .renderType(RenderType.eyes(FDLib.location("textures/entities/chesed_crystal.png")))
+                                .build())
+                .build());
+
         event.registerEntityRenderer(BossEntities.EARTH_SHATTER.get(), EarthShatterRenderer::new);
         event.registerEntityRenderer(BossEntities.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
         event.registerEntityRenderer(BossEntities.CHESED_FALLING_BLOCK.get(), ChesedFallingBlockRenderer::new);

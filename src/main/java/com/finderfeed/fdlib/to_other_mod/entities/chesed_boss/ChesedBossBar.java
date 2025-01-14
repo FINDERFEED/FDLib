@@ -62,15 +62,9 @@ public class ChesedBossBar extends FDBossBarInterpolated {
 
             long rndOffset = 2343;
 
-            Random shakeRndP = new Random((time + 1) * rndOffset - rndOffset);
             Random shakeRnd = new Random((time + 1) * rndOffset);
             float tx = shakeRnd.nextFloat() * 2 - 1;
             float ty = shakeRnd.nextFloat() * 2 - 1;
-//            float txP = shakeRndP.nextFloat() * 2 - 1;
-//            float tyP = shakeRndP.nextFloat() * 2 - 1;
-//
-//            tx = FDMathUtil.lerp(txP,tx,partialTicks);
-//            ty = FDMathUtil.lerp(tyP,ty,partialTicks);
 
             matrices.translate(tx * str, ty * str, 0);
         }

@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.to_other_mod.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.ChesedEntity;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.chesed_crystal.ChesedCrystalEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.electric_sphere.ChesedElectricSphereEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.falling_block.ChesedFallingBlock;
@@ -70,6 +71,12 @@ public class BossEntities {
     )
             .sized(0.2f,0.2f)
             .build("radial_earthquake"));
+
+    public static final Supplier<EntityType<ChesedCrystalEntity>> CHESED_CRYSTAL = ENTITIES.register("chesed_crystal",()->EntityType.Builder.of(
+            ChesedCrystalEntity::new, MobCategory.MISC
+    )
+            .sized(2f,2f)
+            .build("chesed_crystal"));
 
 
     @SubscribeEvent
