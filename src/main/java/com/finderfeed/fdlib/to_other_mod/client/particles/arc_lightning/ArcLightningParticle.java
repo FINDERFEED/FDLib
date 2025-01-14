@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -110,7 +111,7 @@ public class ArcLightningParticle extends Particle {
 
 
         int lightningCounts = options.lightningSegments;
-        var path = buildPath(level, options.lightningRandomSpread, options.seed,lightningCounts,positions);
+        var path = buildPath(level.getGameTime(), options.lightningRandomSpread, options.seed,lightningCounts,positions);
 
         Matrix4f mat = new Matrix4f();
         mat.translate(
@@ -128,6 +129,27 @@ public class ArcLightningParticle extends Particle {
         drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f,1f);
         mat.translate(0,0,-0.002f);
         drawLightning(mat,vertex,path,positions,options.lightningWidth * 0.15f,1f,1,1f,1f);
+
+    }
+
+    public static void fullLightningImmediateDraw(long time,int seed,int lightningBreakCount,Matrix4f transform, List<Vec3> path, float lightningWidth, float lightningRandomSpread,float r,float g,float b,float a){
+
+        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+
+        var builder = RENDER_TYPE.begin(tesselator, Minecraft.getInstance().getTextureManager());
+
+        List<Vec3> positions = buildPath(time,lightningRandomSpread,seed,lightningBreakCount,path);
+
+        drawLightning(transform,builder,positions,path,lightningWidth,r,g,b,a);
+
+        BufferUploader.drawWithShader(builder.build());
+
+    }
+    public static void fullLightningDraw(long time,int seed,int lightningBreakCount,Matrix4f transform,VertexConsumer vertexConsumer, List<Vec3> path, float lightningWidth, float lightningRandomSpread,float r,float g,float b,float a){
+
+        List<Vec3> positions = buildPath(time,lightningRandomSpread,seed,lightningBreakCount,path);
+
+        drawLightning(transform,vertexConsumer,positions,path,lightningWidth,r,g,b,a);
 
     }
 
@@ -256,14 +278,14 @@ public class ArcLightningParticle extends Particle {
 
     }
 
-    public static List<Vec3> buildPath(Level level,float lightningRandomSpread,int seed,int lightningCounts, List<Vec3> positions){
+    public static List<Vec3> buildPath(long time,float lightningRandomSpread,int seed,int lightningCounts, List<Vec3> positions){
 
         float step = 1f / lightningCounts;
 
-        Random r = new Random(level.getGameTime() * seed);
+        Random r = new Random(time * seed);
 
         List<Vec3> path = new ArrayList<>();
-        path.add(Vec3.ZERO);
+        path.add(positions.get(0));
         float lightningSpread = lightningRandomSpread;
 
         for (float i = step; i <= 1 - step/2; i += step){

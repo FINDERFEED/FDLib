@@ -4,25 +4,40 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarInterpolated;
 import com.finderfeed.fdlib.init.FDCoreShaders;
 import com.finderfeed.fdlib.systems.screen.screen_particles.FDTexturedSParticle;
+import com.finderfeed.fdlib.to_other_mod.client.particles.arc_lightning.ArcLightningParticle;
 import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallParticle;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.finderfeed.fdlib.util.rendering.FDShaderRenderer;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 public class ChesedBossBar extends FDBossBarInterpolated {
 
+    public static final int HIT_EVENT = 0;
+    public static final int MAX_HIT_TIME = 10;
+
     private static final Random r = new Random();
 
     public static final ResourceLocation TEXTURE = ResourceLocation.tryBuild(FDLib.MOD_ID,"textures/boss_bars/chesed_boss_bar.png");
 
+    private int previousHitStrength = 0;
     private int time = 0;
+
+    private int hitTime = 0;
+    private int hitTimeO = 20;
 
 
     public ChesedBossBar(UUID uuid, int entityId) {
@@ -34,6 +49,31 @@ public class ChesedBossBar extends FDBossBarInterpolated {
     public void renderInterpolatedBossBar(GuiGraphics graphics, float partialTicks,float interpolatedPercentage) {
 
         PoseStack matrices = graphics.pose();
+
+
+        matrices.pushPose();
+
+        if (hitTime != 0) {
+
+            float str = 1 + Math.min(previousHitStrength / 5f,1.5f);
+
+            float t = FDMathUtil.lerp(hitTimeO, hitTime, partialTicks) / MAX_HIT_TIME;
+            str *= t;
+
+            long rndOffset = 2343;
+
+            Random shakeRndP = new Random((time + 1) * rndOffset - rndOffset);
+            Random shakeRnd = new Random((time + 1) * rndOffset);
+            float tx = shakeRnd.nextFloat() * 2 - 1;
+            float ty = shakeRnd.nextFloat() * 2 - 1;
+//            float txP = shakeRndP.nextFloat() * 2 - 1;
+//            float tyP = shakeRndP.nextFloat() * 2 - 1;
+//
+//            tx = FDMathUtil.lerp(txP,tx,partialTicks);
+//            ty = FDMathUtil.lerp(tyP,ty,partialTicks);
+
+            matrices.translate(tx * str, ty * str, 0);
+        }
 
         FDRenderUtil.bindTexture(TEXTURE);
         FDRenderUtil.blitWithBlend(matrices,-198/2f,0,198,45,0,0,
@@ -49,7 +89,7 @@ public class ChesedBossBar extends FDBossBarInterpolated {
 
 
 
-        float t = (time + partialTicks) / 4000f;
+        float shaderTime = (time + partialTicks) / 4000f;
 
 
         FDRenderUtil.Scissor.pushScissors(matrices,hpPosX,hpPosY,hpW * interpolatedPercentage,5);
@@ -60,19 +100,52 @@ public class ChesedBossBar extends FDBossBarInterpolated {
                 .setUpColor(0.1f,0.5f,0.5f,0f)
                 .setDownColor(0.1f,0.8f,0.8f,0.8f)
                 .setShaderUniform("size",hpW,5)
-                .setShaderUniform("xyOffset",0,t)
+                .setShaderUniform("xyOffset",0,shaderTime)
                 .setShaderUniform("sections",100)
                 .setShaderUniform("octaves",4)
-                .setShaderUniform("time",t)
+                .setShaderUniform("time",shaderTime)
                 .end();
         FDRenderUtil.Scissor.popScissors();
 
+
+        this.renderLightning(matrices,hpPosX,hpPosY,hpW,interpolatedPercentage,partialTicks);
+
+        matrices.popPose();
+    }
+
+    private void renderLightning(PoseStack matrices,float hpPosX,float hpPosY,float hpW,float interpolatedPercentage,float partialTicks){
+        if (hitTime != 0) {
+            float t = FDMathUtil.lerp(hitTimeO, hitTime, partialTicks) / MAX_HIT_TIME;
+
+            t *= t;
+
+            hpW *= interpolatedPercentage;
+
+            List<Vec3> path = List.of(
+                    new Vec3(hpPosX, hpPosY + 2, 0),
+                    new Vec3(hpPosX + hpW, hpPosY + 2, 0)
+            );
+            List<Vec3> path2 = List.of(
+                    new Vec3(hpPosX, hpPosY + 2, 0),
+                    new Vec3(hpPosX + hpW, hpPosY + 2, 0)
+            );
+            float lw = 1.5f;
+            float lspread = 3;
+            int lightningBreaks = Math.max(2, Math.round(interpolatedPercentage * 20));
+            ArcLightningParticle.fullLightningImmediateDraw(time, 32423543, lightningBreaks, matrices.last().pose(), path, lw, lspread, 0.2f, 1f, 1f, t);
+            ArcLightningParticle.fullLightningImmediateDraw(time, 32423543, lightningBreaks, matrices.last().pose(), path, lw / 2, lspread, 0.7f, 1f, 1f, t);
+
+            ArcLightningParticle.fullLightningImmediateDraw(time, 5353543, lightningBreaks, matrices.last().pose(), path2, lw, lspread, 0.2f, 1f, 1f, t);
+            ArcLightningParticle.fullLightningImmediateDraw(time, 5353543, lightningBreaks, matrices.last().pose(), path2, lw / 2, lspread, 0.7f, 1f, 1f, t);
+        }
     }
 
     @Override
     public void tick(float topOffset) {
         super.tick(topOffset);
         time++;
+        hitTimeO = hitTime;
+        hitTime = Mth.clamp(hitTime - 1,0,MAX_HIT_TIME);
 
         Window window = Minecraft.getInstance().getWindow();
 
@@ -126,6 +199,11 @@ public class ChesedBossBar extends FDBossBarInterpolated {
 
     @Override
     public void hanldeBarEvent(int eventId, int data) {
+
+        if (eventId == HIT_EVENT){
+            this.previousHitStrength = data;
+            this.hitTime = MAX_HIT_TIME;
+        }
 
     }
 }

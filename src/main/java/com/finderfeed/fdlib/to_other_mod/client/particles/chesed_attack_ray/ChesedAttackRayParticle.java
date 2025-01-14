@@ -130,7 +130,7 @@ public class ChesedAttackRayParticle extends Particle {
             var positions = List.of(
                     Vec3.ZERO,new Vec3(0,len,0)
             );
-            var path = ArcLightningParticle.buildPath(level, w * 2, 342332, Math.max((int) Math.round(len / (2 * w * 2)), 2), positions);
+            var path = ArcLightningParticle.buildPath(level.getGameTime(), w * 2, 342332, Math.max((int) Math.round(len / (2 * w * 2)), 2), positions);
             mat.translate(0, 0, 0.02f);
             ArcLightningParticle.drawLightning(mat, vertex, path, positions, w * 0.5f, options.lightningColor.r, options.lightningColor.g, options.lightningColor.b, alpha);
 

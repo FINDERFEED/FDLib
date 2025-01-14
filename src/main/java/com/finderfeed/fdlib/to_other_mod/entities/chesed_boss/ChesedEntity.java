@@ -50,6 +50,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -139,6 +140,15 @@ public class ChesedEntity extends FDMob {
         }
     }
 
+    @Override
+    public boolean hurt(DamageSource src, float damage) {
+
+        boolean res = super.hurt(src, damage);
+        if (res){
+            this.bossBar.broadcastEvent(ChesedBossBar.HIT_EVENT,(int)Math.ceil(damage));
+        }
+        return res;
+    }
 
     @Override
     public void tick() {
