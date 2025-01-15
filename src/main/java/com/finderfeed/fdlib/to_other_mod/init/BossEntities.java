@@ -81,7 +81,7 @@ public class BossEntities {
 
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event){
-        event.put(CHESED.get(), Mob.createMobAttributes().add(Attributes.MAX_HEALTH,50).build());
+        event.put(CHESED.get(), Mob.createMobAttributes().add(Attributes.MAX_HEALTH,10).build());
         event.put(CHESED_ELECTRIC_SPHERE.get(), LivingEntity.createLivingAttributes().build());
     }
 

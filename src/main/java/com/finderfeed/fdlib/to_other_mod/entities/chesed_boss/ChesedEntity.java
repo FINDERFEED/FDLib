@@ -5,7 +5,6 @@ import com.finderfeed.fdlib.network.lib_packets.PlaySoundInEarsPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDLivingEntity;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDMob;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.entity.action_chain.AttackChain;
@@ -28,6 +27,7 @@ import com.finderfeed.fdlib.to_other_mod.client.particles.ball_particle.BallPart
 import com.finderfeed.fdlib.to_other_mod.client.particles.chesed_attack_ray.ChesedRayOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.smoke_particle.BigSmokeParticleOptions;
 import com.finderfeed.fdlib.to_other_mod.client.particles.sonic_particle.SonicParticleOptions;
+import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.chesed_crystal.ChesedCrystalEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterEntity;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.earthshatter_entity.EarthShatterSettings;
 import com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.electric_sphere.ChesedElectricSphereEntity;
@@ -50,14 +50,15 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -71,7 +72,6 @@ import org.joml.Math;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +81,10 @@ import static com.finderfeed.fdlib.to_other_mod.init.BossAnims.*;
 
 public class ChesedEntity extends FDMob {
 
-    public static EntityDataAccessor<Boolean> IS_ROLLING = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
-    public static EntityDataAccessor<Boolean> IS_LAUNCHING_ORBS = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
+
+
+    public static final EntityDataAccessor<Boolean> IS_ROLLING = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> IS_LAUNCHING_ORBS = SynchedEntityData.defineId(ChesedEntity.class, EntityDataSerializers.BOOLEAN);
 
     public FDServerBossBar bossBar = new FDServerBossBar(BossBars.CHESED_BOSS_BAR,this);
 
@@ -98,6 +100,7 @@ public class ChesedEntity extends FDMob {
 
     private boolean doBlinding = true;
 
+    private int remainingHits = 10;
 
     public ChesedEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
@@ -123,31 +126,30 @@ public class ChesedEntity extends FDMob {
                     .registerAttack("rockfall",this::rockfallAttack) // 1
                     .registerAttack("esphere",this::electricSphereAttack) // 1
                     .addAttack(0, "ray")
-                    .addAttack(1,AttackOptions.builder()
-                            .addAttack("esphere")
-                            .setNextAttack(rayOrBlocks)
-                            .build())
-                    .addAttack(1,AttackOptions.builder()
-                            .addAttack("rockfall")
-                            .setNextAttack(rayOrBlocks)
-                            .build())
-                    .addAttack(1,AttackOptions.builder()
-                            .addAttack("equake")
-                            .setNextAttack(rayOrBlocks)
-                            .build())
-                    .addAttack(2,"roll");
-
+//                    .addAttack(1,AttackOptions.builder()
+//                            .addAttack("esphere")
+//                            .setNextAttack(rayOrBlocks)
+//                            .build())
+//                    .addAttack(1,AttackOptions.builder()
+//                            .addAttack("rockfall")
+//                            .setNextAttack(rayOrBlocks)
+//                            .build())
+//                    .addAttack(1,AttackOptions.builder()
+//                            .addAttack("equake")
+//                            .setNextAttack(rayOrBlocks)
+//                            .build())
+//                    .addAttack(2,"roll")
+            ;
+            this.remainingHits = this.getBossMaxHits();
         }
     }
 
     @Override
     public boolean hurt(DamageSource src, float damage) {
 
-        boolean res = super.hurt(src, damage);
-        if (res){
-            this.bossBar.broadcastEvent(ChesedBossBar.HIT_EVENT,(int)Math.ceil(damage));
-        }
-        return res;
+        if (!src.is(DamageTypes.GENERIC_KILL) && !src.is(DamageTypes.FELL_OUT_OF_WORLD)) return false;
+
+        return super.hurt(src,damage);
     }
 
     @Override
@@ -156,7 +158,7 @@ public class ChesedEntity extends FDMob {
             this.setYRot(yHeadRot);
         }
         super.tick();
-        this.bossBar.setPercentage(this.getHealth() / this.getMaxHealth());
+        this.bossBar.setPercentage(this.getRemainingHits() / (float) this.getBossMaxHits());
         AnimationSystem system = this.getSystem();
         system.setVariable("variable.radius",600);
         system.setVariable("variable.angle",270);
@@ -397,6 +399,9 @@ public class ChesedEntity extends FDMob {
                 Vec3 look = this.getLookAngle();
                 Vec3 p = this.getCenter().add(look.reverse());
                 Vec3 end = p.add(look.multiply(60,60,60));
+
+                this.damageOnRay(p,end);
+
                 ClipContext clipContext = new ClipContext(p,end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
                 var result = level().clip(clipContext);
                 end = result.getLocation();
@@ -480,6 +485,27 @@ public class ChesedEntity extends FDMob {
         }
 
         return false;
+    }
+
+    private void damageOnRay(Vec3 begin, Vec3 end){
+
+        var list = FDHelpers.traceEntities(level(),begin,end,0,(entity)->{
+            return entity != this;
+        });
+
+        boolean crystalHit = false;
+
+        for (Entity entity : list){
+            if (entity instanceof ChesedCrystalEntity chesedCrystal){
+                entity.kill();
+                crystalHit = true;
+            }
+        }
+
+        if (crystalHit){
+            this.decreaseHitCount(1);
+        }
+
     }
 
     public boolean electricSphereAttack(AttackInstance instance){
@@ -1291,6 +1317,22 @@ public class ChesedEntity extends FDMob {
         return 39;
     }
 
+    public int getBossMaxHits(){
+        return 10;
+    }
+
+    public int getRemainingHits(){
+        return remainingHits;
+    }
+
+    public void decreaseHitCount(int amount){
+        this.remainingHits = Mth.clamp(this.remainingHits - amount,0,this.getBossMaxHits());
+        this.bossBar.broadcastEvent(ChesedBossBar.HIT_EVENT,amount * 10);
+        if (remainingHits <= 0){
+            this.kill();
+        }
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -1305,6 +1347,7 @@ public class ChesedEntity extends FDMob {
             chain.save(t);
             tag.put("chain",t);
         }
+        tag.putInt("bossHealth",this.remainingHits);
         return super.save(tag);
     }
 
@@ -1312,6 +1355,11 @@ public class ChesedEntity extends FDMob {
     public void load(CompoundTag tag) {
         if (chain != null){
             this.chain.load(tag.getCompound("chain"));
+        }
+        if (tag.contains("bossHealth")) {
+            this.remainingHits = tag.getInt("bossHealth");
+        }else{
+            this.remainingHits = this.getBossMaxHits();
         }
         super.load(tag);
     }

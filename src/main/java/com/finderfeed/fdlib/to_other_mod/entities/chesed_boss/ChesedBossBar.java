@@ -27,7 +27,7 @@ import java.util.UUID;
 public class ChesedBossBar extends FDBossBarInterpolated {
 
     public static final int HIT_EVENT = 0;
-    public static final int MAX_HIT_TIME = 10;
+    public static final int MAX_HIT_TIME = 20;
 
     private static final Random r = new Random();
 
@@ -37,7 +37,7 @@ public class ChesedBossBar extends FDBossBarInterpolated {
     private int time = 0;
 
     private int hitTime = 0;
-    private int hitTimeO = 20;
+    private int hitTimeO = 0;
 
 
     public ChesedBossBar(UUID uuid, int entityId) {
@@ -58,6 +58,7 @@ public class ChesedBossBar extends FDBossBarInterpolated {
             float str = 1 + Math.min(previousHitStrength / 5f,1.5f);
 
             float t = FDMathUtil.lerp(hitTimeO, hitTime, partialTicks) / MAX_HIT_TIME;
+            t *= t;
             str *= t;
 
             long rndOffset = 2343;
@@ -110,7 +111,6 @@ public class ChesedBossBar extends FDBossBarInterpolated {
     private void renderLightning(PoseStack matrices,float hpPosX,float hpPosY,float hpW,float interpolatedPercentage,float partialTicks){
         if (hitTime != 0) {
             float t = FDMathUtil.lerp(hitTimeO, hitTime, partialTicks) / MAX_HIT_TIME;
-
             t *= t;
 
             hpW *= interpolatedPercentage;
@@ -197,6 +197,7 @@ public class ChesedBossBar extends FDBossBarInterpolated {
         if (eventId == HIT_EVENT){
             this.previousHitStrength = data;
             this.hitTime = MAX_HIT_TIME;
+            this.hitTimeO = MAX_HIT_TIME;
         }
 
     }
