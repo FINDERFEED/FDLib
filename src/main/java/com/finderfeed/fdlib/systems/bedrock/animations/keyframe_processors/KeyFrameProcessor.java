@@ -18,9 +18,9 @@ public abstract class KeyFrameProcessor {
         }
     }
 
-    public abstract void applyTransformations(AnimationContext context, FDModelPart modelPart, float time, float partialTick);
+    public abstract void applyTransformations(AnimationContext context, FDModelPart modelPart, float time);
 
-    public abstract Vector3f getCurrentTransformation(AnimationContext context, float time, float partialTick);
+    public abstract Vector3f getCurrentTransformation(AnimationContext context, float time);
 
     public IntRangedList<KeyFrame> getKeyFrames() {
         return keyFrames;

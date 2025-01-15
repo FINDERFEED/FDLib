@@ -36,7 +36,7 @@ public abstract class AnimationSystem {
                     case ONCE -> {
                         int toNullTime = ticker.getToNullTransitionTime();
                         if (toNullTime != 0) {
-                            Animation nullTransition = animation.createTransitionTo(context, null, ticker.getElapsedTime(), ticker.getToNullTransitionTime(), 0);
+                            Animation nullTransition = animation.createTransitionTo(context, null, ticker.getTime(0), ticker.getToNullTransitionTime(), 0);
                             ticker.resetTime();
                             ticker.setAnimation(nullTransition);
                         }else{
@@ -68,7 +68,7 @@ public abstract class AnimationSystem {
             AnimationContext context = new AnimationContext(animation);
             context.variables = variables;
             entry.addVariables(context,partialTicks);
-            animation.applyAnimation(context,model,entry.getElapsedTime(),partialTicks * entry.getSpeedModifier());
+            animation.applyAnimation(context,model,entry.getTime(partialTicks));
         }
     }
 
@@ -94,7 +94,7 @@ public abstract class AnimationSystem {
             current.addVariables(context,0);
             Animation transition = current.getAnimation().createTransitionTo(context,
                     ticker.getAnimation(),
-                    current.getElapsedTime(),
+                    current.getTime(0),
                     ticker.getToNullTransitionTime(),
                     0
             );
@@ -115,7 +115,7 @@ public abstract class AnimationSystem {
                     AnimationContext context = new AnimationContext(animation);
                     context.variables = this.variables;
                     ticker.addVariables(context,0);
-                    Animation toNull = animation.createTransitionTo(context, null, ticker.getElapsedTime(),
+                    Animation toNull = animation.createTransitionTo(context, null, ticker.getTime(0),
                             ticker.getToNullTransitionTime(), 0);
                     AnimationTicker newTicker = new AnimationTicker(ticker);
                     newTicker.setLoopMode(Animation.LoopMode.ONCE);

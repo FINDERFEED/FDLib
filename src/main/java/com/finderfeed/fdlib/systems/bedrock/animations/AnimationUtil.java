@@ -19,7 +19,7 @@ public class AnimationUtil {
         }
         float localTime = time - current.time;
         float timeBetween = next.time - current.time;
-        float p = Mth.clamp((localTime + partialTick) / timeBetween,0,1);
+        float p = Mth.clamp((localTime) / timeBetween,0,1);
         KeyFrame f1 = frames.get(0);
         KeyFrame f4 = frames.get(3);
         return FDMathUtil.catmullrom(

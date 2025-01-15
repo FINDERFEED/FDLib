@@ -20,6 +20,7 @@ public class ChesedCrystalEntity extends FDEntity {
         super(type, level);
         this.getSystem().startAnimation("SPAWN", AnimationTicker.builder(BossAnims.CHESED_CRYSTAL_SPAWN.get())
                 .setToNullTransitionTime(0)
+                        .setSpeed(2)
                 .build());
     }
 

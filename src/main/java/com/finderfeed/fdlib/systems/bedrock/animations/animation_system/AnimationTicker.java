@@ -18,9 +18,10 @@ public class AnimationTicker {
             ByteBufCodecs.FLOAT,ticker->ticker.elapsedTime,
             ByteBufCodecs.FLOAT,ticker->ticker.speedModifier,
             ByteBufCodecs.INT,ticker->ticker.toNullTransitionTime,
+            ByteBufCodecs.BOOL,ticker->ticker.reversed,
             ByteBufCodecs.STRING_UTF8,ticker->ticker.loopMode.name(),
             ByteBufCodecs.STRING_UTF8,ticker->ticker.animation.getName().toString(),
-            (elapsedTime,speedModifier,toNull,loopModeName,animationName)->{
+            (elapsedTime,speedModifier,toNull,reversed,loopModeName,animationName)->{
                 ResourceLocation location = ResourceLocation.tryParse(animationName);
                 Animation animation = FDRegistries.ANIMATIONS.get(location);
                 if (animation == null){
@@ -29,6 +30,7 @@ public class AnimationTicker {
                 Animation.LoopMode mode = Animation.LoopMode.valueOf(loopModeName);
                 AnimationTicker ticker = new AnimationTicker(animation);
                 ticker.loopMode = mode;
+                ticker.reversed = reversed;
                 ticker.elapsedTime = elapsedTime;
                 ticker.speedModifier = speedModifier;
                 ticker.toNullTransitionTime = toNull;
@@ -37,6 +39,7 @@ public class AnimationTicker {
     private float elapsedTime = 0;
     private float speedModifier = 1;
     private int toNullTransitionTime;
+    private boolean reversed;
     private Animation.LoopMode loopMode;
     private Animation animation;
 
@@ -47,6 +50,7 @@ public class AnimationTicker {
         this.toNullTransitionTime = other.toNullTransitionTime;
         this.loopMode = other.loopMode;
         this.animation = other.getAnimation();
+        this.reversed = other.reversed;
     }
 
     public AnimationTicker(Animation animation){
@@ -72,12 +76,27 @@ public class AnimationTicker {
         return elapsedTime == animation.getAnimTime();
     }
 
+    public boolean isReversed() {
+        return reversed;
+    }
+
     public Animation getAnimation() {
         return animation;
     }
 
     public float getElapsedTime() {
         return elapsedTime;
+    }
+
+    public float getTime(float partialTicks){
+
+        partialTicks *= this.getSpeedModifier();
+
+        if (reversed){
+            return Mth.clamp(this.animation.getAnimTime() - this.getElapsedTime() - partialTicks,0,this.animation.getAnimTime());
+        }else{
+            return Mth.clamp(this.getElapsedTime() + partialTicks,0,this.animation.getAnimTime());
+        }
     }
 
     public float getSpeedModifier() {
@@ -120,14 +139,11 @@ public class AnimationTicker {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnimationTicker that = (AnimationTicker) o;
-        boolean a1 = this.animation.equals(that.animation);
-        boolean a2 = that.toNullTransitionTime == this.toNullTransitionTime;
-        boolean a3 = this.loopMode == that.loopMode;
-        boolean a4 = Float.compare(this.speedModifier, that.speedModifier) == 0;
         return this.animation.equals(that.animation)
                 && that.toNullTransitionTime == this.toNullTransitionTime
                 && this.loopMode == that.loopMode
                 && Float.compare(this.speedModifier, that.speedModifier) == 0
+                && (this.reversed == that.reversed)
                 ;
     }
 
@@ -161,6 +177,11 @@ public class AnimationTicker {
 
         public Builder startTime(float startTime){
             this.ticker.elapsedTime = Mth.clamp(startTime,0,ticker.animation.getAnimTime());
+            return this;
+        }
+
+        public Builder reversed(){
+            ticker.reversed = true;
             return this;
         }
 
