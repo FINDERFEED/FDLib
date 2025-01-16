@@ -129,11 +129,30 @@ public class AttackChain {
         while (!samePriority.isEmpty()){
             int rndid = source.nextInt(samePriority.size());
             AttackOptions options = samePriority.get(rndid);
-            while (options != null){
-                this.chain.offer(options.getAttack(source).getName());
-                options = options.getNextAttackOptions();
-            }
+
+            this.addOptionsToQueue(options);
+
             samePriority.remove(rndid);
+        }
+    }
+
+    private void addOptionsToQueue(AttackOptions options){
+
+        AttackOptions pre = options.getPreAttackOptions();
+        if (pre != null){
+            this.addOptionsToQueue(pre);
+        }
+
+        AttackOptions next = options;
+        while (next != null){
+
+            AttackDefinition definition = next.getAttack(source);
+            if (definition.getExecutorName() != null) {
+                this.chain.offer(definition.getExecutorName());
+            }else{
+                this.addOptionsToQueue(definition.getOptions());
+            }
+            next = next.getNextAttackOptions();
         }
     }
 

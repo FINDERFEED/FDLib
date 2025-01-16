@@ -6,6 +6,7 @@ import net.minecraft.util.random.WeightedEntry;
 public class AttackDefinition implements WeightedEntry {
 
     private String name;
+    private AttackOptions attack;
     protected int weight;
 
     protected AttackDefinition(String name, int weight){
@@ -13,8 +14,17 @@ public class AttackDefinition implements WeightedEntry {
         this.weight = weight;
     }
 
-    public String getName() {
+    protected AttackDefinition(AttackOptions attack, int weight){
+        this.attack = attack;
+        this.weight = weight;
+    }
+
+    public String getExecutorName() {
         return name;
+    }
+
+    public AttackOptions getOptions(){
+        return this.attack;
     }
 
     @Override

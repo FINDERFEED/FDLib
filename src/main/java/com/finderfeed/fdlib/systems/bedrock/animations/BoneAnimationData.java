@@ -39,14 +39,14 @@ public class BoneAnimationData {
         }
     }
 
-    public BoneAnimationData createTransitionData(BoneAnimationData transitionTo, AnimationContext currentContext,int toNullTime,float elapsedTime,float partialTick){
-        List<KeyFrame> positionFrames = this.createPositionTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime,partialTick);
-        List<KeyFrame> rotationFrames = this.createRotationTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime,partialTick);
-        List<KeyFrame> scaleFrames = this.createScaleTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime,partialTick);
+    public BoneAnimationData createTransitionData(BoneAnimationData transitionTo, AnimationContext currentContext,int toNullTime,float elapsedTime){
+        List<KeyFrame> positionFrames = this.createPositionTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime);
+        List<KeyFrame> rotationFrames = this.createRotationTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime);
+        List<KeyFrame> scaleFrames = this.createScaleTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime);
         return new BoneAnimationData(this.boneName,positionFrames,rotationFrames,scaleFrames,true);
     }
 
-    private List<KeyFrame> createPositionTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime,float partialTick){
+    private List<KeyFrame> createPositionTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime){
         if (this.position.isActive()){
             Vector3f current = this.position.getCurrentTransformation(currentContext,elapsedTime);
             RPNVector3f v = new RPNVector3f(current.x,current.y,current.z);
@@ -69,7 +69,7 @@ public class BoneAnimationData {
         }
     }
 
-    private List<KeyFrame> createRotationTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime,float partialTick){
+    private List<KeyFrame> createRotationTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime){
         if (this.rotation.isActive()){
             Vector3f current = this.rotation.getCurrentTransformation(currentContext,elapsedTime);
             RPNVector3f v = new RPNVector3f(current.x,current.y,current.z);
@@ -92,7 +92,7 @@ public class BoneAnimationData {
         }
     }
 
-    private List<KeyFrame> createScaleTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime,float partialTick){
+    private List<KeyFrame> createScaleTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime){
         if (this.scale.isActive()){
             Vector3f current = this.scale.getCurrentTransformation(currentContext,elapsedTime);
             RPNVector3f v = new RPNVector3f(current.x,current.y,current.z);

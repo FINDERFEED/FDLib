@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.to_other_mod.entities.chesed_boss.chesed_crystal;
 
 import com.finderfeed.fdlib.init.FDEDataSerializers;
+import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.FDEntity;
 import com.finderfeed.fdlib.to_other_mod.init.BossAnims;
@@ -10,21 +11,47 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 
 public class ChesedCrystalEntity extends FDEntity {
 
     public static final EntityDataAccessor<Vec3> DIRECTION = SynchedEntityData.defineId(ChesedCrystalEntity.class, FDEDataSerializers.VEC3.get());
 
+    private boolean dead = false;
+    private int deathTime = 20;
+
     public ChesedCrystalEntity(EntityType<?> type, Level level) {
         super(type, level);
         this.getSystem().startAnimation("SPAWN", AnimationTicker.builder(BossAnims.CHESED_CRYSTAL_SPAWN.get())
                 .setToNullTransitionTime(0)
-                        .setSpeed(2)
                 .build());
     }
 
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (!level().isClientSide){
+            if (dead && deathTime-- < 0){
+                this.setRemoved(RemovalReason.KILLED);
+                this.gameEvent(GameEvent.ENTITY_DIE);
+            }
+        }
+    }
+
+    @Override
+    public void kill() {
+        if (!dead) {
+            dead = true;
+            deathTime = 10;
+            this.getSystem().startAnimation("DEATH", AnimationTicker.builder(BossAnims.CHESED_CRYSTAL_SPAWN.get())
+                    .setLoopMode(Animation.LoopMode.HOLD_ON_LAST_FRAME)
+                    .reversed()
+                    .setSpeed(2f)
+                    .build());
+        }
+    }
 
     @Override
     public void onAddedToLevel() {

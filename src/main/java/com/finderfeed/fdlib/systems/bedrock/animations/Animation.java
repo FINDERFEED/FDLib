@@ -46,7 +46,7 @@ public class Animation {
 
 
 
-    public Animation createTransitionTo(AnimationContext context, Animation next, float elapsedTime,int toNullTime,float partialTick){
+    public Animation createTransitionTo(AnimationContext context, Animation next, float elapsedTime,int toNullTime){
         Animation animation;
         HashMap<String,BoneAnimationData> dataHashMap;
         if (next != null) {
@@ -54,36 +54,36 @@ public class Animation {
             animation.name = ResourceLocation.tryBuild("fdlib", TRANSITION);
             animation.defaultLoopMode = next.getDefaultLoopMode();
             animation.animTime = next.getAnimTime();
-            dataHashMap = this.createToAnimationDatas(next,context,toNullTime,elapsedTime,partialTick);
+            dataHashMap = this.createToAnimationDatas(next,context,toNullTime,elapsedTime);
         }else{
             animation = new Animation();
             animation.name = ResourceLocation.tryBuild("fdlib",TO_NULL_TRANSITION);
             animation.defaultLoopMode = LoopMode.ONCE;
             animation.animTime = toNullTime;
-            dataHashMap = this.createToNullDatas(context,toNullTime,elapsedTime,partialTick);
+            dataHashMap = this.createToNullDatas(context,toNullTime,elapsedTime);
         }
         animation.datas = dataHashMap;
         return animation;
     }
 
 
-    private HashMap<String,BoneAnimationData> createToNullDatas(AnimationContext context,int toNullTime,float elapsedTime,float partialTick){
+    private HashMap<String,BoneAnimationData> createToNullDatas(AnimationContext context,int toNullTime,float elapsedTime){
         HashMap<String,BoneAnimationData> map = new HashMap<>();
         for (var entry : this.datas.entrySet()){
-            BoneAnimationData data = entry.getValue().createTransitionData(null,context,toNullTime,elapsedTime,partialTick);
+            BoneAnimationData data = entry.getValue().createTransitionData(null,context,toNullTime,elapsedTime);
             map.put(entry.getKey(),data);
         }
         return map;
     }
 
-    private HashMap<String,BoneAnimationData> createToAnimationDatas(Animation next,AnimationContext context,int toNullTime,float elapsedTime,float partialTick){
+    private HashMap<String,BoneAnimationData> createToAnimationDatas(Animation next,AnimationContext context,int toNullTime,float elapsedTime){
         HashMap<String,BoneAnimationData> map = new HashMap<>(next.datas);
         for (var entry : this.datas.entrySet()){
             var d = next.datas.get(entry.getKey());
             if (d == null && toNullTime == 0){
                 continue;
             }
-            BoneAnimationData data = entry.getValue().createTransitionData(d,context,toNullTime,elapsedTime,partialTick);
+            BoneAnimationData data = entry.getValue().createTransitionData(d,context,toNullTime,elapsedTime);
             map.put(entry.getKey(),data);
         }
         return map;

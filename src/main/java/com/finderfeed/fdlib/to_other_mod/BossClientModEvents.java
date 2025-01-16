@@ -20,6 +20,7 @@ import com.finderfeed.fdlib.util.client.NullEntityRenderer;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -71,9 +72,8 @@ public class BossClientModEvents {
                                 .model(BossModels.CHESED_CRYSTAL)
                                 .renderCondition((entity -> true))
                                 .transformation(((entity, stack, partialTicks) -> {
-
-                                    stack.mulPose(FDRenderUtil.rotationDegrees(FDRenderUtil.YP(),entity.getId() * 42.343f));
                                     FDRenderUtil.applyMovementMatrixRotations(stack,((ChesedCrystalEntity)entity).getCrystalFacingDirection());
+                                    stack.mulPose(FDRenderUtil.rotationDegrees(FDRenderUtil.YP(),entity.getId() * 42.343f));
                                     stack.scale(3.2f,3,3.2f);
                                 }))
                                 .renderType(RenderType.eyes(FDLib.location("textures/entities/chesed_crystal.png")))

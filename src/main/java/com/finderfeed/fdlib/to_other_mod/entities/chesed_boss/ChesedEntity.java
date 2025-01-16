@@ -39,6 +39,7 @@ import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.ProjectileMovementPath;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -68,10 +69,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4fStack;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,20 +111,27 @@ public class ChesedEntity extends FDMob {
         }
         if (!level.isClientSide) {
 
-            AttackOptions rayOrBlocks = AttackOptions.builder()
+
+            AttackOptions ray = AttackOptions.builder()
+                    .setPreAttack("crystals")
                     .addAttack("ray")
+                    .build();
+
+            AttackOptions rayOrBlocks = AttackOptions.builder()
+                    .addAttack(ray)
                     .addAttack("blocks")
                     .build();
 
             chain = new AttackChain(level.random)
                     .registerAttack("nothing",this::doNothing)
+                    .registerAttack("crystals",this::summonCrystals)
                     .registerAttack("ray",this::rayAttack) //0 and in the middle
                     .registerAttack("blocks",this::blockAttack) //in the middle
                     .registerAttack("roll",this::roll) //after all
                     .registerAttack("equake",this::earthquakeAttack) // 1
                     .registerAttack("rockfall",this::rockfallAttack) // 1
                     .registerAttack("esphere",this::electricSphereAttack) // 1
-                    .addAttack(0, "ray")
+                    .addAttack(0, ray)
 //                    .addAttack(1,AttackOptions.builder()
 //                            .addAttack("esphere")
 //                            .setNextAttack(rayOrBlocks)
@@ -255,6 +261,7 @@ public class ChesedEntity extends FDMob {
             Vec3 lookAngle = player.getLookAngle();
             Vec3 b = player.position().subtract(this.position()).normalize();
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION,400,0,true,false));
+            if (true) continue;
             if (!(player.isCreative() || player.isSpectator())) {
                 if (doBlinding) {
                     if (lookAngle.dot(b) > 0.05) {
@@ -346,6 +353,47 @@ public class ChesedEntity extends FDMob {
             System.out.println("Idling... " + instance.tick);
         }
         return instance.tick >= 100;
+    }
+
+    public boolean summonCrystals(AttackInstance instance){
+
+        if (this.getTarget() == null){
+            if (instance.tick % 10 == 0){
+                this.changeTarget();
+            }
+            return false;
+        }
+
+        AABB box = new AABB(-40, -5, -40, 40, 5, 40).move(this.position());
+        var list = level().getEntitiesOfClass(ChesedCrystalEntity.class, box);
+        for (ChesedCrystalEntity chesedCrystal : list) {
+            chesedCrystal.kill();
+        }
+        for (int i = 0; i < 4; i++) {
+
+            ChesedCrystalEntity chesedCrystal = new ChesedCrystalEntity(BossEntities.CHESED_CRYSTAL.get(), level());
+            Vector3f pos = new Vector3f(
+                    (float) this.position().x,
+                    (float) this.position().y,
+                    (float) this.position().z
+            );
+            Vector3f between = new Vector3f(37, 0, 0).rotateY(random.nextFloat() * FDMathUtil.FPI * 2);
+            Vector3f spawnPos = pos.add(between, new Vector3f());
+            Vector3f normalized = between.normalize(new Vector3f());
+
+            Matrix4f mt = new Matrix4f();
+            FDRenderUtil.applyMovementMatrixRotations(mt, new Vec3(-normalized.x, 0, -normalized.z));
+            mt.rotateX(-FDMathUtil.FPI / 4);
+
+            Vector3f direction = mt.transformDirection(new Vector3f(0, 1, 0));
+            chesedCrystal.setCrystalFacingDirection(new Vec3(direction.x, direction.y, direction.z));
+            chesedCrystal.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
+            level().addFreshEntity(chesedCrystal);
+
+        }
+
+
+        return true;
     }
 
     public boolean rayAttack(AttackInstance instance){

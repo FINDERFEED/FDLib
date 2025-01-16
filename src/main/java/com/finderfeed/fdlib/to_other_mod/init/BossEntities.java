@@ -75,7 +75,7 @@ public class BossEntities {
     public static final Supplier<EntityType<ChesedCrystalEntity>> CHESED_CRYSTAL = ENTITIES.register("chesed_crystal",()->EntityType.Builder.of(
             ChesedCrystalEntity::new, MobCategory.MISC
     )
-            .sized(2f,2f)
+            .sized(2.5f,4f)
             .build("chesed_crystal"));
 
 
