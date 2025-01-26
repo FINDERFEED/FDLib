@@ -1,8 +1,8 @@
 package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.client.FDBlockParticleOptions;
-import com.finderfeed.fdlib.util.client.FDTerrainParticle;
+import com.finderfeed.fdlib.util.client.particles.FDBlockParticleOptions;
+import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticleOptions;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -27,6 +27,18 @@ public class FDParticles {
         @Override
         public StreamCodec<? super RegistryFriendlyByteBuf, FDBlockParticleOptions> streamCodec() {
             return FDBlockParticleOptions.STREAM_CODEC;
+        }
+    });
+
+    public static final Supplier<ParticleType<BallParticleOptions>> BALL_PARTICLE = PARTICLES.register("ball_particle",()-> new ParticleType<>(true) {
+        @Override
+        public MapCodec<BallParticleOptions> codec() {
+            return BallParticleOptions.MAP_CODEC;
+        }
+
+        @Override
+        public StreamCodec<? super RegistryFriendlyByteBuf, BallParticleOptions> streamCodec() {
+            return BallParticleOptions.STREAM_CODEC;
         }
     });
 
