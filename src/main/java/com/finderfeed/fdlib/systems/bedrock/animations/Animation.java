@@ -27,6 +27,10 @@ public class Animation {
 
     public Animation(){}
 
+    /**
+     * Should point to animation file in  bedrock/animations/
+     * Animation name inside file is used during registration
+     */
     public Animation(ResourceLocation fileLocation){
         this.fileLocation = fileLocation;
     }

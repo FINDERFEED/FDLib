@@ -131,6 +131,11 @@ public abstract class AnimationSystem {
 
     public void setVariable(String name,float variable){
         this.variables.put(name,variable);
+        this.onVariableAdded(name,variable);
+    }
+
+    public float getVariable(String name){
+        return this.variables.get(name);
     }
 
     public AnimationTicker getTicker(String name){

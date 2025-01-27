@@ -22,35 +22,41 @@ import java.util.List;
 
 public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityRenderer<T> {
 
-    public List<ReadyLayer<T>> layers;
-    public IShouldRender<T> shouldRender;
+    public List<FDEntityRenderLayer<T>> layers;
+    public IShouldEntityRender<T> shouldRender;
+    public FDFreeEntityRenderer<T> freeRender;
 
 
-    public FDEntityRenderer(EntityRendererProvider.Context ctx,IShouldRender<T> shouldRender, List<FDRenderLayerOptions<T>> layerDefinitions) {
+    public FDEntityRenderer(EntityRendererProvider.Context ctx, IShouldEntityRender<T> shouldRender, List<FDEntityRenderLayerOptions<T>> layerDefinitions,FDFreeEntityRenderer<T> freeEntityRenderer) {
         super(ctx);
+        this.freeRender = freeEntityRenderer;
         this.shouldRender = shouldRender;
         this.layers = new ArrayList<>();
-        for (FDRenderLayerOptions<T> layer : layerDefinitions){
+        for (FDEntityRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
-            ReadyLayer<T> l = new ReadyLayer<>(model,layer.renderType,layer.renderCondition,layer.transform);
+            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform);
             this.layers.add(l);
         }
     }
 
     @Override
-    public void render(T entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light) {
-        super.render(entity, idk, partialTicks, matrices, src, light);
+    public void render(T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light) {
+        super.render(entity, yaw, partialTicks, matrices, src, light);
 
-        this.applyAnimations(entity,idk,partialTicks,matrices,src,light);
-        this.renderLayers(entity,idk,partialTicks,matrices,src,light);
+        this.applyAnimations(entity,yaw,partialTicks,matrices,src,light);
+        this.renderLayers(entity,yaw,partialTicks,matrices,src,light);
+
+        if (freeRender != null){
+            freeRender.render(entity,yaw,partialTicks,matrices,src,light);
+        }
     }
 
-    public void applyAnimations(T entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
+    public void applyAnimations(T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
         AnimationSystem system = entity.getSystem();
         for (var layer : this.layers){
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
-            model.main.addYRot(-idk);
+            model.main.addYRot(-yaw);
         }
     }
 

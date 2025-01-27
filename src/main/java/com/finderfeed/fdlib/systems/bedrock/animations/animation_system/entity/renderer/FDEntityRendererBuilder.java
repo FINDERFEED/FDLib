@@ -9,26 +9,32 @@ import java.util.List;
 
 public class FDEntityRendererBuilder<T extends Entity & AnimatedObject> {
 
-    private List<FDRenderLayerOptions<T>> layers = new ArrayList<>();
-    private IShouldRender<T> shouldRender = null;
+    private List<FDEntityRenderLayerOptions<T>> layers = new ArrayList<>();
+    private IShouldEntityRender<T> shouldRender = null;
+    private FDFreeEntityRenderer<T> freeEntityRenderer;
 
     public static <E extends Entity & AnimatedObject> FDEntityRendererBuilder<E> builder(){
         return new FDEntityRendererBuilder<E>();
     }
 
-    public FDEntityRendererBuilder<T> addLayer(FDRenderLayerOptions<T> layer){
+    public FDEntityRendererBuilder<T> addLayer(FDEntityRenderLayerOptions<T> layer){
         this.layers.add(layer);
         return this;
     }
 
-    public FDEntityRendererBuilder<T> shouldRender(IShouldRender<T> shouldRender){
+    public FDEntityRendererBuilder<T> freeRender(FDFreeEntityRenderer<T> freeEntityRenderer){
+        this.freeEntityRenderer = freeEntityRenderer;
+        return this;
+    }
+
+    public FDEntityRendererBuilder<T> shouldRender(IShouldEntityRender<T> shouldRender){
         this.shouldRender = shouldRender;
         return this;
     }
 
     public EntityRendererProvider<T> build(){
         return (context -> {
-            return new FDEntityRenderer<>(context,shouldRender,layers);
+            return new FDEntityRenderer<>(context,shouldRender,layers,freeEntityRenderer);
         });
     }
 

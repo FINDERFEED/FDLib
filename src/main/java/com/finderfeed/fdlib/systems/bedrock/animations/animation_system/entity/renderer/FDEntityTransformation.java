@@ -1,12 +1,12 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
-import net.minecraft.client.renderer.culling.Frustum;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.Entity;
 
 @FunctionalInterface
-public interface IShouldRender<T extends Entity & AnimatedObject> {
+public interface FDEntityTransformation<T extends Entity & AnimatedObject> {
 
-    boolean shouldRender(T entity, Frustum frustum, double x, double y, double z);
+    void apply(T entity, PoseStack stack,float partialTicks);
 
 }

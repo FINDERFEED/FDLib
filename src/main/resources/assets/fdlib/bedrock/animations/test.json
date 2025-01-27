@@ -1,0 +1,20 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"testanim": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"main": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.2917": [0, 11, 0],
+						"0.5": [0, 11, -12],
+						"0.75": [0, 0, -12],
+						"1.0": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}

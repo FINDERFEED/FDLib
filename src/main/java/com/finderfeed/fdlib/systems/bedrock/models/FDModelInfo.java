@@ -21,6 +21,9 @@ public class FDModelInfo {
     private float cubeScale;
     public List<FDModelPartDefinition> partDefinitionList = new ArrayList<>();
 
+    /**
+     * Location is automatically pointing to assets/bedrock/models/ you just need to specify the file (without geo json bla bla bla)
+     */
     public FDModelInfo(ResourceLocation location,float cubeScale){
         this.modelName = location;
         this.cubeScale = cubeScale;
