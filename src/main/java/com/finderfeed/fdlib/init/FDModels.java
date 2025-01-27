@@ -12,5 +12,6 @@ public class FDModels {
     public static final DeferredRegister<FDModelInfo> MODELS = DeferredRegister.create(FDRegistries.MODELS, FDLib.MOD_ID);
 
     public static final Supplier<FDModelInfo> TEST = MODELS.register("test",()->new FDModelInfo(FDLib.location("test"),1));
+    public static final Supplier<FDModelInfo> TEST2 = MODELS.register("test2",()->new FDModelInfo(FDLib.location("test"),1.5f));
 
 }

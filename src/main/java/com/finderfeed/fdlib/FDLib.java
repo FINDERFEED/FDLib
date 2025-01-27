@@ -30,7 +30,7 @@ public class FDLib {
         FDModels.MODELS.register(bus);
         FDAnims.ANIMATIONS.register(bus);
         FDParticles.PARTICLES.register(bus);
-        FDTileEntities.BLOCK_ENTITIES.register(bus);
+        FDBlockEntities.BLOCK_ENTITIES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
     }

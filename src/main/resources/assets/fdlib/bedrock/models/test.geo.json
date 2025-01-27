@@ -4,8 +4,8 @@
 		{
 			"description": {
 				"identifier": "geometry.unknown",
-				"texture_width": 16,
-				"texture_height": 16,
+				"texture_width": 64,
+				"texture_height": 64,
 				"visible_bounds_width": 2,
 				"visible_bounds_height": 2.5,
 				"visible_bounds_offset": [0, 0.75, 0]
@@ -15,7 +15,7 @@
 					"name": "main",
 					"pivot": [0, 0, 0],
 					"cubes": [
-						{"origin": [-8, 0, -8], "size": [16, 16, 16], "uv": [-21, -14]}
+						{"origin": [-8, 0, -8], "size": [16, 16, 16], "uv": [0, 0]}
 					]
 				}
 			]

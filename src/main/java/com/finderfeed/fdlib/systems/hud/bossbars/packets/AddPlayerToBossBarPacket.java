@@ -7,7 +7,6 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBar;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarFactory;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
-import com.finderfeed.fdlib.to_other_mod.init.BossBars;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

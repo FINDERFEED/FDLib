@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FDBlockEntityRendererBuilder <T extends BlockEntity & AnimatedObject> {
+public class FDBlockEntityRendererBuilder<T extends BlockEntity & AnimatedObject> {
 
     private List<FDBlockRenderLayerOptions<T>> layers = new ArrayList<>();
     private IShouldBERender<T> shouldRender = (tile,v)->true;

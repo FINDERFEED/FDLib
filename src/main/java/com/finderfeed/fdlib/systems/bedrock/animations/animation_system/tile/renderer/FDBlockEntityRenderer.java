@@ -44,7 +44,7 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
 
     @Override
     public void render(T blockEntity, float pticks, PoseStack matrices, MultiBufferSource src, int light, int overlay) {
-
+        if (blockEntity.getLevel() == null) return;
         matrices.pushPose();
 
         matrices.translate(0.5,0,0.5);
@@ -60,6 +60,7 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
 
     public void applyAnimations(T entity, float partialTicks, PoseStack matrices, MultiBufferSource src, int light,int overlay){
         AnimationSystem system = entity.getSystem();
+        if (system == null) return;
         for (var layer : this.layers){
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);

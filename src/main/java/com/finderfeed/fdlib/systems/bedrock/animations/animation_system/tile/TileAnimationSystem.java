@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.fml.util.thread.EffectiveSide;
 
 public abstract class TileAnimationSystem extends AnimationSystem {
 
@@ -16,7 +17,7 @@ public abstract class TileAnimationSystem extends AnimationSystem {
     }
 
     public static TileAnimationSystem create(BlockEntity tile){
-        if (tile.getLevel().isClientSide){
+        if (EffectiveSide.get().isClient()){
             return new ClientTileAnimationSystem(tile);
         }else{
             return new ServerTileAnimationSystem(tile);
