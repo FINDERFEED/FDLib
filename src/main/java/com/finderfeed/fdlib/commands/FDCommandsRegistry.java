@@ -30,7 +30,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME)
-public class CommandsRegistry {
+public class FDCommandsRegistry {
 
 
     @SubscribeEvent

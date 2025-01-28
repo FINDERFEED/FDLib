@@ -1,7 +1,9 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.RenderFunction;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
+import com.finderfeed.fdlib.util.FDColor;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.Entity;
 
@@ -11,9 +13,10 @@ import java.util.function.Supplier;
 public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
 
     public Supplier<FDModelInfo> layerModel;
-    public RenderType renderType;
-    public Function<T,Boolean> renderCondition = (entity)->true;
-    public FDEntityTransformation<T> transform = (entity, stack, pticks)->{};
+    public RenderFunction<T,RenderType> renderType;
+    public Function<T,Boolean> renderCondition;
+    public FDEntityTransformation<T> transform;
+    public RenderFunction<T,FDColor> layerColor;
 
     private FDEntityRenderLayerOptions(){
     }
@@ -25,20 +28,34 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
     public static class Builder<T extends Entity & AnimatedObject> {
 
         private Supplier<FDModelInfo> layerModel;
-        private RenderType renderType;
+        private RenderFunction<T,RenderType> renderType;
         private Function<T,Boolean> renderCondition = (entity)->true;
         private FDEntityTransformation<T> transform = (entity, stack, ticks)->{};
+        private RenderFunction<T,FDColor> layerColor = (entity,partialTicks)->new FDColor(1,1,1,1);
 
         public Builder(){}
+
+        public Builder<T> color(RenderFunction<T,FDColor> layerColorFunction){
+            this.layerColor = layerColorFunction;
+            return this;
+        }
+
+        public Builder<T> color(float r,float g,float b,float a){
+            return this.color((entity,partialTicks)->new FDColor(r,g,b,a));
+        }
 
         public Builder<T> model(Supplier<FDModelInfo> infoSupplier){
             this.layerModel = infoSupplier;
             return this;
         }
 
-        public Builder<T> renderType(RenderType type){
+        public Builder<T> renderType(RenderFunction<T,RenderType> type){
             this.renderType = type;
             return this;
+        }
+
+        public Builder<T> renderType(RenderType type){
+            return this.renderType((tile,partialTicks)->type);
         }
 
         public Builder<T> renderCondition(Function<T,Boolean> renderCondition){
@@ -59,6 +76,7 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
             layer.layerModel = layerModel;
             layer.renderCondition = renderCondition;
             layer.transform = transform;
+            layer.layerColor = layerColor;
             return layer;
         }
 

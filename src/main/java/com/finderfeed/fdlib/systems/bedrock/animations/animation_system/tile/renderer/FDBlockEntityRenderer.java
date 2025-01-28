@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.re
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -36,7 +37,7 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
 
         for (FDBlockRenderLayerOptions<T> layer : layers){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform);
+            FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor);
             this.layers.add(l);
         }
 
@@ -76,12 +77,14 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
             matrices.pushPose();
 
             FDModel model = layer.model();
-            RenderType type = layer.renderType();
+            RenderType type = layer.renderType().getValue(entity,partialTicks);
             VertexConsumer consumer = src.getBuffer(type);
 
             layer.matrixTransform().apply(entity,matrices,partialTicks);
 
-            model.render(matrices,consumer,light, overlay,1f,1f,1f,1f);
+            FDColor color = layer.color().getValue(entity,partialTicks);
+
+            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a);
 
             matrices.popPose();
         }

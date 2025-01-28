@@ -3,12 +3,15 @@ package com.finderfeed.fdlib.init;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.renderer.FDBlockEntityRendererBuilder;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.renderer.FDBlockRenderLayerOptions;
+import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.client.particles.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.particles.InvisibleParticle;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -32,7 +35,24 @@ public class FDClientModEvents {
             BlockEntityRenderers.register(FDBlockEntities.TEST.get(), FDBlockEntityRendererBuilder.builder()
                             .addLayer(FDBlockRenderLayerOptions.builder()
                                     .model(FDModels.TEST)
-                                    .renderType(RenderType.entityCutout(FDLib.location("textures/texture.png")))
+                                    .renderType((entity,pticks)->{
+
+                                        float t = entity.getLevel().getGameTime() % 10;
+
+                                        if (t < 5){
+                                            return RenderType.eyes(TextureAtlas.LOCATION_BLOCKS);
+                                        }
+
+                                        return RenderType.entityCutout(FDLib.location("textures/texture.png"));
+                                    })
+                                    .color(((object, partialTicks) -> {
+
+                                        Level l = object.getLevel();
+                                        float t = (l.getGameTime() + partialTicks) % 20;
+
+
+                                        return new FDColor(t / 20,1,1,1);
+                                    }))
                                     .build())
                             .addLayer(FDBlockRenderLayerOptions.builder()
                                     .model(FDModels.TEST2)

@@ -13,7 +13,7 @@ public class FDBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.createBlocks(FDLib.MOD_ID);
 
-    public static final Supplier<Block> TEST = BLOCKS.register("test",()->new FDTestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)));
+    public static final Supplier<Block> TEST = BLOCKS.register("test",()->new FDTestBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion()));
 
 
 }

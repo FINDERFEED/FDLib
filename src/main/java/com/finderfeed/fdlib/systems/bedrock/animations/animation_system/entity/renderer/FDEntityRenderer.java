@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -34,7 +35,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         this.layers = new ArrayList<>();
         for (FDEntityRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform);
+            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor);
             this.layers.add(l);
         }
     }
@@ -69,7 +70,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
             matrices.pushPose();
 
             FDModel model = layer.model();
-            RenderType type = layer.renderType();
+            RenderType type = layer.renderType().getValue(entity,partialTicks);
             VertexConsumer consumer = src.getBuffer(type);
 
             int overlay = OverlayTexture.NO_OVERLAY;
@@ -79,7 +80,9 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
             layer.matrixTransform().apply(entity,matrices,partialTicks);
 
-            model.render(matrices,consumer,light, overlay,1f,1f,1f,1f);
+            FDColor color = layer.color().getValue(entity,partialTicks);
+
+            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a);
 
             matrices.popPose();
         }

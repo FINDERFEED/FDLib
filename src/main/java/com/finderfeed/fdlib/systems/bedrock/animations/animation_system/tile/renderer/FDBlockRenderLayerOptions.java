@@ -1,8 +1,11 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.renderer;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.RenderFunction;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDEntityRenderLayerOptions;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer.FDEntityTransformation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
+import com.finderfeed.fdlib.util.FDColor;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -12,9 +15,10 @@ import java.util.function.Supplier;
 public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
 
     public Supplier<FDModelInfo> layerModel;
-    public RenderType renderType;
-    public Function<T,Boolean> renderCondition = (entity)->true;
-    public FDBlockEntityTransformation<T> transform = (entity, stack, pticks)->{};
+    public RenderFunction<T,RenderType> renderType;
+    public Function<T,Boolean> renderCondition;
+    public FDBlockEntityTransformation<T> transform;
+    public RenderFunction<T, FDColor> layerColor;
 
     private FDBlockRenderLayerOptions(){
     }
@@ -26,20 +30,34 @@ public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
     public static class Builder<T extends BlockEntity & AnimatedObject> {
 
         private Supplier<FDModelInfo> layerModel;
-        private RenderType renderType;
+        private RenderFunction<T,RenderType> renderType;
         private Function<T,Boolean> renderCondition = (entity)->true;
         private FDBlockEntityTransformation<T> transform = (entity, stack, ticks)->{};
+        private RenderFunction<T, FDColor> layerColor = (tile,partialTicks)->new FDColor(1,1,1,1);
 
         public Builder(){}
+
+        public Builder<T> color(RenderFunction<T,FDColor> layerColorFunction){
+            this.layerColor = layerColorFunction;
+            return this;
+        }
+
+        public Builder<T> color(float r, float g, float b, float a){
+            return this.color((entity,partialTicks)->new FDColor(r,g,b,a));
+        }
 
         public FDBlockRenderLayerOptions.Builder<T> model(Supplier<FDModelInfo> infoSupplier){
             this.layerModel = infoSupplier;
             return this;
         }
 
-        public FDBlockRenderLayerOptions.Builder<T> renderType(RenderType type){
+        public FDBlockRenderLayerOptions.Builder<T> renderType(RenderFunction<T,RenderType> type){
             this.renderType = type;
             return this;
+        }
+
+        public FDBlockRenderLayerOptions.Builder<T> renderType(RenderType type){
+            return this.renderType((tile,pticks)->type);
         }
 
         public FDBlockRenderLayerOptions.Builder<T> renderCondition(Function<T,Boolean> renderCondition){
@@ -60,6 +78,7 @@ public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
             layer.layerModel = layerModel;
             layer.renderCondition = renderCondition;
             layer.transform = transform;
+            layer.layerColor = layerColor;
             return layer;
         }
 
