@@ -167,9 +167,9 @@ public class FDCube {
         }else{
             Vec2 uv = JsonHelper.parseVec2(faceDatas);
 
-            float x = (float)size.x/scale - inflate*2;
-            float y = (float)size.y/scale - inflate*2;
-            float z = (float)size.z/scale - inflate*2;
+            float x = (float)Math.floor(size.x/scale - inflate*2);
+            float y = (float)Math.floor(size.y/scale - inflate*2);
+            float z = (float)Math.floor(size.z/scale - inflate*2);
             north = createFace(v1, v2, v5, v3, tnormals.get(0),
                     new Vec2(uv.x + z + x,uv.y + z + y),
                     new Vec2(uv.x + z,uv.y + z + y),
