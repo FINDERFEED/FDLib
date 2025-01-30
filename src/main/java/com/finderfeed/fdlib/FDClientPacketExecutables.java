@@ -20,8 +20,8 @@ public class FDClientPacketExecutables {
         player.setDeltaMovement(movement);
     }
 
-    public static void playsoundInEars(SoundEvent event){
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(event,1));
+    public static void playsoundInEars(SoundEvent event,float pitch,float volume){
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(event,pitch,volume));
     }
 
     public static void entityStartAnimationPacket(int entityId, String tickerName, AnimationTicker ticker){
