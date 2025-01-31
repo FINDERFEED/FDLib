@@ -39,20 +39,6 @@ public class FDHelpers {
     public static final Gson GSON = new GsonBuilder().create();
 
 
-    public static void addParticleEmitter(Level level, double radius, ParticleEmitterData data){
-        if (level instanceof ServerLevel serverLevel) {
-            PacketDistributor.sendToPlayersNear(serverLevel, null, data.position.x, data.position.y, data.position.z, radius, new ParticleEmitterPacket(data));
-        }else{
-            ParticleEmitterHandler.addParticleEmitter(data);
-        }
-    }
-
-
-    public static void setServerPlayerSpeed(ServerPlayer player,Vec3 deltaMovement){
-        player.setDeltaMovement(deltaMovement);
-        PacketDistributor.sendToPlayer(player,new PlayerMovePacket(deltaMovement));
-    }
-
     public static List<Entity> traceEntities(Level level, Vec3 start, Vec3 end,double boxInflate, Predicate<Entity> predicate){
         var list = level.getEntitiesOfClass(Entity.class,new AABB(start,end).inflate(boxInflate),predicate);
         Iterator<Entity> entityIterator = list.iterator();

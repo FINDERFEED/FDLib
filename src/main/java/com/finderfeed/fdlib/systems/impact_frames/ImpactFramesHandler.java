@@ -41,12 +41,10 @@ public class ImpactFramesHandler {
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();
     private static int width = -1;
     private static int height = -1;
+    private static ImpactFrame currentImpactFrame = null;
+    private static int currentTick = 0;
+
     public static PostChain impactFrameShader;
-
-    @SubscribeEvent
-    public static void renderFrameEvent(RenderFrameEvent.Pre event){
-
-    }
 
     @SubscribeEvent
     public static void tick(ClientTickEvent.Pre event){
@@ -58,23 +56,48 @@ public class ImpactFramesHandler {
 
         resizeImpactShaderIfNeeded();
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        if (!impactFrames.isEmpty()) {
 
-            var frame = impactFrames.poll();
-
-            impactFrameShader.setUniform("treshhold",frame.getTreshhold());
-            impactFrameShader.setUniform("treshholdLerp",frame.getTreshholdLerp());
-            impactFrameShader.setUniform("invert",frame.isInverted() ? 1 : 0);
-            renderer.postEffect = impactFrameShader;
-            renderer.effectActive = true;
-
-        }else{
-            if (isImpactFrameShaderActive()){
+        if (currentImpactFrame == null){
+            if (!impactFrames.isEmpty()){
+                currentImpactFrame = impactFrames.poll();
+                activateImpactShader(currentImpactFrame);
+                currentTick = 1;
+            }else{
+                currentTick = 0;
                 renderer.postEffect = null;
                 renderer.effectActive = false;
             }
+        }else{
+            if (currentTick >= currentImpactFrame.getDuration()){
+                if (!impactFrames.isEmpty()){
+                    currentImpactFrame = impactFrames.poll();
+                    activateImpactShader(currentImpactFrame);
+                    currentTick = 1;
+                }else{
+                    currentImpactFrame = null;
+                    currentTick = 0;
+                    renderer.postEffect = null;
+                    renderer.effectActive = false;
+                }
+            }else{
+                activateImpactShader(currentImpactFrame);
+                currentTick++;
+            }
         }
 
+
+
+
+
+    }
+
+    private static void activateImpactShader(ImpactFrame frame){
+        GameRenderer renderer = Minecraft.getInstance().gameRenderer;
+        impactFrameShader.setUniform("treshhold",frame.getTreshhold());
+        impactFrameShader.setUniform("treshholdLerp",frame.getTreshholdLerp());
+        impactFrameShader.setUniform("invert",frame.isInverted() ? 1 : 0);
+        renderer.postEffect = impactFrameShader;
+        renderer.effectActive = true;
     }
 
     public static void beforePostEffect(DeltaTracker deltaTracker, boolean idk){
@@ -122,35 +145,11 @@ public class ImpactFramesHandler {
 
     }
 
-    public static void lightTextureMixin(Vector3f light, CallbackInfo ci){
-//        if (isImpactFrameShaderActive()) {
-//            light.set(1, 1, 1);
-//            ci.cancel();
-//        }
-    }
 
     public static boolean isImpactFrameShaderActive(){
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
         return renderer.postEffect != null && renderer.postEffect.getName().equals(impactFrameShader.getName());
     }
-
-
-
-    @SubscribeEvent
-    public static void hurtEvent(AttackEntityEvent event){
-        Player player = event.getEntity();
-        if (player.level().isClientSide){
-            ImpactFrame base = new ImpactFrame(0.6f,0,false);
-            addImpactFrame(new ImpactFrame(base));
-            addImpactFrame(new ImpactFrame(base).setInverted(true));
-            ClientMixinHandler.addShake(new DefaultShake(FDShakeData.builder()
-                    .frequency(20)
-                    .amplitude(0.1f)
-                    .outTime(10)
-                    .build()));
-        }
-    }
-
 
     public static void addImpactFrame(ImpactFrame frame){
         impactFrames.offer(frame);
