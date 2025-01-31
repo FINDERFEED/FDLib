@@ -21,7 +21,7 @@ public class ImpactFramesPacket extends FDPacket {
         this.frames = new ArrayList<>();
         int size = buf.readInt();
         for (int i = 0; i < size;i++){
-
+            this.frames.add(ImpactFrame.STREAM_CODEC.decode(buf));
         }
     }
 
