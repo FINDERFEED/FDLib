@@ -16,6 +16,9 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    maven {
+        url "https://cursemaven.com"
+    }
 }
 
 base {
@@ -69,6 +72,10 @@ configurations {
 dependencies {
    implementation "net.neoforged:neoforge:${neo_version}"
 
+    implementation fileTree(dir: 'jarmods', include: ['*.jar'])
+
+//    implementation "curse.maven:sodium-394468:6000085"
+    implementation "curse.maven:irisshaders-455508:6117625"
 
 }
 

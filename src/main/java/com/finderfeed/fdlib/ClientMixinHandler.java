@@ -86,10 +86,4 @@ public class ClientMixinHandler {
     }
 
 
-    public static void onGameRenderEnd(DeltaTracker deltaTracker,boolean someBoolean){
-
-
-
-    }
-
 }

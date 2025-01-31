@@ -5,6 +5,7 @@ uniform vec2 ScreenSize;
 uniform float treshhold;
 uniform float treshholdLerp;
 uniform float invert;
+uniform float maxEstimatedGrayscale;
 
 in vec2 texCoord;
 
@@ -16,6 +17,8 @@ void main(){
     vec4 color = texture(DiffuseSampler, texCoord);
 
     float gray = max(max(color.x,color.y),color.z);
+
+    gray /= maxEstimatedGrayscale;
 
     if (gray > treshhold){
         gray = 1;
