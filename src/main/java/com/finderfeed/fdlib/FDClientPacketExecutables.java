@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
+
 public class FDClientPacketExecutables {
 
     public static void movePlayer(Vec3 movement){
@@ -40,7 +42,7 @@ public class FDClientPacketExecutables {
         }
     }
 
-    public static void entitySyncAnimationsPacket(int entityId, TickerSyncInstance[] syncInstances){
+    public static void entitySyncAnimationsPacket(int entityId, List<TickerSyncInstance> syncInstances){
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         if (entity instanceof AnimatedObject object){
             AnimationSystem system = object.getSystem();
@@ -69,7 +71,7 @@ public class FDClientPacketExecutables {
         object.getSystem().stopAnimation(layer);
     }
 
-    public static void tileEntitySyncAnimations(BlockPos pos,TickerSyncInstance[] syncInstances){
+    public static void tileEntitySyncAnimations(BlockPos pos,List<TickerSyncInstance> syncInstances){
         Level level = Minecraft.getInstance().level;
         if (!((level.getBlockEntity(pos)) instanceof AnimatedObject object)) return;
         AnimationSystem system = object.getSystem();
