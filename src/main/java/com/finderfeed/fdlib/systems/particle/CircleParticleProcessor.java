@@ -23,14 +23,14 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
     private Vec3 point = null;
     private boolean forward = true;
     private boolean in = true;
-    private int circleCount = 1;
+    private float circleCount = 1;
 
     private Vec3 previousPoint = null;
     private Vec3 initialPoint = null;
     private Vector3f axis = null;
     private Vec3 oldSpeed = Vec3.ZERO;
 
-    public CircleParticleProcessor(Vec3 point,boolean forward,boolean in,int circleCount){
+    public CircleParticleProcessor(Vec3 point,boolean forward,boolean in,float circleCount){
         this.point = point;
         this.forward = forward;
         this.in = in;
@@ -126,7 +126,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
                 FDByteBufCodecs.VEC3,v->v.point,
                 ByteBufCodecs.BOOL,v->v.forward,
                 ByteBufCodecs.BOOL,v->v.in,
-                ByteBufCodecs.INT,v->v.circleCount,
+                ByteBufCodecs.FLOAT,v->v.circleCount,
                 CircleParticleProcessor::new
         );
 
@@ -134,7 +134,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
                 FDCodecs.VEC3.fieldOf("point").forGetter(v->v.point),
                 Codec.BOOL.fieldOf("forward").forGetter(v->v.forward),
                 Codec.BOOL.fieldOf("in").forGetter(v->v.in),
-                Codec.INT.fieldOf("circleCount").forGetter(v->v.circleCount)
+                Codec.FLOAT.fieldOf("circleCount").forGetter(v->v.circleCount)
         ).apply(p,CircleParticleProcessor::new));
 
         @Override
