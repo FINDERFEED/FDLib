@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 
 public class AttackChain {
 
@@ -18,6 +19,8 @@ public class AttackChain {
     private Queue<String> chain = new ArrayDeque<>();
 
     private AttackInstance currentAttack = null;
+
+    private Function<String, AttackAction> attackListener = (inst)->AttackAction.PROCEED;
 
     private RandomSource source;
 
@@ -41,6 +44,11 @@ public class AttackChain {
                 });
             }
         }
+        return this;
+    }
+
+    public AttackChain attackListener(Function<String, AttackAction> listener){
+        this.attackListener = listener;
         return this;
     }
 
@@ -86,7 +94,23 @@ public class AttackChain {
     //executed immediately or whole chain is drain, then goes to next tick
     private void pollAndExecuteAttack(){
         while (currentAttack == null && !this.chain.isEmpty()) {
-            String executorName = this.chain.poll();
+
+            String executorName = this.chain.peek();
+
+            AttackAction attackAction = this.attackListener.apply(executorName);
+
+            if (attackAction == AttackAction.WAIT){
+                break;
+            }else if (attackAction == AttackAction.PROCEED){
+                this.chain.poll();
+            }else if (attackAction == AttackAction.SKIP){
+                this.chain.poll();
+                continue;
+            }else{
+                break;
+            }
+
+
             AttackExecutor executor = this.registeredAttackExecutors.get(executorName);
             if (executor == null) {
                 throw new RuntimeException("Attack not registered: " + executorName);

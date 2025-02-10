@@ -66,9 +66,11 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
     @Override
     public void processParticle(Particle particle) {
 
-        if (particle.age > particle.lifetime) return;
+        int particleLifetime = particle.lifetime - 2;
 
-        float p2 = particle.age / (float) particle.lifetime;
+        if (particle.age > particleLifetime) return;
+
+        float p2 = particle.age / (float) particleLifetime;
 
         double len = initialPoint.subtract(point).length();
 
