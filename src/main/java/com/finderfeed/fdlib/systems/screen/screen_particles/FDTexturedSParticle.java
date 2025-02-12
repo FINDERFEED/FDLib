@@ -146,11 +146,12 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
     }
 
     public float getCurrentQuadSize(float partialTicks){
-        if (quadSizeO < currentQuadSize) {
-            return Mth.lerp(partialTicks, quadSizeO, currentQuadSize);
-        }else{
-            return Mth.lerp(1 - partialTicks, quadSizeO,currentQuadSize);
-        }
+//        if (quadSizeO < currentQuadSize) {
+//            return Mth.lerp(partialTicks, quadSizeO, currentQuadSize);
+//        }else{
+//            return Mth.lerp(1 - partialTicks, quadSizeO,currentQuadSize);
+//        }
+        return Mth.lerp(partialTicks,quadSizeO,currentQuadSize);
     }
 
     @Override
