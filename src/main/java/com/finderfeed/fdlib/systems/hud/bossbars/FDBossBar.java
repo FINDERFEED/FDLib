@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.hud.bossbars;
 
+import com.finderfeed.fdlib.FDClientHelpers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -54,8 +55,7 @@ public abstract class FDBossBar {
     }
 
     public <T extends Entity> T getEntity() {
-
-        Level level = Minecraft.getInstance().level;
+        Level level = FDClientHelpers.getClientLevel();
         if (level == null) return null;
 
         Entity entity = level.getEntity(this.entityId);
