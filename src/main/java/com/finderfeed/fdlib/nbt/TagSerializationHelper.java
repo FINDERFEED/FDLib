@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.nbt;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.FDHelpers;
+import com.finderfeed.fdlib.systems.cutscenes.CurveType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -32,9 +33,14 @@ public class TagSerializationHelper {
 
     private static <T extends AutoSerializable> void saveField(T object,CompoundTag tag,Field field){
         try {
+
+            Class<?> clazz = field.getType();
             String name = field.getName();
             Object value = field.get(object);
-            if (value instanceof Integer i){
+
+            if (clazz.isEnum()) {
+                tag.putString(name,((Enum<?>)value).name());
+            } else if (value instanceof Integer i){
                 tag.putInt(name,i);
             }else if (value instanceof Float f){
                 tag.putFloat(name,f);
@@ -55,7 +61,6 @@ public class TagSerializationHelper {
                 autoSerializable.autoSave(t);
                 tag.put(name,t);
             } else {
-                Class<?> clazz = field.getType();
                 if (FDTagDeserializers.DESERIALIZERS.containsKey(clazz)){
                     TagDeserializer<?> deserializer = FDTagDeserializers.DESERIALIZERS.get(clazz);
                     hackyUseSerializer(name,deserializer,value,tag);
@@ -74,22 +79,38 @@ public class TagSerializationHelper {
             String name = field.getName();
             Class<?> fieldType = field.getType();
 
+//            if (!tag.contains(name)){
+//                if (int.class.isAssignableFrom(fieldType)){
+//                    field.set(object,tag.getInt(name));
+//                }else if(float.class.isAssignableFrom(fieldType)){
+//                    field.set(object,tag.getFloat(name));
+//                }else if (double.class.isAssignableFrom(fieldType)){
+//                    field.set(object,tag.getDouble(name));
+//                }else if (boolean.class.isAssignableFrom(fieldType)){
+//                    field.set(object,tag.getBoolean(name));
+//                }else {
+//                    field.set(object, null);
+//                }
+//                return;
+//            }
+
             if (!tag.contains(name)){
-                if (int.class.isAssignableFrom(fieldType)){
-                    field.set(object,tag.getInt(name));
-                }else if(float.class.isAssignableFrom(fieldType)){
-                    field.set(object,tag.getFloat(name));
-                }else if (double.class.isAssignableFrom(fieldType)){
-                    field.set(object,tag.getDouble(name));
-                }else if (boolean.class.isAssignableFrom(fieldType)){
-                    field.set(object,tag.getBoolean(name));
-                }else {
-                    field.set(object, null);
-                }
                 return;
             }
 
-            if (Integer.class.isAssignableFrom(fieldType) || int.class.isAssignableFrom(fieldType)){
+            if (fieldType.isEnum()) {
+
+                String enumName = tag.getString(name);
+
+                for (Object en : fieldType.getEnumConstants()) {
+                    Enum<?> enums = (Enum<?>) en;
+                    if (enums.name().equals(enumName)){
+                        field.set(object,enums);
+                        break;
+                    }
+                }
+
+            }else if (Integer.class.isAssignableFrom(fieldType) || int.class.isAssignableFrom(fieldType)){
                 field.set(object,tag.getInt(name));
             }else if (Float.class.isAssignableFrom(fieldType) || float.class.isAssignableFrom(fieldType)){
                 field.set(object,tag.getFloat(name));

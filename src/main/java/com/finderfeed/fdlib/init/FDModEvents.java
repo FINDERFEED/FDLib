@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.ReflectiveJsonConfig;
+import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import com.finderfeed.fdlib.systems.particle.CompositeParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.EmptyParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
