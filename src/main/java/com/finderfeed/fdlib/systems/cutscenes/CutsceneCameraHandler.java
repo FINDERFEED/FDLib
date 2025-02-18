@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import com.finderfeed.fdlib.init.FDClientModEvents;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -57,18 +58,25 @@ public class CutsceneCameraHandler {
                 Vec3 eyePos = player.getEyePosition();
 
                 CutsceneData data = CutsceneData.create()
-                        .time(200)
-                        .moveCurveType(CurveType.CATMULLROM)
-                        .timeEasing(EasingType.LINEAR)
-                        .lookEasing(EasingType.EASE_IN_OUT)
-                        .stopMode(CutsceneData.StopMode.PLAYER)
-                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),90,0))
-                        .addCameraPos(new CameraPos(eyePos.add(0,-1,10),180,-20))
-                        .addCameraPos(new CameraPos(eyePos.add(-10,1,0),270,20))
-                        .addCameraPos(new CameraPos(eyePos.add(0,-1,-10),0,-20))
-                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),90,0))
+                        .stopMode(CutsceneData.StopMode.UNSTOPPABLE)
+                        .time(1000)
+                        .lookEasing(EasingType.LINEAR)
+                        .timeEasing(EasingType.EASE_IN_OUT)
+                        .moveCurveType(CurveType.LINEAR);
 
-                        ;
+                int segments = 32;
+                float angle = FDMathUtil.FPI * 2 / segments;
+                Vec3 base = player.position().add(0,10,0);
+                for (float i = 0; i <= FDMathUtil.FPI * 2;i += angle){
+
+                    Vec3 v = new Vec3(30,0,0).yRot(i);
+                    Vec3 pos = base.add(v);
+
+                    Vec3 look = player.position().add(0,1.5,0).subtract(pos);
+
+                    data.addCameraPos(new CameraPos(pos,look));
+
+                }
 
                 startCutscene(data);
             }else{

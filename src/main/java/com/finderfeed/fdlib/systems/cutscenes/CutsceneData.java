@@ -111,7 +111,7 @@ public class CutsceneData implements AutoSerializable {
 
     }
 
-    enum StopMode{
+    public enum StopMode{
         AUTOMATIC, // Ends on completion
         PLAYER, // Player can end the cutscene with a hotkey
         UNSTOPPABLE // Can only be stopped through cutscene fix command or code

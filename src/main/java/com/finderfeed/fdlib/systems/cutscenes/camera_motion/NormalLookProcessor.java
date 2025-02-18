@@ -15,9 +15,10 @@ public class NormalLookProcessor extends CameraLookProcessor {
 
         List<CameraPos> positions = cutsceneData.getCameraPositions();
 
+        EasingType timeEasing = cutsceneData.getTimeEasing();
         EasingType easingType = cutsceneData.getLookEasing();
 
-        float p = CutsceneUtil.getPercent(cutsceneData,currentTime,partialTick);
+        float p = timeEasing.apply(CutsceneUtil.getPercent(cutsceneData,currentTime,partialTick));
 
         float globalPercent = p * (positions.size() - 1);
 
