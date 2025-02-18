@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDLibCalls;
 import com.finderfeed.fdlib.nbt.AutoSerializable;
 import com.finderfeed.fdlib.nbt.SerializableField;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 public class CameraPos implements AutoSerializable {
@@ -12,21 +13,22 @@ public class CameraPos implements AutoSerializable {
     private Vec3 pos;
 
     @SerializableField
-    private Vec3 lookDirection;
+    private float yaw;
+
+    @SerializableField
+    private float pitch;
 
     protected CameraPos(){}
 
-    public CameraPos(Vec3 pos,Vec3 lookDirection){
+    public CameraPos(Vec3 pos, float yaw,float pitch){
         this.pos = pos;
-        this.lookDirection = lookDirection;
+        this.yaw = FDMathUtil.convertMCYRotationToNormal(yaw);
+        this.pitch = Mth.clamp(pitch,-90,90);
     }
 
-    public Vec3 getPos() {
-        return pos;
-    }
-
-    public Vec3 getLookDirection() {
-        return lookDirection;
+    //Will cause anomalies with look direction vec (0; Y; 0)
+    public CameraPos(Vec3 pos,Vec3 lookDirection){
+        this(pos,FDMathUtil.yRotFromVector(lookDirection.normalize()),FDMathUtil.xRotFromVector(lookDirection.normalize()));
     }
 
     public Vec3 interpolate(CameraPos next,float p){
@@ -37,14 +39,16 @@ public class CameraPos implements AutoSerializable {
         );
     }
 
-    //pitch
-    public float getXRot(){
-        return FDMathUtil.xRotFromVector(lookDirection);
+    public Vec3 getPos() {
+        return pos;
     }
 
-    //yaw
-    public float getYRot(){
-        return FDMathUtil.yRotFromVector(lookDirection);
+    public float getYaw(){
+        return yaw;
+    }
+
+    public float getPitch(){
+        return pitch;
     }
 
 }

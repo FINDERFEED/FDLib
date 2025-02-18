@@ -1,9 +1,10 @@
 package com.finderfeed.fdlib.systems.cutscenes;
 
 import com.finderfeed.fdlib.FDClientHelpers;
-import com.finderfeed.fdlib.FDHelpers;
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.math.FDMathUtil;
+import com.finderfeed.fdlib.data_structures.ObjectHolder;
+import com.finderfeed.fdlib.init.FDClientModEvents;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -12,8 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.lwjgl.glfw.GLFW;
 
@@ -23,14 +23,13 @@ public class CutsceneCameraHandler {
 
     private static ClientCameraEntity clientCameraEntity;
     private static Entity previousCameraEntity;
-
     private static CutsceneExecutor cutsceneExecutor;
 
     //TODO: TEST
     private static boolean movingForward = false;
 
     @SubscribeEvent
-    public static void keyEvent(InputEvent.Key event){
+    public static void testCamera(InputEvent.Key event){
         if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
 
         int key = event.getKey();
@@ -48,7 +47,7 @@ public class CutsceneCameraHandler {
 
         if (action != GLFW.GLFW_PRESS) return;
 
-        if (key == GLFW.GLFW_KEY_K) {
+        if (key == GLFW.GLFW_KEY_H) {
             Entity c = Minecraft.getInstance().cameraEntity;
 
             if (!(c instanceof ClientCameraEntity camera)) {
@@ -58,84 +57,110 @@ public class CutsceneCameraHandler {
                 Vec3 eyePos = player.getEyePosition();
 
                 CutsceneData data = CutsceneData.create()
-                        .time(500)
+                        .time(200)
                         .moveCurveType(CurveType.CATMULLROM)
                         .timeEasing(EasingType.LINEAR)
-                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),Vec3.ZERO))
-                        .addCameraPos(new CameraPos(eyePos.add(0,0,10),Vec3.ZERO))
-                        .addCameraPos(new CameraPos(eyePos.add(-10,0,0),Vec3.ZERO))
-                        .addCameraPos(new CameraPos(eyePos.add(0,0,-10),Vec3.ZERO))
-                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),Vec3.ZERO))
+                        .lookEasing(EasingType.EASE_IN_OUT)
+                        .stopMode(CutsceneData.StopMode.PLAYER)
+                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),90,0))
+                        .addCameraPos(new CameraPos(eyePos.add(0,-1,10),180,-20))
+                        .addCameraPos(new CameraPos(eyePos.add(-10,1,0),270,20))
+                        .addCameraPos(new CameraPos(eyePos.add(0,-1,-10),0,-20))
+                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),90,0))
 
                         ;
 
-                initiateCamera(data);
+                startCutscene(data);
             }else{
-                stopCamera();
+                stopCutscene();
             }
         }
 
     }
 
+
     @SubscribeEvent
     public static void playerTickEvent(PlayerTickEvent.Pre playerTickEvent){
         Player player = playerTickEvent.getEntity();
         if (!player.level().isClientSide) return;
-        if (clientCameraEntity == null || cutsceneExecutor == null) return;
 
+        boolean wasStoppedByPlayer = false;
+        while (FDClientModEvents.END_CUTSCENE.consumeClick()){
+            wasStoppedByPlayer = true;
+        }
 
-        setCameraOlds();
+        if (!isCutsceneActive()) return;
+
+        if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.PLAYER && wasStoppedByPlayer){
+            stopCutscene();
+            return;
+        }
+
+        if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON){
+            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+        }
+
+        ensurePlayerIsACamera();
 
         cutsceneExecutor.tick(clientCameraEntity);
 
-        if (cutsceneExecutor.hasEnded()){
-            stopCamera();
+        if (cutsceneExecutor.hasEnded() && cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC){
+            stopCutscene();
         }
 
     }
 
     @SubscribeEvent
+    public static void renderHighlightEvent(RenderHighlightEvent.Block event){
+        if (isCutsceneActive()) {
+            event.setCanceled(true);
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void renderGuiLayers(RenderGuiLayerEvent.Pre event){
+        if (isCutsceneActive()){
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderHand(RenderHandEvent event){
+        if (isCutsceneActive()){
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
     public static void cameraAngles(ViewportEvent.ComputeCameraAngles event){
 
-        if (clientCameraEntity == null || cutsceneExecutor == null) return;
+        if (!isCutsceneActive()) return;
 
-        float yRotO = FDMathUtil.convertMCYRotationToNormal(clientCameraEntity.yRotO);
-        float yRot = FDMathUtil.convertMCYRotationToNormal(clientCameraEntity.getYRot());
+        ObjectHolder<Float> yaw = new ObjectHolder<>(event.getYaw());
+        ObjectHolder<Float> pitch = new ObjectHolder<>(event.getPitch());
 
-        event.setYaw((float) FDMathUtil.lerpAround(yRotO,yRot,-180,180,(float) event.getPartialTick()));
+        cutsceneExecutor.setYawAndPitch((float) event.getPartialTick(),yaw,pitch);
 
+        event.setPitch(pitch.getValue());
+        event.setYaw(yaw.getValue());
 
     }
 
-    private static void setCameraOlds(){
-        clientCameraEntity.yRotO = clientCameraEntity.getYRot();
-        clientCameraEntity.xRotO = clientCameraEntity.getXRot();
-        clientCameraEntity.xo = clientCameraEntity.getX();
-        clientCameraEntity.yo = clientCameraEntity.getY();
-        clientCameraEntity.zo = clientCameraEntity.getZ();
+
+    private static void ensurePlayerIsACamera(){
+
+        if (cutsceneExecutor != null && clientCameraEntity != null){
+            Entity camera = Minecraft.getInstance().cameraEntity;
+            if (!(camera instanceof ClientCameraEntity)){
+                previousCameraEntity = camera;
+                Minecraft.getInstance().setCameraEntity(clientCameraEntity);
+            }
+        }
+
     }
 
-    private static void setCameraRotation(Vec3 v){
-        float xRot = FDMathUtil.xRotFromVector(v);
-        float yRot = FDMathUtil.yRotFromVector(v);
-        setCameraRotation(xRot,yRot);
-    }
-
-    private static void setCameraRotation(float xRot,float yRot) {
-        clientCameraEntity.setXRot(xRot);
-        clientCameraEntity.setYRot(yRot);
-    }
-
-    private static void setCameraPosition(Vec3 pos){
-        setCameraPosition(pos.x,pos.y,pos.z);
-    }
-
-    private static void setCameraPosition(double x,double y,double z){
-        clientCameraEntity.setPos(x,y,z);
-    }
-
-
-    public static void initiateCamera(CutsceneData data){
+    public static void startCutscene(CutsceneData data){
 
         Level level = FDClientHelpers.getClientLevel();
 
@@ -161,12 +186,21 @@ public class CutsceneCameraHandler {
         cutsceneExecutor = new CutsceneExecutor(data);
     }
 
-    public static void stopCamera(){
-        clientCameraEntity = null;
-        cutsceneExecutor = null;
-        Minecraft.getInstance().setCameraEntity(previousCameraEntity);
+
+    public static void stopCutscene() {
+        if (isCutsceneActive()) {
+            clientCameraEntity = null;
+            cutsceneExecutor = null;
+            Minecraft.getInstance().setCameraEntity(previousCameraEntity);
+        }
     }
 
+    public static CutsceneExecutor getCutsceneExecutor(){
+        return cutsceneExecutor;
+    }
 
+    public static boolean isCutsceneActive(){
+        return clientCameraEntity != null && cutsceneExecutor != null;
+    }
 
 }

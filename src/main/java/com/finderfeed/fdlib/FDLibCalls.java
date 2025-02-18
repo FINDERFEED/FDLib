@@ -1,6 +1,9 @@
 package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.network.lib_packets.PlayerMovePacket;
+import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
+import com.finderfeed.fdlib.systems.cutscenes.packets.StartCutscenePacket;
+import com.finderfeed.fdlib.systems.cutscenes.packets.StopCutscenePacket;
 import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
 import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesPacket;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterData;
@@ -23,7 +26,21 @@ public class FDLibCalls {
 
     public static final TargetingConditions ALL = TargetingConditions.forNonCombat().selector(p->true).ignoreLineOfSight().ignoreInvisibilityTesting();
 
+    public static void startCutsceneForPlayer(ServerPlayer player, CutsceneData data){
+        PacketDistributor.sendToPlayer(player,new StartCutscenePacket(data));
+    }
 
+    public static void startCutsceneForPlayers(ServerLevel level,Vec3 pos,double radius, CutsceneData data){
+        PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new StartCutscenePacket(data));
+    }
+
+    public static void stopCutsceneForPlayer(ServerPlayer player){
+        PacketDistributor.sendToPlayer(player,new StopCutscenePacket());
+    }
+
+    public static void stopCutsceneForPlayers(ServerLevel level,Vec3 pos,double radius){
+        PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new StopCutscenePacket());
+    }
 
     public static <T> T getListValueSafe(int id,List<T> list){
 

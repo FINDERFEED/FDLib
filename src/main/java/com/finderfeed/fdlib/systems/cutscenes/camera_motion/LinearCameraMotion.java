@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.cutscenes.camera_motion;
 import com.finderfeed.fdlib.FDLibCalls;
 import com.finderfeed.fdlib.systems.cutscenes.CameraPos;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
+import com.finderfeed.fdlib.systems.cutscenes.CutsceneUtil;
 import com.finderfeed.fdlib.systems.cutscenes.EasingType;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,11 +20,9 @@ public class LinearCameraMotion extends CameraMotion {
             throw new RuntimeException("List of camera positions cannot be empty!");
         }
 
-        int cutsceneTime = data.getCutsceneTime();
-
         EasingType easingType = data.getTimeEasing();
 
-        float p = easingType.apply((currentTime + partialTick) / (float) cutsceneTime);
+        float p = easingType.apply(CutsceneUtil.getPercent(data,currentTime,partialTick));
 
         float globalPercent = p * (positions.size() - 1);
 

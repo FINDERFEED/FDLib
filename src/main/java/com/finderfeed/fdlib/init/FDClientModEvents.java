@@ -8,7 +8,9 @@ import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.client.particles.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.particles.InvisibleParticle;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.math.Axis;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -18,11 +20,21 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
 public class FDClientModEvents {
 
+    public static final String FDLIB_KEY_CATEGORY = "fdlib.key_category";
+
+    public static final KeyMapping END_CUTSCENE = new KeyMapping("fdlib.key.end_cutscene", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, FDLIB_KEY_CATEGORY);
+
+    @SubscribeEvent
+    public static void registerKeyMappings(RegisterKeyMappingsEvent event){
+        event.register(END_CUTSCENE);
+    }
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event){

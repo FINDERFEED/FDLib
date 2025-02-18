@@ -1,14 +1,15 @@
 package com.finderfeed.fdlib.systems.cutscenes;
 
-import com.finderfeed.fdlib.systems.cutscenes.camera_motion.CameraMotion;
-import com.finderfeed.fdlib.systems.cutscenes.camera_motion.CatmullRomCameraMotion;
-import com.finderfeed.fdlib.systems.cutscenes.camera_motion.LinearCameraMotion;
+import com.finderfeed.fdlib.data_structures.ObjectHolder;
+import com.finderfeed.fdlib.systems.cutscenes.camera_motion.*;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 public class CutsceneExecutor {
 
     private CutsceneData data;
+
+    private CameraLookProcessor lookProcessor;
 
     private CameraMotion cameraMotion;
 
@@ -21,16 +22,18 @@ public class CutsceneExecutor {
         }else{
             cameraMotion = new CatmullRomCameraMotion();
         }
+        lookProcessor = new NormalLookProcessor();
     }
 
     public boolean tick(ClientCameraEntity camera){
-        if (currentTime >= data.getCutsceneTime()){
-            return true;
-        }
 
         camera.xo = camera.getX();
         camera.yo = camera.getY();
         camera.zo = camera.getZ();
+
+        if (currentTime >= data.getCutsceneTime()){
+            return true;
+        }
 
         Vec3 newPos = cameraMotion.calculateCameraPosition(data,currentTime,0);
 
@@ -40,10 +43,21 @@ public class CutsceneExecutor {
         return false;
     }
 
+    public void setYawAndPitch(float partialTick, ObjectHolder<Float> yaw,ObjectHolder<Float> pitch){
+        lookProcessor.rotate(this.data,currentTime,partialTick,yaw,pitch);
+    }
+
 
     public boolean hasEnded(){
         return currentTime >= data.getCutsceneTime();
     }
 
 
+    public CutsceneData getData() {
+        return data;
+    }
+
+    public int getCurrentTime() {
+        return currentTime;
+    }
 }

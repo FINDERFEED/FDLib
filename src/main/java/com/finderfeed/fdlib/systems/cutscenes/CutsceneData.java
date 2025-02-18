@@ -20,10 +20,26 @@ public class CutsceneData implements AutoSerializable {
     @SerializableField
     private EasingType timeEasing = EasingType.LINEAR;
 
-    private CutsceneData(){}
+    @SerializableField
+    private EasingType lookEasing = EasingType.LINEAR;
+
+    @SerializableField
+    private StopMode stopMode = StopMode.AUTOMATIC;
+
+    // Cutscenes do not load chunks! Use them near player!
+    public CutsceneData(){}
+
+    public CutsceneData stopMode(StopMode stopMode){
+        this.stopMode = stopMode;
+        return this;
+    }
 
     public CutsceneData timeEasing(EasingType type){
         this.timeEasing = type;
+        return this;
+    }
+    public CutsceneData lookEasing(EasingType type){
+        this.lookEasing = type;
         return this;
     }
 
@@ -58,6 +74,14 @@ public class CutsceneData implements AutoSerializable {
         return timeEasing;
     }
 
+    public EasingType getLookEasing() {
+        return lookEasing;
+    }
+
+    public StopMode getStopMode() {
+        return stopMode;
+    }
+
     public static CutsceneData create(){
         return new CutsceneData();
     }
@@ -86,4 +110,11 @@ public class CutsceneData implements AutoSerializable {
         }
 
     }
+
+    enum StopMode{
+        AUTOMATIC, // Ends on completion
+        PLAYER, // Player can end the cutscene with a hotkey
+        UNSTOPPABLE // Can only be stopped through cutscene fix command or code
+    }
+
 }
