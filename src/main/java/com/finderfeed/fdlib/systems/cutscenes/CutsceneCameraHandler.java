@@ -89,12 +89,16 @@ public class CutsceneCameraHandler {
 
     @SubscribeEvent
     public static void renderScreenParticlesEvent(ScreenParticlesRenderEvent.Gui event){
-        event.setCanceled(true);
+        if (isCutsceneActive()) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
     public static void renderScreenParticlesEvent2(ScreenParticlesRenderEvent.Screen event){
-        event.setCanceled(true);
+        if (isCutsceneActive()) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
