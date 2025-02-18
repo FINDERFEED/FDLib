@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.commands;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.FDLibCalls;
 import com.finderfeed.fdlib.init.FDModEvents;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.TriggerAnimationReloadPacket;
@@ -23,6 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -83,9 +85,23 @@ public class FDCommandsRegistry {
                                         }))
 
                                 )
+                                .then(Commands.literal("fix")
+                                        .then(Commands.literal("cutscene")
+                                                .executes((stack)->{
+                                                    emergencyCutsceneEnd(stack);
+                                                    return 1;
+                                                })
+                                        )
+                                )
 
                 )
         ;
+    }
+
+    public static void emergencyCutsceneEnd(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        CommandSourceStack stack = ctx.getSource();
+        ServerPlayer player = stack.getPlayerOrException();
+        FDLibCalls.stopCutsceneForPlayer(player);
     }
 
     public static void reloadAnimations(CommandContext<CommandSourceStack> ctx){
