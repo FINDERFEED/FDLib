@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import com.finderfeed.fdlib.init.FDClientModEvents;
+import com.finderfeed.fdlib.systems.screen.screen_particles.ScreenParticlesRenderEvent;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -86,6 +87,15 @@ public class CutsceneCameraHandler {
 
     }
 
+    @SubscribeEvent
+    public static void renderScreenParticlesEvent(ScreenParticlesRenderEvent.Gui event){
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void renderScreenParticlesEvent2(ScreenParticlesRenderEvent.Screen event){
+        event.setCanceled(true);
+    }
 
     @SubscribeEvent
     public static void playerTickEvent(PlayerTickEvent.Pre playerTickEvent){

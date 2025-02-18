@@ -17,6 +17,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,14 +30,17 @@ public class FDScreenParticleEngine {
     private static HashMap<ParticleRenderType, List<FDScreenParticle>> SCREEN_PARTICLES = new HashMap<>();
     private static HashMap<ParticleRenderType, List<FDScreenParticle>> OVERLAY_PARTICLES = new HashMap<>();
 
-
     @SubscribeEvent
     public static void renderScreenEvent(ScreenEvent.Render.Post event){
+        if (NeoForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Screen()).isCanceled()) return;
         render(SCREEN_PARTICLES,event.getGuiGraphics(),event.getPartialTick());
     }
 
     @SubscribeEvent
     public static void onGuiRender(RenderGuiEvent.Post event){
+
+        if (NeoForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Gui()).isCanceled()) return;
+
         GuiGraphics graphics = event.getGuiGraphics();
         int layerCount = Minecraft.getInstance().gui.getLayerCount();
         graphics.pose().pushPose();
