@@ -21,8 +21,79 @@ public class FDMathUtil {
     public static float lerp(float v1,float v2,float p){
         return v1 + (v2 - v1) * p;
     }
+
     public static double lerp(double v1,double v2,double p){
         return v1 + (v2 - v1) * p;
+    }
+
+
+    public static float yRotFromVector(Vec3 v){
+        if (v.x == 0 && v.z == 0){
+            return 0;
+        }
+
+        float value = -(float) Math.atan2(v.x,v.z);
+
+        return (float) Math.toDegrees(value);
+    }
+
+    public static float xRotFromVector(Vec3 v){
+        Vec3 g = new Vec3(v.x,0,v.z);
+
+        float value = -(float)Math.atan2(v.y,g.length());
+
+        return (float) Math.toDegrees(value);
+    }
+
+
+
+    //from -infinite - infinite to -180 - 180
+    public static float convertMCYRotationToNormal(float rot){
+
+        float d = rot % 360;
+
+        if (rot > 0) {
+            if (d > 180){
+                return -180 + (d - 180);
+            }else{
+                return d;
+            }
+        }else{
+            if (d < -180){
+                return 180 - (-180 - d);
+            }else{
+                return d;
+            }
+        }
+
+    }
+
+    public static float lerpAround(float v1,float v2,float min,float max,float p){
+        if (v2 < v1){
+            float v = v2;
+            v2 = v1;
+            v1 = v;
+            p = 1 - p;
+        }
+
+        float d1 = v2 - v1;
+
+        float v1tomin = v1 - min;
+        float v2tomax = max - v2;
+
+        float d2 = v1tomin + v2tomax;
+
+        if (d1 < d2){
+            return lerp(v1,v2,p);
+        }else{
+            float d = d2 * p;
+            if (d < v1tomin){
+                return v1 - d;
+            }else{
+                float remain = d - v1tomin;
+                return max - remain;
+            }
+        }
     }
 
     public static Vec3 projectVectorOnVector(Vec3 v,Vec3 on){

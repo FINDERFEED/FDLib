@@ -1,10 +1,8 @@
-package com.finderfeed.fdlib.systems.cutscenes.test;
+package com.finderfeed.fdlib.systems.cutscenes;
 
 import com.finderfeed.fdlib.FDClientHelpers;
-import com.finderfeed.fdlib.FDClientPacketExecutables;
 import com.finderfeed.fdlib.FDHelpers;
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.cutscenes.ClientCameraEntity;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -20,12 +18,13 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.GAME)
-public class CameraHandler {
+public class CutsceneCameraHandler {
 
 
     private static ClientCameraEntity clientCameraEntity;
     private static Entity previousCameraEntity;
 
+    private static CutsceneExecutor cutsceneExecutor;
 
     //TODO: TEST
     private static boolean movingForward = false;
@@ -53,7 +52,24 @@ public class CameraHandler {
             Entity c = Minecraft.getInstance().cameraEntity;
 
             if (!(c instanceof ClientCameraEntity camera)) {
-                initiateCamera();
+
+                Player player = Minecraft.getInstance().player;
+
+                Vec3 eyePos = player.getEyePosition();
+
+                CutsceneData data = CutsceneData.create()
+                        .time(500)
+                        .moveCurveType(CurveType.CATMULLROM)
+                        .timeEasing(EasingType.LINEAR)
+                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),Vec3.ZERO))
+                        .addCameraPos(new CameraPos(eyePos.add(0,0,10),Vec3.ZERO))
+                        .addCameraPos(new CameraPos(eyePos.add(-10,0,0),Vec3.ZERO))
+                        .addCameraPos(new CameraPos(eyePos.add(0,0,-10),Vec3.ZERO))
+                        .addCameraPos(new CameraPos(eyePos.add(10,0,0),Vec3.ZERO))
+
+                        ;
+
+                initiateCamera(data);
             }else{
                 stopCamera();
             }
@@ -65,14 +81,15 @@ public class CameraHandler {
     public static void playerTickEvent(PlayerTickEvent.Pre playerTickEvent){
         Player player = playerTickEvent.getEntity();
         if (!player.level().isClientSide) return;
-        if (clientCameraEntity == null) return;
+        if (clientCameraEntity == null || cutsceneExecutor == null) return;
 
 
         setCameraOlds();
-        setCameraRotation(player.getLookAngle());
-        if (movingForward){
-            Vec3 pos = clientCameraEntity.position();
-            setCameraPosition(pos.add(clientCameraEntity.getLookAngle()));
+
+        cutsceneExecutor.tick(clientCameraEntity);
+
+        if (cutsceneExecutor.hasEnded()){
+            stopCamera();
         }
 
     }
@@ -80,12 +97,13 @@ public class CameraHandler {
     @SubscribeEvent
     public static void cameraAngles(ViewportEvent.ComputeCameraAngles event){
 
-        if (clientCameraEntity == null) return;
+        if (clientCameraEntity == null || cutsceneExecutor == null) return;
 
-        float yRotO = clientCameraEntity.yRotO;
-        float yRot = clientCameraEntity.getYRot();
+        float yRotO = FDMathUtil.convertMCYRotationToNormal(clientCameraEntity.yRotO);
+        float yRot = FDMathUtil.convertMCYRotationToNormal(clientCameraEntity.getYRot());
 
-        event.setYaw((float) FDMathUtil.lerp(yRotO,yRot,event.getPartialTick()));
+        event.setYaw((float) FDMathUtil.lerpAround(yRotO,yRot,-180,180,(float) event.getPartialTick()));
+
 
     }
 
@@ -98,8 +116,8 @@ public class CameraHandler {
     }
 
     private static void setCameraRotation(Vec3 v){
-        float xRot = FDHelpers.xRotFromVector(v);
-        float yRot = FDHelpers.yRotFromVector(v);
+        float xRot = FDMathUtil.xRotFromVector(v);
+        float yRot = FDMathUtil.yRotFromVector(v);
         setCameraRotation(xRot,yRot);
     }
 
@@ -117,31 +135,35 @@ public class CameraHandler {
     }
 
 
-    public static void initiateCamera(){
+    public static void initiateCamera(CutsceneData data){
 
         Level level = FDClientHelpers.getClientLevel();
 
         Entity currentCamera = Minecraft.getInstance().cameraEntity;
         if (currentCamera instanceof ClientCameraEntity) return;
 
-
-        Entity player = currentCamera;
-
         ClientCameraEntity camera = new ClientCameraEntity(level);
-        Vec3 pos = player.position().add(0,player.getEyeHeight(),0);
-        camera.setPos(pos);
-        camera.xo = pos.x;
-        camera.yo = pos.y;
-        camera.zo = pos.z;
+
+        CameraPos pos = data.getCameraPositions().get(0);
+
+        Vec3 p = pos.getPos();
+
+        camera.setPos(p);
+        camera.xo = p.x;
+        camera.yo = p.y;
+        camera.zo = p.z;
 
         Minecraft.getInstance().setCameraEntity(camera);
 
         clientCameraEntity = camera;
         previousCameraEntity = currentCamera;
+
+        cutsceneExecutor = new CutsceneExecutor(data);
     }
 
     public static void stopCamera(){
         clientCameraEntity = null;
+        cutsceneExecutor = null;
         Minecraft.getInstance().setCameraEntity(previousCameraEntity);
     }
 

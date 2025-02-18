@@ -4,8 +4,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animated
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
-import com.finderfeed.fdlib.systems.cutscenes.ClientCameraEntity;
-import com.finderfeed.fdlib.systems.cutscenes.test.CameraHandler;
+import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
@@ -20,7 +19,7 @@ import java.util.List;
 public class FDClientPacketExecutables {
 
     public static void testCameraPacket(){
-        CameraHandler.initiateCamera();
+//        CutsceneCameraHandler.initiateCamera();
     }
 
     public static void movePlayer(Vec3 movement){

@@ -54,6 +54,10 @@ public class CutsceneData implements AutoSerializable {
         return cameraPositions;
     }
 
+    public EasingType getTimeEasing() {
+        return timeEasing;
+    }
+
     public static CutsceneData create(){
         return new CutsceneData();
     }

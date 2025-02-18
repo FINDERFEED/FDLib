@@ -24,6 +24,34 @@ public class FDLibCalls {
     public static final TargetingConditions ALL = TargetingConditions.forNonCombat().selector(p->true).ignoreLineOfSight().ignoreInvisibilityTesting();
 
 
+
+    public static <T> T getListValueSafe(int id,List<T> list){
+
+        if (list.isEmpty()){
+            return null;
+        }
+
+        if (id < 0 || id >= list.size()){
+            return null;
+        }
+
+        return list.get(id);
+    }
+    public static <T> T getListValueOrBoundaries(int id,List<T> list){
+
+        if (list.isEmpty()){
+            return null;
+        }
+
+        if (id < 0){
+            return list.getFirst();
+        }else if (id >= list.size()){
+            return list.getLast();
+        }
+
+        return list.get(id);
+    }
+
     public static void addParticleEmitter(Level level, double sendRadius, ParticleEmitterData data){
         if (level instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersNear(serverLevel, null, data.position.x, data.position.y, data.position.z, sendRadius, new ParticleEmitterPacket(data));
