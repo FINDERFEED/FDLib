@@ -11,7 +11,7 @@ import java.util.List;
 public class NormalLookProcessor extends CameraLookProcessor {
 
     @Override
-    public void rotate(CutsceneData cutsceneData, int currentTime, float partialTick, ObjectHolder<Float> yaw, ObjectHolder<Float> pitch) {
+    public void rotate(CutsceneData cutsceneData, int currentTime, float partialTick, ObjectHolder<Float> yaw, ObjectHolder<Float> pitch, ObjectHolder<Float> roll) {
 
         List<CameraPos> positions = cutsceneData.getCameraPositions();
 
@@ -35,11 +35,19 @@ public class NormalLookProcessor extends CameraLookProcessor {
         float currentPitch = current.getPitch();
         float nextPitch = next.getPitch();
 
+        float currentRoll = current.getRoll();
+        float nextRoll = next.getRoll();
+
+
+
         float pitchValue = FDMathUtil.lerp(currentPitch,nextPitch,localPercent);
         float yawValue = FDMathUtil.lerpAround(currentYaw,nextYaw,-180,180,localPercent);
+        float rollValue = FDMathUtil.lerp(currentRoll,nextRoll,localPercent);
 
         pitch.setValue(pitchValue);
         yaw.setValue(yawValue);
+        roll.setValue(rollValue);
+
     }
 
 }

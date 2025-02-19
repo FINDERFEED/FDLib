@@ -43,8 +43,8 @@ public class CutsceneExecutor {
         return false;
     }
 
-    public void setYawAndPitch(float partialTick, ObjectHolder<Float> yaw,ObjectHolder<Float> pitch){
-        lookProcessor.rotate(this.data,currentTime,partialTick,yaw,pitch);
+    public void setCameraRotation(float partialTick, ObjectHolder<Float> yaw, ObjectHolder<Float> pitch, ObjectHolder<Float> roll){
+        lookProcessor.rotate(this.data,currentTime,partialTick,yaw, pitch, roll);
     }
 
 

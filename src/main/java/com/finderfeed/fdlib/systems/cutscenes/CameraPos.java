@@ -18,17 +18,26 @@ public class CameraPos implements AutoSerializable {
     @SerializableField
     private float pitch;
 
+    @SerializableField
+    private float roll = 0;
+
+
     protected CameraPos(){}
 
-    public CameraPos(Vec3 pos, float yaw,float pitch){
+    public CameraPos(Vec3 pos, float yaw,float pitch,float roll){
         this.pos = pos;
         this.yaw = FDMathUtil.convertMCYRotationToNormal(yaw);
         this.pitch = Mth.clamp(pitch,-90,90);
+        this.roll = roll;
     }
 
     //Will cause anomalies with look direction vec (0; Y; 0)
     public CameraPos(Vec3 pos,Vec3 lookDirection){
-        this(pos,FDMathUtil.yRotFromVector(lookDirection.normalize()),FDMathUtil.xRotFromVector(lookDirection.normalize()));
+        this(pos,FDMathUtil.yRotFromVector(lookDirection.normalize()),FDMathUtil.xRotFromVector(lookDirection.normalize()),0);
+    }
+
+    public CameraPos(Vec3 pos,Vec3 lookDirection,float roll){
+        this(pos,FDMathUtil.yRotFromVector(lookDirection.normalize()),FDMathUtil.xRotFromVector(lookDirection.normalize()),roll);
     }
 
     public Vec3 interpolate(CameraPos next,float p){
@@ -45,6 +54,10 @@ public class CameraPos implements AutoSerializable {
 
     public float getYaw(){
         return yaw;
+    }
+
+    public float getRoll() {
+        return roll;
     }
 
     public float getPitch(){

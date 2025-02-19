@@ -27,25 +27,12 @@ public class CutsceneCameraHandler {
     private static Entity previousCameraEntity;
     private static CutsceneExecutor cutsceneExecutor;
 
-    //TODO: TEST
-    private static boolean movingForward = false;
-
     @SubscribeEvent
     public static void testCamera(InputEvent.Key event){
         if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
 
         int key = event.getKey();
         int action = event.getAction();
-
-        if (clientCameraEntity != null) {
-            if (key == GLFW.GLFW_KEY_W) {
-                if (action == GLFW.GLFW_PRESS) {
-                    movingForward = true;
-                } else if (action == GLFW.GLFW_RELEASE) {
-                    movingForward = false;
-                }
-            }
-        }
 
         if (action != GLFW.GLFW_PRESS) return;
 
@@ -60,17 +47,17 @@ public class CutsceneCameraHandler {
 
                 CutsceneData data = CutsceneData.create()
                         .stopMode(CutsceneData.StopMode.UNSTOPPABLE)
-                        .time(1000)
+                        .time(200)
                         .lookEasing(EasingType.LINEAR)
                         .timeEasing(EasingType.EASE_IN_OUT)
                         .moveCurveType(CurveType.LINEAR);
 
-                int segments = 32;
+                int segments = 64;
                 float angle = FDMathUtil.FPI * 2 / segments;
                 Vec3 base = player.position().add(0,10,0);
-                for (float i = 0; i <= FDMathUtil.FPI * 2;i += angle){
+                for (int i = 0; i <= segments; i++){
 
-                    Vec3 v = new Vec3(30,0,0).yRot(i);
+                    Vec3 v = new Vec3(30,0,0).yRot(i * angle);
                     Vec3 pos = base.add(v);
 
                     Vec3 look = player.position().add(0,1.5,0).subtract(pos);
@@ -102,8 +89,8 @@ public class CutsceneCameraHandler {
     }
 
     @SubscribeEvent
-    public static void playerTickEvent(PlayerTickEvent.Pre playerTickEvent){
-        Player player = playerTickEvent.getEntity();
+    public static void playerTickEvent(PlayerTickEvent.Pre event){
+        Player player = event.getEntity();
         if (!player.level().isClientSide) return;
 
         boolean wasStoppedByPlayer = false;
@@ -161,11 +148,15 @@ public class CutsceneCameraHandler {
 
         ObjectHolder<Float> yaw = new ObjectHolder<>(event.getYaw());
         ObjectHolder<Float> pitch = new ObjectHolder<>(event.getPitch());
+        ObjectHolder<Float> roll = new ObjectHolder<>(event.getRoll());
 
-        cutsceneExecutor.setYawAndPitch((float) event.getPartialTick(),yaw,pitch);
+
+        cutsceneExecutor.setCameraRotation((float) event.getPartialTick(), yaw, pitch, roll);
 
         event.setPitch(pitch.getValue());
         event.setYaw(yaw.getValue());
+        event.setRoll(roll.getValue());
+
 
     }
 
