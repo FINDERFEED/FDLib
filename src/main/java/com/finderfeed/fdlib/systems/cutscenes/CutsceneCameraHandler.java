@@ -8,6 +8,9 @@ import com.finderfeed.fdlib.systems.screen.screen_particles.ScreenParticlesRende
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.client.player.Input;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -26,6 +29,13 @@ public class CutsceneCameraHandler {
     private static ClientCameraEntity clientCameraEntity;
     private static Entity previousCameraEntity;
     private static CutsceneExecutor cutsceneExecutor;
+
+    @SubscribeEvent
+    private static void onLogoff(ClientPlayerNetworkEvent.LoggingOut out){
+        clientCameraEntity = null;
+        previousCameraEntity = null;
+        cutsceneExecutor = null;
+    }
 
     @SubscribeEvent
     public static void testCamera(InputEvent.Key event){
@@ -100,6 +110,10 @@ public class CutsceneCameraHandler {
 
         if (!isCutsceneActive()) return;
 
+
+        LocalPlayer localPlayer = (LocalPlayer) player;
+        nullifyInput(localPlayer);
+
         if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.PLAYER && wasStoppedByPlayer){
             stopCutscene();
             return;
@@ -117,6 +131,18 @@ public class CutsceneCameraHandler {
             stopCutscene();
         }
 
+    }
+
+    public static void nullifyInput(LocalPlayer player){
+        Input input = player.input;
+        input.leftImpulse = 0;
+        input.forwardImpulse = 0;
+        input.up = false;
+        input.down = false;
+        input.left = false;
+        input.right = false;
+        input.jumping = false;
+        input.shiftKeyDown = false;
     }
 
     @SubscribeEvent
@@ -204,6 +230,9 @@ public class CutsceneCameraHandler {
         if (isCutsceneActive()) {
             clientCameraEntity = null;
             cutsceneExecutor = null;
+            MouseHandler mouseHandler = Minecraft.getInstance().mouseHandler;
+            mouseHandler.accumulatedDX = 0;
+            mouseHandler.accumulatedDY = 0;
             Minecraft.getInstance().setCameraEntity(previousCameraEntity);
         }
     }
