@@ -19,11 +19,4 @@ public class LocalPlayerMixin {
         }
     }
 
-    @Inject(method = "serverAiStep", at = @At("HEAD"))
-    public void serverAIStep(CallbackInfo ci){
-        if (CutsceneCameraHandler.isCutsceneActive()){
-            CutsceneCameraHandler.nullifyInput((LocalPlayer) (Object) this);
-        }
-    }
-
 }

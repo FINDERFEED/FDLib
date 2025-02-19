@@ -64,10 +64,10 @@ public class CutsceneCameraHandler {
 
                 int segments = 64;
                 float angle = FDMathUtil.FPI * 2 / segments;
-                Vec3 base = player.position().add(0,10,0);
+                Vec3 base = player.position().add(0,5,0);
                 for (int i = 0; i <= segments; i++){
 
-                    Vec3 v = new Vec3(30,0,0).yRot(i * angle);
+                    Vec3 v = new Vec3(15,0,0).yRot(i * angle);
                     Vec3 pos = base.add(v);
 
                     Vec3 look = player.position().add(0,1.5,0).subtract(pos);
@@ -164,6 +164,14 @@ public class CutsceneCameraHandler {
     public static void renderHand(RenderHandEvent event){
         if (isCutsceneActive()){
             event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void cancelPlayerMouseUsage(InputEvent.InteractionKeyMappingTriggered event){
+        if (isCutsceneActive()){
+            event.setCanceled(true);
+            event.setSwingHand(false);
         }
     }
 
