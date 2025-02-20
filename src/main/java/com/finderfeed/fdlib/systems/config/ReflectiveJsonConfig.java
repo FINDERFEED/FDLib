@@ -54,6 +54,11 @@ public abstract class ReflectiveJsonConfig extends JsonConfig {
         return changesMade;
     }
 
+
+
+
+
+
     private boolean parseDataFromJson(Field field, JsonObject object){
         String name = field.getName();
         if (object.has(name)){
@@ -107,6 +112,13 @@ public abstract class ReflectiveJsonConfig extends JsonConfig {
             Object value = field.get(this);
             String name = field.getName();
             Class<?> fieldClass = field.getType();
+
+            Comment comment;
+            if ((comment = field.getAnnotation(Comment.class)) != null){
+                String c = comment.value();
+                object.addProperty("_comment_" + name,c);
+            }
+
             if (value instanceof Number number) {
                 object.addProperty(name, number);
             } else if (value instanceof String string) {
