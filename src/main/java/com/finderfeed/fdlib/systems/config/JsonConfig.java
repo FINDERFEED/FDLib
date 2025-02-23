@@ -19,10 +19,25 @@ public abstract class JsonConfig {
             .disableHtmlEscaping()
             .create();
     private Path path;
+    private Path directory;
     private String loadedJson;
     private ResourceLocation name;
     public JsonConfig(ResourceLocation location){
-        path = FMLPaths.CONFIGDIR.get().resolve(location.getNamespace()).resolve(location.getPath() + ".json");
+
+        String p = location.getPath();
+        int id = p.lastIndexOf('/');
+
+        if (id != -1){
+            String filename = p.substring(id + 1);
+            p = p.substring(0,id + 1);
+            directory = FMLPaths.CONFIGDIR.get().resolve(location.getNamespace()).resolve(p);
+            path = directory.resolve(filename + ".json");
+        }else{
+            directory = FMLPaths.CONFIGDIR.get().resolve(location.getNamespace());
+            path = directory.resolve(p + ".json");
+        }
+
+
         this.name = location;
     }
 
@@ -31,6 +46,7 @@ public abstract class JsonConfig {
         try {
             FDLib.LOGGER.info("Loading config " + name);
             if (!Files.exists(path)){
+                Files.createDirectories(directory);
                 Writer writer = Files.newBufferedWriter(path);
                 GSON.toJson(new JsonObject(),writer);
                 writer.close();

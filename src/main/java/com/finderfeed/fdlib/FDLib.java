@@ -22,12 +22,13 @@ public class FDLib {
 
 
     public static ResourceLocation location(String loc){
-        return ResourceLocation.tryBuild(MOD_ID,loc);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID,loc);
     }
 
     public FDLib(IEventBus bus, ModContainer modContainer) {
         FDBlocks.BLOCKS.register(bus);
         FDModels.MODELS.register(bus);
+        FDConfigs.CONFIGS.register(bus);
         FDAnims.ANIMATIONS.register(bus);
         FDParticles.PARTICLES.register(bus);
         FDEntities.ENTITY_TYPES.register(bus);

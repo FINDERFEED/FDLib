@@ -37,7 +37,7 @@ public class FDModEvents {
         //memorize all default values in reflective configs
         for (JsonConfig config : FDRegistries.CONFIGS){
             if (config instanceof ReflectiveJsonConfig c){
-                c.memorizeDefaultValues();
+                c.memorizeDefaultValues(c.getClass(),c);
             }
         }
 
