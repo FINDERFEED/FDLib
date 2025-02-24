@@ -15,7 +15,7 @@ public class TagSerializationHelper {
 
     public static <T extends AutoSerializable> void saveFields(CompoundTag tag,T object){
         Class<? extends AutoSerializable> clazz = object.getClass();
-        List<Field> fields = FDHelpers.getAnnotatedFieldsInClass(clazz, SerializableField.class);
+        List<Field> fields = FDHelpers.getAllAnnotatedFieldsInClass(clazz, SerializableField.class);
         for (Field field : fields){
             field.setAccessible(true);
             saveField(object,tag,field);
@@ -24,7 +24,7 @@ public class TagSerializationHelper {
 
     public static <T extends AutoSerializable> void loadFields(CompoundTag tag,T object){
         Class<? extends AutoSerializable> clazz = object.getClass();
-        List<Field> fields = FDHelpers.getAnnotatedFieldsInClass(clazz, SerializableField.class);
+        List<Field> fields = FDHelpers.getAllAnnotatedFieldsInClass(clazz, SerializableField.class);
         for (Field field : fields){
             field.setAccessible(true);
             loadField(object,tag,field);
