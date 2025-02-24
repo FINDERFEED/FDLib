@@ -39,25 +39,36 @@ public class BoneAnimationData {
         }
     }
 
-    public BoneAnimationData createTransitionData(BoneAnimationData transitionTo, AnimationContext currentContext,int toNullTime,float elapsedTime){
-        List<KeyFrame> positionFrames = this.createPositionTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime);
-        List<KeyFrame> rotationFrames = this.createRotationTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime);
-        List<KeyFrame> scaleFrames = this.createScaleTransitionKeyFrames(transitionTo,currentContext,toNullTime,elapsedTime);
+    public BoneAnimationData createTransitionData(Animation next, BoneAnimationData transitionTo, AnimationContext currentContext,int toNullTime,float elapsedTime, boolean transitionToReversed){
+        List<KeyFrame> positionFrames = this.createPositionTransitionKeyFrames(next, transitionTo,currentContext,toNullTime,elapsedTime,transitionToReversed);
+        List<KeyFrame> rotationFrames = this.createRotationTransitionKeyFrames(next, transitionTo,currentContext,toNullTime,elapsedTime,transitionToReversed);
+        List<KeyFrame> scaleFrames = this.createScaleTransitionKeyFrames(next, transitionTo,currentContext,toNullTime,elapsedTime,transitionToReversed);
         return new BoneAnimationData(this.boneName,positionFrames,rotationFrames,scaleFrames,true);
     }
 
-    private List<KeyFrame> createPositionTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime){
+    private List<KeyFrame> createPositionTransitionKeyFrames(Animation next, BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime, boolean transitionToReversed){
         if (this.position.isActive()){
             Vector3f current = this.position.getCurrentTransformation(currentContext,elapsedTime);
             RPNVector3f v = new RPNVector3f(current.x,current.y,current.z);
             if (transitionTo != null && transitionTo.position.isActive()){
                 List<KeyFrame> frames = transitionTo.position.getKeyFrames().getAllValuesAfter(0);
-                if (frames.getFirst().time != 0){
-                    frames.addFirst(new KeyFrame(v,0,frames.getFirst().interpolationMode));
+                if (!transitionToReversed) {
+                    KeyFrame first = frames.getFirst();
+                    if (first.time != 0) {
+                        frames.addFirst(new KeyFrame(v, 0, first.interpolationMode));
+                    } else {
+                        frames.set(0, new KeyFrame(v, 0, first.interpolationMode));
+                    }
+                    return frames;
                 }else{
-                    frames.set(0,new KeyFrame(v,0,frames.getFirst().interpolationMode));
+                    KeyFrame last = frames.getLast();
+                    if (last.time != next.getAnimTime()) {
+                        frames.addLast(new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                    } else {
+                        frames.set(frames.size() - 1, new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                    }
+                    return frames;
                 }
-                return frames;
             }else{
                 return new ArrayList<>(List.of(
                         new KeyFrame(v,0,InterpolationMode.LINEAR),
@@ -69,18 +80,29 @@ public class BoneAnimationData {
         }
     }
 
-    private List<KeyFrame> createRotationTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime){
+    private List<KeyFrame> createRotationTransitionKeyFrames(Animation next, BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime, boolean transitionToReversed){
         if (this.rotation.isActive()){
             Vector3f current = this.rotation.getCurrentTransformation(currentContext,elapsedTime);
             RPNVector3f v = new RPNVector3f(current.x,current.y,current.z);
             if (transitionTo != null && transitionTo.rotation.isActive()){
                 List<KeyFrame> frames = transitionTo.rotation.getKeyFrames().getAllValuesAfter(0);
-                if (frames.getFirst().time != 0){
-                    frames.addFirst(new KeyFrame(v,0,frames.getFirst().interpolationMode));
+                if (!transitionToReversed) {
+                    KeyFrame first = frames.getFirst();
+                    if (first.time != 0) {
+                        frames.addFirst(new KeyFrame(v, 0, first.interpolationMode));
+                    } else {
+                        frames.set(0, new KeyFrame(v, 0, first.interpolationMode));
+                    }
+                    return frames;
                 }else{
-                    frames.set(0,new KeyFrame(v,0,frames.getFirst().interpolationMode));
+                    KeyFrame last = frames.getLast();
+                    if (last.time != next.getAnimTime()) {
+                        frames.addLast(new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                    } else {
+                        frames.set(frames.size() - 1, new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                    }
+                    return frames;
                 }
-                return frames;
             }else{
                 return new ArrayList<>(List.of(
                         new KeyFrame(v,0,InterpolationMode.LINEAR),
@@ -92,18 +114,29 @@ public class BoneAnimationData {
         }
     }
 
-    private List<KeyFrame> createScaleTransitionKeyFrames(BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime){
+    private List<KeyFrame> createScaleTransitionKeyFrames(Animation next, BoneAnimationData transitionTo,AnimationContext currentContext,int toNullTime,float elapsedTime, boolean transitionToReversed){
         if (this.scale.isActive()){
             Vector3f current = this.scale.getCurrentTransformation(currentContext,elapsedTime);
             RPNVector3f v = new RPNVector3f(current.x,current.y,current.z);
             if (transitionTo != null && transitionTo.scale.isActive()){
                 List<KeyFrame> frames = transitionTo.scale.getKeyFrames().getAllValuesAfter(0);
-                if (frames.getFirst().time != 0){
-                    frames.addFirst(new KeyFrame(v,0,frames.getFirst().interpolationMode));
+                if (!transitionToReversed) {
+                    KeyFrame first = frames.getFirst();
+                    if (first.time != 0) {
+                        frames.addFirst(new KeyFrame(v, 0, first.interpolationMode));
+                    } else {
+                        frames.set(0, new KeyFrame(v, 0, first.interpolationMode));
+                    }
+                    return frames;
                 }else{
-                    frames.set(0,new KeyFrame(v,0,frames.getFirst().interpolationMode));
+                    KeyFrame last = frames.getLast();
+                    if (last.time != next.getAnimTime()) {
+                        frames.addLast(new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                    } else {
+                        frames.set(frames.size() - 1, new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                    }
+                    return frames;
                 }
-                return frames;
             }else{
                 return new ArrayList<>(List.of(
                         new KeyFrame(v,0,InterpolationMode.LINEAR),

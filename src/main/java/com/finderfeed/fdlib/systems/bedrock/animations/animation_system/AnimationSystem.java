@@ -36,7 +36,7 @@ public abstract class AnimationSystem {
                     case ONCE -> {
                         int toNullTime = ticker.getToNullTransitionTime();
                         if (toNullTime != 0) {
-                            Animation nullTransition = animation.createTransitionTo(context, null, ticker.getTime(0), ticker.getToNullTransitionTime());
+                            Animation nullTransition = animation.createTransitionTo(context, null, ticker.getTime(0), ticker.getToNullTransitionTime(),false);
                             ticker.resetTime();
                             ticker.setAnimation(nullTransition);
                         }else{
@@ -95,7 +95,8 @@ public abstract class AnimationSystem {
             Animation transition = current.getAnimation().createTransitionTo(context,
                     ticker.getAnimation(),
                     current.getTime(0),
-                    ticker.getToNullTransitionTime()
+                    ticker.getToNullTransitionTime(),
+                    ticker.isReversed()
             );
             AnimationTicker newTicker = new AnimationTicker(ticker);
             newTicker.setAnimation(transition);
@@ -115,7 +116,7 @@ public abstract class AnimationSystem {
                     context.variables = this.variables;
                     ticker.addVariables(context,0);
                     Animation toNull = animation.createTransitionTo(context, null, ticker.getTime(0),
-                            ticker.getToNullTransitionTime());
+                            ticker.getToNullTransitionTime(),false);
                     AnimationTicker newTicker = new AnimationTicker(ticker);
                     newTicker.setLoopMode(Animation.LoopMode.ONCE);
                     newTicker.setAnimation(toNull);
