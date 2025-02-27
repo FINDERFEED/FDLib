@@ -112,7 +112,11 @@ public abstract class ReflectiveJsonConfig extends JsonConfig {
             String data = (String) this.defaultValues.get(field);
             field.set(currentObject,data);
             json.addProperty(fieldName,data);
-        }else {
+        }else if (boolean.class.isAssignableFrom(fieldClass)){
+            boolean data = (boolean) this.defaultValues.get(field);
+            field.set(currentObject,data);
+            json.addProperty(fieldName,data);
+        } else {
             Object data = this.defaultValues.get(field);
             JsonObject object = new JsonObject();
             this.processObject(data,object);
@@ -192,7 +196,21 @@ public abstract class ReflectiveJsonConfig extends JsonConfig {
                 json.addProperty(fieldName,data);
                 changesWereMade = true;
             }
-        }else {
+        }else if (boolean.class.isAssignableFrom(fieldClass)){
+
+            boolean data;
+            try{
+                data = element.getAsBoolean();
+                field.set(currentObject,data);
+            }catch (Exception e){
+                e.printStackTrace();
+                data = (boolean) this.defaultValues.get(field);
+                field.set(currentObject,data);
+                json.addProperty(fieldName,data);
+                changesWereMade = true;
+            }
+
+        } else {
             Object fieldValue = field.get(currentObject);
             JsonObject newObject;
             try{
