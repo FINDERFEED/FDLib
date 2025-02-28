@@ -1,6 +1,8 @@
 package com.finderfeed.fdlib.util.rendering;
 
+import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -10,8 +12,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
@@ -32,6 +36,29 @@ import java.util.Stack;
 import java.util.function.Function;
 
 public class FDRenderUtil {
+
+
+    public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale, RenderType renderType){
+        matrices.pushPose();
+
+        VertexConsumer builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(renderType);
+
+        matrices.translate(x,y,0);
+
+        matrices.mulPose(new Quaternionf().rotationXYZ(rotX,rotY,rotZ));
+
+        matrices.scale(-scale,-scale,-scale);
+
+        Lighting.setupForEntityInInventory();
+
+        model.render(matrices,builder, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,1f,1f,1f,1f);
+
+        Minecraft.getInstance().renderBuffers().bufferSource().endLastBatch();
+
+        Lighting.setupFor3DItems();
+
+        matrices.popPose();
+    }
 
     public static void renderCenteredText(GuiGraphics graphics,float x,float y,float textScale,boolean drawShadow,String s,int color){
         Font font = Minecraft.getInstance().font;
