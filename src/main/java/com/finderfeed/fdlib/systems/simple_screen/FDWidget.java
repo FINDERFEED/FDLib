@@ -5,11 +5,14 @@ import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public abstract class FDWidget implements GuiEventListener, Renderable {
+public abstract class FDWidget implements GuiEventListener, Renderable, NarratableEntry {
 
     private float x;
     private float y;
@@ -17,18 +20,19 @@ public abstract class FDWidget implements GuiEventListener, Renderable {
     private float height;
 
     private boolean focused = false;
-
     private boolean active = true;
-
     private boolean hovered = false;
 
-    private HashMap<String, FDWidget> children = new LinkedHashMap<>();
+    protected Screen widgetOwner;
 
-    public FDWidget(float x,float y,float width,float height){
+    protected HashMap<String, FDWidget> children = new LinkedHashMap<>();
+
+    public FDWidget(Screen screen, float x, float y, float width, float height){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.widgetOwner = screen;
     }
 
     public abstract void renderWidget(GuiGraphics graphics, float mx, float my, float pticks);
@@ -73,6 +77,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable {
 
 
     public void addChild(String id, FDWidget widget){
+
+        float widgetX = widget.getX();
+        float widgetY = widget.getY();
+
+        widget.setX(this.getX() + widgetX);
+        widget.setY(this.getY() + widgetY);
+
         this.children.put(id,widget);
     }
 
@@ -184,8 +195,9 @@ public abstract class FDWidget implements GuiEventListener, Renderable {
         FDWidget clickedWidget = result.getValue();
         if (clickedWidget != null) {
             this.setFocusStateFor(clickedWidget);
+            this.widgetOwner.setFocused(clickedWidget);
         }
-        return clickedWidget != null;
+        return false;
     }
 
     private boolean mouseRelease(double mx, double my, int key, ObjectHolder<FDWidget> result){
@@ -353,4 +365,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable {
     }
 
 
+    @Override
+    public NarrationPriority narrationPriority() {
+        return NarrationPriority.NONE;
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput p_169152_) {
+
+    }
 }
