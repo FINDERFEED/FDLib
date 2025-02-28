@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Deprecated()
 public abstract class FDScreen extends Screen {
 
     private HashMap<String,FDScreenComponent> componentLookup = new HashMap<>();
