@@ -6,11 +6,14 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.joml.Vector2f;
 
+import java.util.List;
+
 public abstract class SimpleFDScreen extends Screen {
 
     public float relX;
     public float relY;
 
+    private List<FDWidget> tickableWidgets;
 
     public SimpleFDScreen() {
         super(Component.empty());
@@ -28,6 +31,17 @@ public abstract class SimpleFDScreen extends Screen {
         this.relX = width / 2 - this.getScreenWidth() / 2;
         this.relY = height / 2 - this.getScreenHeight() / 2;
 
+    }
+
+
+    @Override
+    public void tick() {
+        super.tick();
+        for (var widget : this.children()){
+            if (widget instanceof FDWidget fdWidget){
+                fdWidget.tick();
+            }
+        }
     }
 
     public Vector2f getAnchor(float wMod, float hMod){
@@ -60,7 +74,5 @@ public abstract class SimpleFDScreen extends Screen {
     public abstract float getScreenWidth();
 
     public abstract float getScreenHeight();
-
-
 
 }

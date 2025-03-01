@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.Util;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,6 +38,14 @@ import java.util.function.Function;
 
 public class FDRenderUtil {
 
+    public static float tryGetPartialTickIgnorePause(){
+        DeltaTracker tracker = Minecraft.getInstance().getTimer();
+        if (tracker instanceof DeltaTracker.Timer timer){
+            return timer.deltaTickResidual;
+        }else{
+            return tracker.getGameTimeDeltaPartialTick(true);
+        }
+    }
 
     public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale, RenderType renderType){
         matrices.pushPose();

@@ -12,11 +12,16 @@ public class InterpolatedValue {
     private int tickO = 0;
     private int tick = 0;
 
+    private float start;
+    private float end;
+
     private int time;
 
-    public InterpolatedValue(int time,Function<Float,Float> easingFunction){
+    public InterpolatedValue(float start,float end,int time,Function<Float,Float> easingFunction){
         this.easing = easingFunction;
         this.time = time;
+        this.start = start;
+        this.end = end;
     }
 
     public void tick(){
@@ -25,7 +30,8 @@ public class InterpolatedValue {
     }
 
     public float getValue(float pticks){
-        return easing.apply(FDMathUtil.lerp(tickO,tick,pticks) / time);
+        float p = easing.apply(FDMathUtil.lerp(tickO,tick,pticks) / time);
+        return FDMathUtil.lerp(start,end,p);
     }
 
     public void reset(){
@@ -42,5 +48,17 @@ public class InterpolatedValue {
 
     public int getTime() {
         return time;
+    }
+
+    public boolean hasFinished(){
+        return tick >= time;
+    }
+
+    public float getStart() {
+        return start;
+    }
+
+    public float getEnd() {
+        return end;
     }
 }

@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.simple_screen;
 
 import com.finderfeed.fdlib.data_structures.ObjectHolder;
+import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.util.FDWidgetMovement;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.function.Function;
 
 public abstract class FDWidget implements GuiEventListener, Renderable, NarratableEntry {
 
@@ -23,9 +25,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
     private boolean active = true;
     private boolean hovered = false;
 
+    private FDWidget parent;
+
     protected Screen widgetOwner;
 
     protected HashMap<String, FDWidget> children = new LinkedHashMap<>();
+
+    protected FDWidgetMovement widgetMovement;
 
     public FDWidget(Screen screen, float x, float y, float width, float height){
         this.x = x;
@@ -33,6 +39,7 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
         this.width = width;
         this.height = height;
         this.widgetOwner = screen;
+        this.widgetMovement = new FDWidgetMovement(this);
     }
 
     public abstract void renderWidget(GuiGraphics graphics, float mx, float my, float pticks);
@@ -57,6 +64,8 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
     @Override
     public void render(GuiGraphics graphics, int mx, int my, float pticks) {
 
+        this.widgetMovement.setWidgetPositionInRender();
+
         if (!isActive()) return;
 
         this.renderWidget(graphics,mx,my,pticks);
@@ -72,7 +81,16 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
     }
 
     public void tick(){
+        this.widgetMovement.tick();
         this.tickChildren();
+    }
+
+    public boolean isMoving(){
+        return this.widgetMovement.isMoving();
+    }
+
+    public void moveWidgetTo(int time, float x, float y, Function<Float,Float> easing){
+        this.widgetMovement.moveTo(time,x,y,easing);
     }
 
 
@@ -83,6 +101,8 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
 
         widget.setX(this.getX() + widgetX);
         widget.setY(this.getY() + widgetY);
+
+        widget.parent = this;
 
         this.children.put(id,widget);
     }
@@ -373,5 +393,9 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
     @Override
     public void updateNarration(NarrationElementOutput p_169152_) {
 
+    }
+
+    public FDWidget getParent() {
+        return parent;
     }
 }
