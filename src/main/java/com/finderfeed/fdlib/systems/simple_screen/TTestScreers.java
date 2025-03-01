@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
+//@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
 public class TTestScreers extends SimpleFDScreen {
 
     private static int test = 0;
@@ -57,12 +57,12 @@ public class TTestScreers extends SimpleFDScreen {
         return 0;
     }
 
-    @SubscribeEvent
-    public static void onKeyPress(InputEvent.Key event){
-        if (Minecraft.getInstance().level == null) return;
-
-        if (event.getKey() == GLFW.GLFW_KEY_M){
-            Minecraft.getInstance().setScreen(new TTestScreers());
-        }
-    }
+//    @SubscribeEvent
+//    public static void onKeyPress(InputEvent.Key event){
+//        if (Minecraft.getInstance().level == null) return;
+//
+//        if (event.getKey() == GLFW.GLFW_KEY_M){
+//            Minecraft.getInstance().setScreen(new TTestScreers());
+//        }
+//    }
 }
