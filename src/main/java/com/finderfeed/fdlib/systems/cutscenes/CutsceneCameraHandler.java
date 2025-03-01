@@ -37,52 +37,52 @@ public class CutsceneCameraHandler {
         cutsceneExecutor = null;
     }
 
-    @SubscribeEvent
-    public static void testCamera(InputEvent.Key event){
-        if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
+//    @SubscribeEvent
+//    public static void testCamera(InputEvent.Key event){
+////        if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
+//
+//        int key = event.getKey();
+//        int action = event.getAction();
+//
+//        if (action != GLFW.GLFW_PRESS) return;
+//
+//        if (key == GLFW.GLFW_KEY_H) {
+//            Entity c = Minecraft.getInstance().cameraEntity;
+//
+//            if (!(c instanceof ClientCameraEntity camera)) {
+//
+//                Player player = Minecraft.getInstance().player;
+//
+//                Vec3 eyePos = player.getEyePosition();
+//
+//                CutsceneData data = CutsceneData.create()
+//                        .stopMode(CutsceneData.StopMode.UNSTOPPABLE)
+//                        .time(200)
+//                        .lookEasing(EasingType.LINEAR)
+//                        .timeEasing(EasingType.EASE_IN_OUT)
+//                        .moveCurveType(CurveType.LINEAR);
+//
+//                int segments = 64;
+//                float angle = FDMathUtil.FPI * 2 / segments;
+//                Vec3 base = player.position().add(0,5,0);
+//                for (int i = 0; i <= segments; i++){
+//
+//                    Vec3 v = new Vec3(15,0,0).yRot(i * angle);
+//                    Vec3 pos = base.add(v);
+//
+//                    Vec3 look = player.position().add(0,1.5,0).subtract(pos);
+//
+//                    data.addCameraPos(new CameraPos(pos,look));
+//
+//                }
+//
+//                startCutscene(data);
+//            }else{
+//                stopCutscene();
+//            }
+//        }
 
-        int key = event.getKey();
-        int action = event.getAction();
-
-        if (action != GLFW.GLFW_PRESS) return;
-
-        if (key == GLFW.GLFW_KEY_H) {
-            Entity c = Minecraft.getInstance().cameraEntity;
-
-            if (!(c instanceof ClientCameraEntity camera)) {
-
-                Player player = Minecraft.getInstance().player;
-
-                Vec3 eyePos = player.getEyePosition();
-
-                CutsceneData data = CutsceneData.create()
-                        .stopMode(CutsceneData.StopMode.UNSTOPPABLE)
-                        .time(200)
-                        .lookEasing(EasingType.LINEAR)
-                        .timeEasing(EasingType.EASE_IN_OUT)
-                        .moveCurveType(CurveType.LINEAR);
-
-                int segments = 64;
-                float angle = FDMathUtil.FPI * 2 / segments;
-                Vec3 base = player.position().add(0,5,0);
-                for (int i = 0; i <= segments; i++){
-
-                    Vec3 v = new Vec3(15,0,0).yRot(i * angle);
-                    Vec3 pos = base.add(v);
-
-                    Vec3 look = player.position().add(0,1.5,0).subtract(pos);
-
-                    data.addCameraPos(new CameraPos(pos,look));
-
-                }
-
-                startCutscene(data);
-            }else{
-                stopCutscene();
-            }
-        }
-
-    }
+//    }
 
     @SubscribeEvent
     public static void renderScreenParticlesEvent(ScreenParticlesRenderEvent.Gui event){
