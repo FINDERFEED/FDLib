@@ -146,6 +146,27 @@ public class FDRenderUtil {
         BufferUploader.drawWithShader(builder.build());
     }
 
+    public static void fill(PoseStack matrices,float x,float y,float xw,float yw,
+                            float r1, float g1, float b1, float a1,
+                            float r2, float g2, float b2, float a2,
+                            float r3, float g3, float b3, float a3,
+                            float r4, float g4, float b4, float a4
+    ){
+        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f m = matrices.last().pose();
+
+        builder.addVertex(m,x,y + yw,0).setColor(r4,g4,b4,a4);
+        builder.addVertex(m,x + xw,y + yw,0).setColor(r3,g3,b3,a3);
+        builder.addVertex(m,x + xw,y,0).setColor(r2,g2,b2,a2);
+        builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
+
+
+        BufferUploader.drawWithShader(builder.build());
+    }
+
     public static void renderShader(PoseStack matrices,float x,float y,float xw,float yw,float r,float g,float b,float a,float xuvStretch,float yuvStretch){
         Tesselator tesselator = RenderSystem.renderThreadTesselator();
         RenderSystem.enableBlend();
@@ -180,6 +201,27 @@ public class FDRenderUtil {
         builder.addVertex(m,x + xw,y + yw,0).setColor(r,g,b,a);
         builder.addVertex(m,x + xw,y,0).setColor(r,g,b,a);
         builder.addVertex(m,x,y,0).setColor(r,g,b,a);
+
+        source.endBatch(type);
+    }
+
+
+    public static void fill(RenderType type,PoseStack matrices, float x, float y, float xw, float yw,
+                            float r1, float g1, float b1, float a1,
+                            float r2, float g2, float b2, float a2,
+                            float r3, float g3, float b3, float a3,
+                            float r4, float g4, float b4, float a4
+    ){
+        MultiBufferSource.BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
+
+        RenderSystem.enableBlend();
+        VertexConsumer builder = source.getBuffer(type);
+        Matrix4f m = matrices.last().pose();
+
+        builder.addVertex(m,x,y + yw,0).setColor(r4,g4,b4,a4);
+        builder.addVertex(m,x + xw,y + yw,0).setColor(r3,g3,b3,a3);
+        builder.addVertex(m,x + xw,y,0).setColor(r2,g2,b2,a2);
+        builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
 
         source.endBatch(type);
     }
