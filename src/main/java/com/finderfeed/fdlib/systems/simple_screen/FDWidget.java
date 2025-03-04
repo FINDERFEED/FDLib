@@ -70,9 +70,15 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
 
         this.renderWidget(graphics,mx,my,pticks);
 
+        this.useScissor();
         this.renderChildren(graphics,mx,my,pticks);
+        this.endScissor();
 
     }
+
+    public void useScissor(){}
+
+    public void endScissor(){}
 
     public void tickChildren(){
         for (var child : children.values()){
@@ -371,6 +377,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
     public void unfocusChildren(){
         for (var child : this.children.values()){
             child.setFocused(false);
+        }
+    }
+
+    public void moveChildren(float x,float y){
+        for (FDWidget widget : this.children.values()){
+            widget.setX(widget.getX() + x);
+            widget.setY(widget.getY() + y);
         }
     }
 
