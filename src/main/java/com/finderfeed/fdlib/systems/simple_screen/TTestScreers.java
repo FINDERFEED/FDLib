@@ -28,23 +28,23 @@ public class TTestScreers extends SimpleFDScreen {
     protected void init() {
         super.init();
 
-        FDButton test2 = new FDButton(this,10,10,10,10)
-                .setTexture(new FDButtonTextures(FDLib.location("textures/gui/test2.png")))
-                .setOnHoverAction(((widget,graphics, mx, my, pticks) -> {
-                    graphics.renderTooltip(font,Component.literal("Ты думал что то здесь будет? Неее..."),(int)mx,(int)my);
-                }));
+//        FDButton test2 = new FDButton(this,10,10,10,10)
+//                .setTexture(new FDButtonTextures(FDLib.location("textures/gui/test2.png")))
+//                .setOnHoverAction(((widget,graphics, mx, my, pticks) -> {
+//                    graphics.renderTooltip(font,Component.literal("Ты думал что то здесь будет? Неее..."),(int)mx,(int)my);
+//                }));
 
-        FDButton button = new FDButton(this,20,20,100,50)
-                .setOnClickAction(((button1, mx, my, key) -> {
-                    Vector2f next = testw[++test % testw.length];
-                    button1.moveWidgetTo(10,next.x,next.y, FDEasings::easeOutBounce);
-                    return true;
-                }))
-                .setText(Component.literal("Click me!"),50,1,true)
-                .setTexture(new FDButtonTextures(FDLib.location("textures/gui/test.png")));
-
-        button.addChild("test",test2);
-        this.addRenderableWidget(button);
+//        FDButton button = new FDButton(this,20,20,100,50)
+//                .setOnClickAction(((button1, mx, my, key) -> {
+//                    Vector2f next = testw[++test % testw.length];
+//                    button1.moveWidgetTo(10,next.x,next.y, FDEasings::easeOutBounce);
+//                    return true;
+//                }))
+//                .setText(Component.literal("Click me!"),50,1,true)
+//                .setTexture(new FDButtonTextures(FDLib.location("textures/gui/test.png")));
+//
+//        button.addChild("test",test2);
+//        this.addRenderableWidget(button);
     }
 
     @Override

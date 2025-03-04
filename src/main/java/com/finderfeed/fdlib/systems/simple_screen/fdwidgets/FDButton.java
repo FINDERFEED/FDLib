@@ -53,8 +53,8 @@ public class FDButton extends FDWidget {
 
         if (buttonTextures != null){
             var texture = this.buttonTextures.getButtonTexture(this.isHovered());
-            FDRenderUtil.bindTexture(texture);
-            FDRenderUtil.blitWithBlend(graphics.pose(),this.getX(),this.getY(),this.getWidth(),this.getHeight(),0,0,1,1,1,1,0,1f);
+            FDRenderUtil.bindTexture(texture.resourceLocation);
+            FDRenderUtil.blitWithBlend(graphics.pose(),this.getX() - texture.xOffset,this.getY() - texture.yOffset,this.getWidth() + texture.xOffset * 2,this.getHeight() + texture.yOffset * 2,0,0,1,1,1,1,0,1f);
         }
 
         if (text != null){
