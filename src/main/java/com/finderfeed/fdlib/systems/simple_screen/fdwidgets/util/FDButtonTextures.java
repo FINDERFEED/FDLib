@@ -1,23 +1,21 @@
 package com.finderfeed.fdlib.systems.simple_screen.fdwidgets.util;
 
-import net.minecraft.resources.ResourceLocation;
-
 public class FDButtonTextures {
 
-    private ButtonTexture hovered;
-    private ButtonTexture unhovered;
+    private WidgetTexture hovered;
+    private WidgetTexture unhovered;
 
-    public FDButtonTextures(ButtonTexture unhovered,ButtonTexture hovered){
+    public FDButtonTextures(WidgetTexture unhovered, WidgetTexture hovered){
         this.hovered = hovered;
         this.unhovered = unhovered;
     }
 
-    public FDButtonTextures(ButtonTexture tex){
+    public FDButtonTextures(WidgetTexture tex){
         this.hovered = tex;
         this.unhovered = tex;
     }
 
-    public ButtonTexture getButtonTexture(boolean hovered){
+    public WidgetTexture getButtonTexture(boolean hovered){
         return hovered ? this.hovered : unhovered;
     }
 
