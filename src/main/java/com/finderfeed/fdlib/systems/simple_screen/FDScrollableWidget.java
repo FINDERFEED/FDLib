@@ -35,4 +35,8 @@ public abstract class FDScrollableWidget extends FDWidget {
     public float getCurrentScroll() {
         return scroll;
     }
+
+    public void setCurrentScroll(float scroll){
+        this.scroll = scroll;
+    }
 }
