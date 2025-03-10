@@ -5,15 +5,22 @@ import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.FDButton;
 import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.TestButtonWidget;
 import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.util.FDButtonTextures;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
-//@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
 public class TTestScreers extends SimpleFDScreen {
 
     private static int test = 0;
@@ -48,6 +55,13 @@ public class TTestScreers extends SimpleFDScreen {
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mx, int my, float pticks) {
+        super.render(graphics, mx, my, pticks);
+
+        FDRenderUtil.renderScaledItemStack(graphics,mx,my,2f,Items.ACACIA_DOOR.getDefaultInstance());
+    }
+
+    @Override
     public float getScreenWidth() {
         return 0;
     }
@@ -57,12 +71,12 @@ public class TTestScreers extends SimpleFDScreen {
         return 0;
     }
 
-//    @SubscribeEvent
-//    public static void onKeyPress(InputEvent.Key event){
-//        if (Minecraft.getInstance().level == null) return;
-//
-//        if (event.getKey() == GLFW.GLFW_KEY_M){
-//            Minecraft.getInstance().setScreen(new TTestScreers());
-//        }
-//    }
+    @SubscribeEvent
+    public static void onKeyPress(InputEvent.Key event){
+        if (Minecraft.getInstance().level == null) return;
+
+        if (event.getKey() == GLFW.GLFW_KEY_M){
+            Minecraft.getInstance().setScreen(new TTestScreers());
+        }
+    }
 }
