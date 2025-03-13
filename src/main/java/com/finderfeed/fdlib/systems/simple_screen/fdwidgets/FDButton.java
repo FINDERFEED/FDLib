@@ -20,6 +20,8 @@ public class FDButton extends FDWidget {
     protected boolean textDrawShadow;
     protected float textScale;
     protected FDButtonTextures buttonTextures;
+    protected float xTextOffset = 0;
+    protected float yTextOffset = 0;
 
     public FDButton(Screen screen, float x, float y, float width, float height) {
         super(screen, x, y, width, height);
@@ -40,11 +42,13 @@ public class FDButton extends FDWidget {
         return this;
     }
 
-    public FDButton setText(Component text, int textWidth, float textScale, boolean textDrawShadow){
+    public FDButton setText(Component text, int textWidth, float textScale, boolean textDrawShadow, float xTextOffset, float yTextOffset){
         this.text = text;
         this.textWidth = textWidth;
         this.textDrawShadow = textDrawShadow;
         this.textScale = textScale;
+        this.xTextOffset = xTextOffset;
+        this.yTextOffset = yTextOffset;
         return this;
     }
 
@@ -70,7 +74,7 @@ public class FDButton extends FDWidget {
 
                 float xStart = -font.width(text) * textScale / 2 + this.getX() + this.getWidth() / 2;
 
-                FDRenderUtil.renderScaledText(graphics,text,xStart,yStart + i * font.lineHeight * textScale,textScale,textDrawShadow,0xffffff);
+                FDRenderUtil.renderScaledText(graphics,text,xTextOffset + xStart,yTextOffset + yStart + i * font.lineHeight * textScale,textScale,textDrawShadow,0xffffff);
 
                 i++;
             }
