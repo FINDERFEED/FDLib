@@ -4,21 +4,21 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.FDButton;
 import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.TestButtonWidget;
 import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.util.FDButtonTextures;
-import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.ArrayList;
-import java.util.List;
 
 //@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
 public class TTestScreers extends SimpleFDScreen {
@@ -54,38 +54,11 @@ public class TTestScreers extends SimpleFDScreen {
 //        this.addRenderableWidget(button);
     }
 
-
     @Override
     public void render(GuiGraphics graphics, int mx, int my, float pticks) {
         super.render(graphics, mx, my, pticks);
 
-        List<Vector2f> l = new ArrayList<>((List.of(
-                new Vector2f(-50,-50),
-                new Vector2f(-50,50),
-                new Vector2f(50,50),
-                new Vector2f(50,-50)
-        )));
-
-        float rotangle = (System.currentTimeMillis() % Integer.MAX_VALUE) / 2000f;
-
-        Vector3f v = new Vector3f(0,1,0).rotateZ(rotangle);
-
-
-        var list = FDMathUtil.scalePointsInDirection(l,new Vector2f(v.x,v.y),2f);
-
-        Vector2f a = this.getAnchor(0.5f,0.5f);
-
-        int d = 0;
-
-        float pw = 10;
-        for (var point : list){
-            float col = d / (float) l.size();
-
-            FDRenderUtil.fill(graphics.pose(),a.x + point.x - pw/2,a.y + point.y - pw/2,pw,pw,col,col,col,1f);
-            d++;
-
-        }
-
+        FDRenderUtil.renderScaledItemStack(graphics,mx,my,2f,Items.ACACIA_DOOR.getDefaultInstance());
     }
 
     @Override

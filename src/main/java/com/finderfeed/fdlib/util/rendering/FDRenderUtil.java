@@ -23,20 +23,54 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.AxisAngle4f;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Function;
 
 public class FDRenderUtil {
+
+    public static void renderCenteredScaledItemStack(GuiGraphics graphics, float x, float y, float scale, ItemStack itemStack){
+        Matrix4fStack stack = RenderSystem.getModelViewStack();
+
+        stack.pushMatrix();
+
+        float mfx = x / scale;
+        float mfy = y / scale;
+
+        stack.scale(scale,scale,1);
+        stack.translate(mfx - 8,mfy - 8,0);
+
+        RenderSystem.applyModelViewMatrix();
+        graphics.renderItem(itemStack, 0,0);
+        stack.popMatrix();
+        RenderSystem.applyModelViewMatrix();
+    }
+
+    public static void renderScaledItemStack(GuiGraphics graphics, float x, float y, float scale, ItemStack itemStack){
+        Matrix4fStack stack = RenderSystem.getModelViewStack();
+
+        stack.pushMatrix();
+
+        float mfx = x / scale;
+        float mfy = y / scale;
+
+        stack.scale(scale,scale,1);
+        stack.translate(mfx,mfy,0);
+
+        RenderSystem.applyModelViewMatrix();
+        graphics.renderItem(itemStack, 0,0);
+        stack.popMatrix();
+        RenderSystem.applyModelViewMatrix();
+    }
 
     public static float tryGetPartialTickIgnorePause(){
         DeltaTracker tracker = Minecraft.getInstance().getTimer();
