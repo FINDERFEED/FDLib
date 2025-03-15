@@ -1,7 +1,10 @@
 package com.finderfeed.fdlib.util.math;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -24,6 +27,27 @@ public class FDMathUtil {
 
     public static double lerp(double v1,double v2,double p){
         return v1 + (v2 - v1) * p;
+    }
+
+    public static List<Vector3f> scalePointsInDirection(List<Vector2f> basePoints, Vector2f direction,float scale){
+
+
+        float angle = (float) Math.atan2(direction.x,direction.y);
+
+        Matrix4f scale1 = new Matrix4f().scale(1,scale,1);
+
+        List<Vector3f> list = basePoints.stream()
+                .map(vec2->{
+
+                    Vector3f v = new Vector3f(vec2.x,vec2.y,0);
+                    v.rotateZ(angle);
+                    scale1.transformPosition(v);
+                    v.rotateZ(-angle);
+
+                    return v;
+                }).toList();
+
+        return list;
     }
 
 
