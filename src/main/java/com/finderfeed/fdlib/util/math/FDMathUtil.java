@@ -228,6 +228,15 @@ public class FDMathUtil {
         return bernstein(current,current + xvc,next + xvn,next,p);
     }
 
+    public static double catmullrom(Double previous,Double current,Double next,Double next2,float p) {
+        if (next == null){return current;}
+        if (previous == null){previous = current + (current - next);}
+        if (next2 == null){next2 = next + (next - current);}
+        double xvc = (next - previous) / 6;
+        double xvn = (current - next2) / 6;
+        return bernstein(current,current + xvc,next + xvn,next,p);
+    }
+
     //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
     public static Vector3f catmullrom(Vector3f previous,Vector3f current,Vector3f next,Vector3f next2,float p) {
         if (next == null){return current;}
@@ -246,13 +255,22 @@ public class FDMathUtil {
         if (previous == null) {previous = current.add(current.subtract(next));}
         if (next2 == null){next2 = next.add(next.subtract(current));}
         return new Vec3(
-                catmullrom((float)previous.x,(float)current.x,(float)next.x,(float)next2.x,p),
-                catmullrom((float)previous.y,(float)current.y,(float)next.y,(float)next2.y,p),
-                catmullrom((float)previous.z,(float)current.z,(float)next.z,(float)next2.z,p)
+                catmullrom(previous.x,current.x,next.x,next2.x,p),
+                catmullrom(previous.y,current.y,next.y,next2.y,p),
+                catmullrom(previous.z,current.z,next.z,next2.z,p)
         );
     }
 
     private static float bernstein(float x1,float x2,float x3,float x4,float t){
+        float t3 = (float) Math.pow(t,3);
+        float t2 = (float) Math.pow(t,2);
+        return x1 * (-t3 + 3*t2 - 3*t  + 1) +
+                x2 * (3*t3 - 6*t2 + 3*t) +
+                x3 * (-3*t3 + 3*t2) +
+                x4 * t3;
+    }
+
+    private static double bernstein(double x1,double x2,double x3,double x4,double t){
         float t3 = (float) Math.pow(t,3);
         float t2 = (float) Math.pow(t,2);
         return x1 * (-t3 + 3*t2 - 3*t  + 1) +
