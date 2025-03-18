@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import com.finderfeed.fdlib.init.FDClientModEvents;
+import com.finderfeed.fdlib.systems.hud.FDHuds;
 import com.finderfeed.fdlib.systems.screen.screen_particles.ScreenParticlesRenderEvent;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.CameraType;
@@ -25,7 +26,6 @@ import org.lwjgl.glfw.GLFW;
 @EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.GAME)
 public class CutsceneCameraHandler {
 
-
     private static ClientCameraEntity clientCameraEntity;
     private static Entity previousCameraEntity;
     private static CutsceneExecutor cutsceneExecutor;
@@ -36,53 +36,6 @@ public class CutsceneCameraHandler {
         previousCameraEntity = null;
         cutsceneExecutor = null;
     }
-
-//    @SubscribeEvent
-//    public static void testCamera(InputEvent.Key event){
-////        if (Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
-//
-//        int key = event.getKey();
-//        int action = event.getAction();
-//
-//        if (action != GLFW.GLFW_PRESS) return;
-//
-//        if (key == GLFW.GLFW_KEY_H) {
-//            Entity c = Minecraft.getInstance().cameraEntity;
-//
-//            if (!(c instanceof ClientCameraEntity camera)) {
-//
-//                Player player = Minecraft.getInstance().player;
-//
-//                Vec3 eyePos = player.getEyePosition();
-//
-//                CutsceneData data = CutsceneData.create()
-//                        .stopMode(CutsceneData.StopMode.UNSTOPPABLE)
-//                        .time(200)
-//                        .lookEasing(EasingType.LINEAR)
-//                        .timeEasing(EasingType.EASE_IN_OUT)
-//                        .moveCurveType(CurveType.LINEAR);
-//
-//                int segments = 64;
-//                float angle = FDMathUtil.FPI * 2 / segments;
-//                Vec3 base = player.position().add(0,5,0);
-//                for (int i = 0; i <= segments; i++){
-//
-//                    Vec3 v = new Vec3(15,0,0).yRot(i * angle);
-//                    Vec3 pos = base.add(v);
-//
-//                    Vec3 look = player.position().add(0,1.5,0).subtract(pos);
-//
-//                    data.addCameraPos(new CameraPos(pos,look));
-//
-//                }
-//
-//                startCutscene(data);
-//            }else{
-//                stopCutscene();
-//            }
-//        }
-
-//    }
 
     @SubscribeEvent
     public static void renderScreenParticlesEvent(ScreenParticlesRenderEvent.Gui event){
@@ -155,7 +108,7 @@ public class CutsceneCameraHandler {
 
     @SubscribeEvent
     public static void renderGuiLayers(RenderGuiLayerEvent.Pre event){
-        if (isCutsceneActive()){
+        if (isCutsceneActive() && event.getLayer() != FDHuds.SCREEN_EFFECT_OVERLAY){
             event.setCanceled(true);
         }
     }
