@@ -39,14 +39,5 @@ public class FDGameEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void test(PlayerTickEvent.Pre event){
-        Player player = event.getEntity();
-        if (!player.level().isClientSide && player.isCrouching() && player.level().getGameTime() % 400 == 0){
-            FDLibCalls.sendScreenEffect((ServerPlayer) player, FDScreenEffects.SCREEN_COLOR.get(),new ScreenColorData(1f,0f,1f,1f),
-                    0,10,30
-            );
-        }
-    }
 
 }

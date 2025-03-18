@@ -271,8 +271,8 @@ public class FDMathUtil {
     }
 
     private static double bernstein(double x1,double x2,double x3,double x4,double t){
-        float t3 = (float) Math.pow(t,3);
-        float t2 = (float) Math.pow(t,2);
+        double t3 = Math.pow(t,3);
+        double t2 = Math.pow(t,2);
         return x1 * (-t3 + 3*t2 - 3*t  + 1) +
                 x2 * (3*t3 - 6*t2 + 3*t) +
                 x3 * (-3*t3 + 3*t2) +
