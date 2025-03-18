@@ -9,6 +9,10 @@ import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesPacket;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterData;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterHandler;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitterPacket;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffect;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
+import com.finderfeed.fdlib.systems.screen.screen_effect.SendScreenEffectPacket;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +25,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class FDLibCalls {
 
@@ -107,6 +112,14 @@ public class FDLibCalls {
         ))) {
             ((ServerLevel) level).sendParticles((ServerPlayer) player, options, true, pos.x, pos.y ,pos.z, amount, xd,yd,zd,speed);
         }
+    }
+
+    public static <D extends ScreenEffectData, T extends ScreenEffect<D>> void sendScreenEffect(ServerPlayer player, ScreenEffectType<D,T> type, D data, int inTime, int stayTime, int outTime){
+        PacketDistributor.sendToPlayer(player, new SendScreenEffectPacket<>(data, type, inTime, stayTime, outTime));
+    }
+
+    public static <D extends ScreenEffectData, T extends ScreenEffect<D>> void sendScreenEffect(ServerPlayer player, Supplier<ScreenEffectType<D, T>> type, D data, int inTime, int stayTime, int outTime){
+        PacketDistributor.sendToPlayer(player, new SendScreenEffectPacket<>(data, type.get(), inTime, stayTime, outTime));
     }
 
 }

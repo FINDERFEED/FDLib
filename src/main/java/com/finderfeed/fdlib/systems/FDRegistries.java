@@ -5,6 +5,8 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarFactory;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectFactory;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +23,7 @@ public class FDRegistries {
     public static final ResourceKey<Registry<Animation>> ANIMATIONS_KEY = key("bedrock/animations");
     public static final ResourceKey<Registry<JsonConfig>> CONFIGS_KEY = key("configs");
     public static final ResourceKey<Registry<FDBossBarFactory<?>>> FD_BOSS_BARS = key("boss_bars");
+    public static final ResourceKey<Registry<ScreenEffectType<?,?>>> SCREEN_EFFECTS_KEY = key("screen_effect");
 
     private static <T> ResourceKey<Registry<T>> key(String name) {
         return ResourceKey.createRegistryKey(ResourceLocation.tryBuild(FDLib.MOD_ID, name));
@@ -30,7 +33,7 @@ public class FDRegistries {
     public static Registry<Animation> ANIMATIONS = new RegistryBuilder<>(ANIMATIONS_KEY).sync(true).create();
     public static Registry<JsonConfig> CONFIGS = new RegistryBuilder<>(CONFIGS_KEY).sync(true).create();
     public static Registry<FDBossBarFactory<?>> BOSS_BARS = new RegistryBuilder<>(FD_BOSS_BARS).sync(true).create();
-
+    public static Registry<ScreenEffectType<?,?>> SCREEN_EFFECTS = new RegistryBuilder<>(SCREEN_EFFECTS_KEY).sync(true).create();
 
     @SubscribeEvent
     public static void createRegistries(NewRegistryEvent event){
@@ -38,6 +41,7 @@ public class FDRegistries {
         event.register(ANIMATIONS);
         event.register(CONFIGS);
         event.register(BOSS_BARS);
+        event.register(SCREEN_EFFECTS);
     }
 
 
