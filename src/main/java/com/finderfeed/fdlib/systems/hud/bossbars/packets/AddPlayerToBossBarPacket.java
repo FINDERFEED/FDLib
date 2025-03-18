@@ -8,6 +8,7 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarFactory;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -37,7 +38,7 @@ public class AddPlayerToBossBarPacket extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeResourceLocation(location);
         buf.writeInt(this.entityId);
         buf.writeUUID(this.uuid);

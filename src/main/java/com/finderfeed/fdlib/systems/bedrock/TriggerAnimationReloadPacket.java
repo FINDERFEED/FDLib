@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:reload_animations_packet")
@@ -21,7 +22,7 @@ public class TriggerAnimationReloadPacket extends FDPacket {
 
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
 
     }
 

@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.particle.particle_emitter;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:emitter_packet")
@@ -19,7 +20,7 @@ public class ParticleEmitterPacket extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         ParticleEmitterData.STREAM_CODEC.encode(buf,data);
     }
 

@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:cutscene_packet")
@@ -25,7 +26,7 @@ public class StartCutscenePacket extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         CompoundTag tag = new CompoundTag();
         data.autoSave(tag);
         buf.writeNbt(tag);

@@ -7,6 +7,7 @@ import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -39,7 +40,7 @@ public class JsonConfigSyncPacket extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeInt(names.size());
         for (String name : names){
             buf.writeUtf(name);

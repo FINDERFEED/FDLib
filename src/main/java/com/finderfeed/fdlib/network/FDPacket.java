@@ -1,6 +1,8 @@
 package com.finderfeed.fdlib.network;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -13,8 +15,7 @@ public abstract class FDPacket implements CustomPacketPayload {
 
     private Type<? extends FDPacket> type;
 
-
-    public abstract void write(FriendlyByteBuf buf);
+    public abstract void write(RegistryFriendlyByteBuf buf);
 
     public abstract void clientAction(IPayloadContext context);
     public abstract void serverAction(IPayloadContext context);

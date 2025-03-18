@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.FDClientPacketExecutables;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:freeze_entity_animations_packet")
@@ -23,7 +24,7 @@ public class EntityFreezeAnimations extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeInt(this.entityId);
         buf.writeBoolean(state);
     }

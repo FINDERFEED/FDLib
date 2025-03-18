@@ -4,6 +4,8 @@ package com.finderfeed.fdlib.network;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.FDHelpers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,15 +35,22 @@ public class PacketHandler {
 
 
             try {
-                Constructor<?> constructor = clazz.getConstructor(FriendlyByteBuf.class);
+                Constructor<?> constructor;
 
-                StreamCodec<? super FriendlyByteBuf,FDPacket> codec = StreamCodec.of(
+                try{
+                    constructor = clazz.getConstructor(FriendlyByteBuf.class);
+                }catch (Exception e){
+                    constructor = clazz.getConstructor(RegistryFriendlyByteBuf.class);
+                }
+
+                Constructor<?> finalConstructor = constructor;
+                StreamCodec<? super RegistryFriendlyByteBuf,FDPacket> codec = StreamCodec.of(
                         (buf,payload)->{
                             payload.write(buf);
                         },
                         (buf)->{
                             try {
-                                FDPacket o = (FDPacket) constructor.newInstance(buf);
+                                FDPacket o = (FDPacket) finalConstructor.newInstance(buf);
                                 return o;
                             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                                 throw new RuntimeException(e);
@@ -49,7 +58,8 @@ public class PacketHandler {
                         }
                 );
 
-                registrar.commonBidirectional(type,codec,((payload, context) -> {
+
+                registrar.playBidirectional(type,codec,((payload, context) -> {
                     context.enqueueWork(()->{
                         if (EffectiveSide.get().isClient()){
                             payload.clientAction(context);

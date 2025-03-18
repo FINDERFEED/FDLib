@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:start_tile_animation")
@@ -28,7 +29,7 @@ public class StartTileAnimationPacket extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         AnimationTicker.NETWORK_CODEC.encode(buf,ticker);
         buf.writeUtf(this.layer);
         buf.writeBlockPos(this.pos);

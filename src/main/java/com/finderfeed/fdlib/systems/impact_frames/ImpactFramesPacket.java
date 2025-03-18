@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.impact_frames;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ImpactFramesPacket extends FDPacket {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         buf.writeInt(frames.size());
         for (var frame : frames){
             ImpactFrame.STREAM_CODEC.encode(buf,frame);
