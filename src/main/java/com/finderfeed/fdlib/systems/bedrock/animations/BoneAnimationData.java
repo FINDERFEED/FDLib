@@ -76,6 +76,9 @@ public class BoneAnimationData {
                 ));
             }
         }else{
+            if (transitionTo != null && transitionTo.position.isActive()){
+                return transitionTo.position.getKeyFrames().getAllValuesAfter(0);
+            }
             return null;
         }
     }
@@ -110,6 +113,9 @@ public class BoneAnimationData {
                 ));
             }
         }else{
+            if (transitionTo != null && transitionTo.rotation.isActive()){
+                return transitionTo.rotation.getKeyFrames().getAllValuesAfter(0);
+            }
             return null;
         }
     }
@@ -144,6 +150,9 @@ public class BoneAnimationData {
                 ));
             }
         }else{
+            if (transitionTo != null && transitionTo.scale.isActive()){
+                return transitionTo.scale.getKeyFrames().getAllValuesAfter(0);
+            }
             return null;
         }
     }
