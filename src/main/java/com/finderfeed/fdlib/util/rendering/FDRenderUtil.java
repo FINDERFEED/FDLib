@@ -81,7 +81,7 @@ public class FDRenderUtil {
         }
     }
 
-    public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale, RenderType renderType){
+    public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale,int light, int overlay, float r,float g, float b,float a, RenderType renderType){
         matrices.pushPose();
 
         VertexConsumer builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(renderType);
@@ -94,13 +94,22 @@ public class FDRenderUtil {
 
         Lighting.setupForEntityInInventory();
 
-        model.render(matrices,builder, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,1f,1f,1f,1f);
+        model.render(matrices,builder,light, overlay,r,g,b,a);
 
         Minecraft.getInstance().renderBuffers().bufferSource().endLastBatch();
 
         Lighting.setupFor3DItems();
 
         matrices.popPose();
+    }
+
+
+    public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale,int light, int overlay, RenderType renderType){
+        renderFDModelInScreen(matrices,model,x,y,rotX,rotY,rotZ,scale,light,overlay,1f,1f,1f,1f,renderType);
+    }
+
+    public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale, RenderType renderType){
+        renderFDModelInScreen(matrices,model,x,y,rotX,rotY,rotZ,scale,LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY,renderType);
     }
 
     public static void renderCenteredText(GuiGraphics graphics,float x,float y,float textScale,boolean drawShadow,String s,int color){
