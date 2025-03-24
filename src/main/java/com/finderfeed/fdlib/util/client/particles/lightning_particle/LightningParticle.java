@@ -5,14 +5,13 @@ import com.finderfeed.fdlib.util.FDUtil;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +20,7 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Random;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,21 +193,26 @@ public class LightningParticle extends Particle {
     }
 
 
-    private static final ParticleRenderType RENDER_TYPE = new FDParticleRenderType() {
-
+    public static final ParticleRenderType RENDER_TYPE = new ParticleRenderType() {
+        @Nullable
         @Override
-        public BufferBuilder begin(Tesselator builder, TextureManager manager) {
-            RenderType type = RenderType.lightning();
-            type.setupRenderState();
+        public BufferBuilder begin(Tesselator tesselator, TextureManager manager) {
+            RenderSystem.depthMask(true);
+            RenderSystem.enableBlend();
             RenderSystem.disableCull();
-            return builder.begin(type.mode(),type.format());
+            RenderSystem.setShader(GameRenderer::getRendertypeLightningShader);
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         }
 
         @Override
-        public void end() {
-            RenderType type = RenderType.lightning();
-            type.clearRenderState();
-            RenderSystem.enableCull();
+        public boolean isTranslucent() {
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "LIGHTNING_RENDER_TYPE";
         }
     };
 
