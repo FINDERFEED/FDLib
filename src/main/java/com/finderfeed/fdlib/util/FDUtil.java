@@ -2,8 +2,13 @@ package com.finderfeed.fdlib.util;
 
 
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class FDUtil {
+
+    public static void printVector3f(Vector3f vector3f){
+        System.out.println("X: " + vector3f.x + " Y: " + vector3f.y + " Z: " + vector3f.z);
+    }
 
     public static int encodeDirection(Vec3 direction){
         direction = direction.normalize();

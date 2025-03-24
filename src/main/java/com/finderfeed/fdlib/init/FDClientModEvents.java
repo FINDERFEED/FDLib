@@ -8,6 +8,7 @@ import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.client.particles.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.particles.InvisibleParticle;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
+import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticle;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.math.Axis;
 import net.minecraft.client.KeyMapping;
@@ -45,6 +46,7 @@ public class FDClientModEvents {
     public static void assignFactories(RegisterParticleProvidersEvent event){
         event.registerSpriteSet(FDParticles.INVISIBLE.get(),InvisibleParticle.Factory::new);
         event.registerSpriteSet(FDParticles.BALL_PARTICLE.get(),BallParticle.Factory::new);
+        event.registerSpecial(FDParticles.LIGHTNING_PARTICLE.get(), new LightningParticle.Factory());
         event.registerSpecial(FDParticles.TERRAIN_PARTICLE.get(), new FDTerrainParticle.Provider());
     }
 

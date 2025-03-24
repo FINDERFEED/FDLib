@@ -29,6 +29,10 @@ public class FDMathUtil {
         return v1 + (v2 - v1) * p;
     }
 
+    public static Vector3f vectorBetweenVectors(Vector3f v1,Vector3f v2){
+        return v1.add(v2,new Vector3f()).normalize();
+    }
+
     public static List<Vector3f> scalePointsInDirection(List<Vector2f> basePoints, Vector2f direction,float scale){
 
 

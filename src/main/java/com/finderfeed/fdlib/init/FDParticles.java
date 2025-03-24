@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.init;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.util.client.particles.FDBlockParticleOptions;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticleOptions;
+import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticleOptions;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -39,6 +40,19 @@ public class FDParticles {
         @Override
         public StreamCodec<? super RegistryFriendlyByteBuf, BallParticleOptions> streamCodec() {
             return BallParticleOptions.STREAM_CODEC;
+        }
+    });
+
+
+    public static final Supplier<ParticleType<LightningParticleOptions>> LIGHTNING_PARTICLE = PARTICLES.register("lightning_particle",()-> new ParticleType<>(true) {
+        @Override
+        public MapCodec<LightningParticleOptions> codec() {
+            return LightningParticleOptions.MAP_CODEC;
+        }
+
+        @Override
+        public StreamCodec<? super RegistryFriendlyByteBuf, LightningParticleOptions> streamCodec() {
+            return LightningParticleOptions.STREAM_CODEC;
         }
     });
 

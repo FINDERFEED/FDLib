@@ -12,10 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -586,6 +583,29 @@ public class FDRenderUtil {
             };
         });
 
+    }
+
+    public static class RenderTypes extends RenderType {
+
+        public static final RenderType LIGHTNING_NO_CULL = create(
+                "lightning_no_cull",
+                DefaultVertexFormat.POSITION_COLOR,
+                VertexFormat.Mode.QUADS,
+                1536,
+                false,
+                true,
+                RenderType.CompositeState.builder()
+                        .setCullState(RenderStateShard.NO_CULL)
+                        .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
+                        .setWriteMaskState(COLOR_DEPTH_WRITE)
+                        .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                        .setOutputState(WEATHER_TARGET)
+                        .createCompositeState(false)
+        );
+
+        public RenderTypes(String p_173178_, VertexFormat p_173179_, VertexFormat.Mode p_173180_, int p_173181_, boolean p_173182_, boolean p_173183_, Runnable p_173184_, Runnable p_173185_) {
+            super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
+        }
     }
 
 }
