@@ -35,7 +35,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         this.layers = new ArrayList<>();
         for (FDEntityRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor);
+            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.ignoreHurtOverlay);
             this.layers.add(l);
         }
     }
@@ -74,7 +74,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
             VertexConsumer consumer = src.getBuffer(type);
 
             int overlay = OverlayTexture.NO_OVERLAY;
-            if (entity instanceof LivingEntity livingEntity){
+            if (entity instanceof LivingEntity livingEntity && !layer.ignoreHurtOverlay()){
                 overlay = LivingEntityRenderer.getOverlayCoords(livingEntity,0);
             }
 

@@ -17,6 +17,7 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
     public Function<T,Boolean> renderCondition;
     public FDEntityTransformation<T> transform;
     public RenderFunction<T,FDColor> layerColor;
+    public boolean ignoreHurtOverlay;
 
     private FDEntityRenderLayerOptions(){
     }
@@ -32,11 +33,17 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
         private Function<T,Boolean> renderCondition = (entity)->true;
         private FDEntityTransformation<T> transform = (entity, stack, ticks)->{};
         private RenderFunction<T,FDColor> layerColor = (entity,partialTicks)->new FDColor(1,1,1,1);
+        private boolean ignoreHurtOverlay = false;
 
         public Builder(){}
 
         public Builder<T> color(RenderFunction<T,FDColor> layerColorFunction){
             this.layerColor = layerColorFunction;
+            return this;
+        }
+
+        public Builder<T> ignoreHurtOverlay(boolean state){
+            this.ignoreHurtOverlay = state;
             return this;
         }
 
@@ -77,6 +84,7 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
             layer.renderCondition = renderCondition;
             layer.transform = transform;
             layer.layerColor = layerColor;
+            layer.ignoreHurtOverlay = ignoreHurtOverlay;
             return layer;
         }
 
