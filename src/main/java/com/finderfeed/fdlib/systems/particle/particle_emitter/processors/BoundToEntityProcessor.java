@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter.processors;
 
+import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessor;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessorType;
@@ -32,7 +33,7 @@ public class BoundToEntityProcessor implements EmitterProcessor<BoundToEntityPro
 
     @Override
     public void initEmitter(ParticleEmitter emitter) {
-        Level level = Minecraft.getInstance().level;
+        Level level = FDClientHelpers.getClientLevel();
         var entity = level.getEntity(id);
         if (entity == null) {
             emitter.removed = true;

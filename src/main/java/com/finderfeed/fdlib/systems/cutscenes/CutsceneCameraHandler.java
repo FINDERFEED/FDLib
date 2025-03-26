@@ -6,7 +6,6 @@ import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import com.finderfeed.fdlib.init.FDClientModEvents;
 import com.finderfeed.fdlib.systems.hud.FDHuds;
 import com.finderfeed.fdlib.systems.screen.screen_particles.ScreenParticlesRenderEvent;
-import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -21,7 +20,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.GAME)
 public class CutsceneCameraHandler {
@@ -52,9 +50,13 @@ public class CutsceneCameraHandler {
     }
 
     @SubscribeEvent
-    public static void playerTickEvent(PlayerTickEvent.Pre event){
-        Player player = event.getEntity();
-        if (!player.level().isClientSide) return;
+    public static void tickEvent(ClientTickEvent.Pre event){
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null){
+            stopCutscene();
+            return;
+        }
 
         boolean wasStoppedByPlayer = false;
         while (FDClientModEvents.END_CUTSCENE.consumeClick()){
@@ -64,24 +66,19 @@ public class CutsceneCameraHandler {
         if (!isCutsceneActive()) return;
 
 
-        LocalPlayer localPlayer = (LocalPlayer) player;
-        nullifyInput(localPlayer);
-
-        if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.PLAYER && wasStoppedByPlayer){
+        nullifyInput(player);
+        if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.PLAYER && wasStoppedByPlayer) {
             stopCutscene();
             return;
         }
-
-        if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON){
+        if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
         }
-
         ensurePlayerIsACamera();
-
         cutsceneExecutor.tick(clientCameraEntity);
-
-        if (cutsceneExecutor.hasEnded() && cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC){
+        if (cutsceneExecutor.hasEnded() && cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC) {
             stopCutscene();
+
         }
 
     }

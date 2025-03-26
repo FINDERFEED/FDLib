@@ -1,10 +1,12 @@
 package com.finderfeed.fdlib.systems.hud.bossbars;
 
 import com.finderfeed.fdlib.FDLib;
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -18,8 +20,11 @@ public class FDBossbars {
 
 
     @SubscribeEvent
-    public static void tick(PlayerTickEvent.Pre event){
-        if (!event.getEntity().level().isClientSide) return;
+    public static void tick(ClientTickEvent.Pre event){
+        if (Minecraft.getInstance().level == null){
+            BOSS_BARS.clear();
+            return;
+        }
 
         float offs = FDBossBarsOverlay.calculateBossBarsOffset();
 
