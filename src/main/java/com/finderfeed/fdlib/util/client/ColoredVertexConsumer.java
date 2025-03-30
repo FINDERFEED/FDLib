@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.util.client;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 public class ColoredVertexConsumer implements VertexConsumer {
 
@@ -31,7 +32,7 @@ public class ColoredVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer setUv(float u, float v) {
-        return original;
+        return original.setUv(u,v);
     }
 
     @Override
@@ -48,4 +49,11 @@ public class ColoredVertexConsumer implements VertexConsumer {
     public VertexConsumer setNormal(float px, float py, float pz) {
         return original.setNormal(px,py,pz);
     }
+
+    public static MultiBufferSource wrapBufferSource(MultiBufferSource source, int r, int g, int b, int a){
+        return renderType->{
+            return new ColoredVertexConsumer(source.getBuffer(renderType),r,g,b,a);
+        };
+    }
+
 }
