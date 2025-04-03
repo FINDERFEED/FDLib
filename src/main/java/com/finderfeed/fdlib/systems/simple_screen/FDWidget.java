@@ -397,6 +397,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
         return focused;
     }
 
+    public void removeAllChildren(){
+        this.children.clear();
+    }
+
+    public HashMap<String, FDWidget> getChildren() {
+        return children;
+    }
 
     @Override
     public NarrationPriority narrationPriority() {
