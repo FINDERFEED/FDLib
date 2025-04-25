@@ -31,13 +31,17 @@ public class DefaultShake extends FDScreenShake{
     @Override
     public void process(PoseStack projection, int time, float partialTicks) {
         float power = easingFunction.apply(time + partialTicks);
-        long t = Math.round((Minecraft.getInstance().level.getGameTime() % 3000) * this.getData().getFrequency());
+        long t = time + 1;
         Random random = new Random(t * 34324);
         double x = this.randomN(random,power);
         double y = this.randomN(random,power);
+
+        double xd = FDMathUtil.lerp(xo,x,partialTicks);
+        double yd = FDMathUtil.lerp(yo,y,partialTicks);
+
         projection.translate(
-                FDMathUtil.lerp(xo,x,partialTicks),
-                FDMathUtil.lerp(yo,y,partialTicks),
+                Double.isNaN(xd) ? 0 : xd,
+                Double.isNaN(yd) ? 0 : yd,
                 0
         );
 
