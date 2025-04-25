@@ -29,6 +29,14 @@ public class CutsceneData implements AutoSerializable {
     // Cutscenes do not load chunks! Use them near player!
     public CutsceneData(){}
 
+    public CutsceneData(CutsceneData cutsceneData){
+        this.cutsceneTime = cutsceneData.cutsceneTime;
+        this.moveType = cutsceneData.moveType;
+        this.timeEasing = cutsceneData.timeEasing;
+        this.stopMode = cutsceneData.stopMode;
+        this.cameraPositions = new ArrayList<>(cutsceneData.cameraPositions);
+    }
+
     public CutsceneData stopMode(StopMode stopMode){
         this.stopMode = stopMode;
         return this;
@@ -45,6 +53,11 @@ public class CutsceneData implements AutoSerializable {
 
     public CutsceneData addCameraPos(CameraPos pos){
         this.cameraPositions.add(pos);
+        return this;
+    }
+
+    public CutsceneData addCameraPos(int index, CameraPos pos){
+        this.cameraPositions.add(index, pos);
         return this;
     }
 

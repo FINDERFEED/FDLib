@@ -35,12 +35,17 @@ public class CutsceneExecutor {
             return true;
         }
 
-        Vec3 newPos = cameraMotion.calculateCameraPosition(data,currentTime,0);
+        Vec3 newPos = this.getCameraPos();
 
         camera.setPos(newPos);
 
         currentTime = Mth.clamp(currentTime + 1,0,data.getCutsceneTime());
         return false;
+    }
+
+    public Vec3 getCameraPos(){
+        Vec3 newPos = cameraMotion.calculateCameraPosition(data,currentTime,0);
+        return newPos;
     }
 
     public void setCameraRotation(float partialTick, ObjectHolder<Float> yaw, ObjectHolder<Float> pitch, ObjectHolder<Float> roll){

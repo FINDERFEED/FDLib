@@ -2,6 +2,7 @@ package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.network.lib_packets.PlayerMovePacket;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
+import com.finderfeed.fdlib.systems.cutscenes.packets.MoveCutsceneCameraPacket;
 import com.finderfeed.fdlib.systems.cutscenes.packets.StartCutscenePacket;
 import com.finderfeed.fdlib.systems.cutscenes.packets.StopCutscenePacket;
 import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
@@ -37,6 +38,14 @@ public class FDLibCalls {
 
     public static void startCutsceneForPlayers(ServerLevel level,Vec3 pos,double radius, CutsceneData data){
         PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new StartCutscenePacket(data));
+    }
+
+    public static void moveCutsceneCameraForPlayer(ServerPlayer player, CutsceneData data){
+        PacketDistributor.sendToPlayer(player,new MoveCutsceneCameraPacket(data));
+    }
+
+    public static void moveCutsceneCameraForPlayers(ServerLevel level,Vec3 pos,double radius, CutsceneData data){
+        PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new MoveCutsceneCameraPacket(data));
     }
 
     public static void stopCutsceneForPlayer(ServerPlayer player){

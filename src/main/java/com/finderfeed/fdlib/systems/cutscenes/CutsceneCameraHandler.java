@@ -183,6 +183,24 @@ public class CutsceneCameraHandler {
         cutsceneExecutor = new CutsceneExecutor(data);
     }
 
+    public static void moveCamera(CutsceneData cutsceneData){
+
+        if (!isCutsceneActive()) return;
+
+        cutsceneData = new CutsceneData(cutsceneData);
+
+        Vec3 pos = cutsceneExecutor.getCameraPos();
+
+        ObjectHolder<Float> yaw = new ObjectHolder<>(0f);
+        ObjectHolder<Float> pitch = new ObjectHolder<>(0f);
+        ObjectHolder<Float> roll = new ObjectHolder<>(0f);
+        cutsceneExecutor.setCameraRotation((float) 0, yaw, pitch, roll);
+
+        cutsceneData.addCameraPos(0, new CameraPos(pos, yaw.getValue(), pitch.getValue(), roll.getValue()));
+
+        cutsceneExecutor = new CutsceneExecutor(cutsceneData);
+    }
+
 
     public static void stopCutscene() {
         if (isCutsceneActive()) {
