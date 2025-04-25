@@ -181,6 +181,10 @@ public class AttackChain {
     }
 
 
+    public void reset(){
+        this.currentAttack = null;
+        this.chain.clear();
+    }
 
 
 
