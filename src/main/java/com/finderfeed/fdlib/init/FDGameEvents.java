@@ -44,33 +44,33 @@ public class FDGameEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void test(InputEvent.Key event){
-        if (event.getKey() == GLFW.GLFW_KEY_J){
-
-            Player player = Minecraft.getInstance().player;
-
-            CutsceneData cutsceneData = new CutsceneData();
-
-            cutsceneData.time(100);
-            cutsceneData.addCameraPos(new CameraPos(player.position(), new Vec3(1,0,0)));
-            cutsceneData.addCameraPos(new CameraPos(player.position().add(10,0,0), new Vec3(0,0,1)));
-            cutsceneData.stopMode(CutsceneData.StopMode.UNSTOPPABLE);
-
-            CutsceneCameraHandler.startCutscene(cutsceneData);
-
-
-        }else if (event.getKey() == GLFW.GLFW_KEY_T){
-            Player player = Minecraft.getInstance().player;
-
-            CutsceneData cutsceneData = new CutsceneData();
-
-            cutsceneData.time(100);
-            cutsceneData.addCameraPos(new CameraPos(player.position(), new Vec3(1,0,0)));
-            cutsceneData.addCameraPos(new CameraPos(player.position().add(10,0,0), new Vec3(0,0,1)));
-
-            CutsceneCameraHandler.moveCamera(cutsceneData);
-        }
-    }
+//    @SubscribeEvent
+//    public static void test(InputEvent.Key event){
+//        if (event.getKey() == GLFW.GLFW_KEY_J){
+//
+//            Player player = Minecraft.getInstance().player;
+//
+//            CutsceneData cutsceneData = new CutsceneData();
+//
+//            cutsceneData.time(100);
+//            cutsceneData.addCameraPos(new CameraPos(player.position(), new Vec3(1,0,0)));
+//            cutsceneData.addCameraPos(new CameraPos(player.position().add(10,0,0), new Vec3(0,0,1)));
+//            cutsceneData.stopMode(CutsceneData.StopMode.UNSTOPPABLE);
+//
+//            CutsceneCameraHandler.startCutscene(cutsceneData);
+//
+//
+//        }else if (event.getKey() == GLFW.GLFW_KEY_T){
+//            Player player = Minecraft.getInstance().player;
+//
+//            CutsceneData cutsceneData = new CutsceneData();
+//
+//            cutsceneData.time(100);
+//            cutsceneData.addCameraPos(new CameraPos(player.position(), new Vec3(1,0,0)));
+//            cutsceneData.addCameraPos(new CameraPos(player.position().add(10,0,0), new Vec3(0,0,1)));
+//
+//            CutsceneCameraHandler.moveCamera(cutsceneData);
+//        }
+//    }
 
 }
