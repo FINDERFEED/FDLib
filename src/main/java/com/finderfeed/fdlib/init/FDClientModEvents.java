@@ -4,18 +4,23 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.renderer.FDBlockEntityRendererBuilder;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.renderer.FDBlockRenderLayerOptions;
 import com.finderfeed.fdlib.systems.impact_frames.FDPostShadersReloadableResourceListener;
+import com.finderfeed.fdlib.test.FDTestBlockEntity;
 import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.client.particles.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.particles.InvisibleParticle;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
 import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticle;
+import com.finderfeed.fdlib.util.rendering.renderers.QuadRenderer;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.math.Axis;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -53,8 +58,8 @@ public class FDClientModEvents {
     @SubscribeEvent
     public static void registerBERenderers(FMLClientSetupEvent event){
 
-            BlockEntityRenderers.register(FDBlockEntities.TEST.get(), FDBlockEntityRendererBuilder.builder()
-                            .addLayer(FDBlockRenderLayerOptions.builder()
+            BlockEntityRenderers.register(FDBlockEntities.TEST.get(), FDBlockEntityRendererBuilder.<FDTestBlockEntity>builder()
+                            .addLayer(FDBlockRenderLayerOptions.<FDTestBlockEntity>builder()
                                     .model(FDModels.TEST)
                                     .renderType((entity,pticks)->{
 
@@ -75,7 +80,7 @@ public class FDClientModEvents {
                                         return new FDColor(t / 20,1,1,1);
                                     }))
                                     .build())
-                            .addLayer(FDBlockRenderLayerOptions.builder()
+                            .addLayer(FDBlockRenderLayerOptions.<FDTestBlockEntity>builder()
                                     .model(FDModels.TEST2)
                                     .renderType(RenderType.eyes(FDLib.location("textures/texture.png")))
                                     .transformation(((blockEntity, stack, partialTicks) -> {
@@ -87,6 +92,24 @@ public class FDClientModEvents {
                                         return entity.getLevel().getGameTime() % 60 > 10;
                                     }))
                                     .build())
+
+                            .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
+
+                                long gametime = Minecraft.getInstance().level.getGameTime();
+                                float time = (gametime + pticks) / 10;
+
+                                QuadRenderer.start(src.getBuffer(RenderType.entityTranslucent(ResourceLocation.parse("minecraft:textures/block/prismarine.png"))))
+                                        .pose(matrices)
+                                        .light(light)
+                                        .translate((float)Math.sin(time),3,(float)Math.cos(time))
+                                        .direction(new Vec3(1,1,1))
+                                        .rotationDegrees(time * 20)
+                                        .offsetOnDirection((float)Math.sin(time) * 5f)
+                                        .setAnimated(Math.round(time) % 4,4)
+                                        .render();
+
+
+                            })
                     .build());
 
 
