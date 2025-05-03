@@ -122,7 +122,7 @@ public class FDRenderUtil {
         y -= ySize / 2;
         for (int i = 0; i < sequences.size();i++){
             var sequence = sequences.get(i);
-            float xp = x - font.width(sequence) * textScale;
+            float xp = x - font.width(sequence) / 2f * textScale;
             float yp = y + i * font.lineHeight * textScale;
             renderScaledText(graphics,sequence,xp,yp,textScale,drawShadow,color);
         }
