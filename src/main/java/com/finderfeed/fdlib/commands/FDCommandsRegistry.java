@@ -112,7 +112,7 @@ public class FDCommandsRegistry {
             PacketDistributor.sendToAllPlayers(new TriggerAnimationReloadPacket());
             stack.sendSystemMessage(Component.literal("Reload complete!"));
         }else{
-            stack.sendFailure(Component.literal("Could only be used in dev environment."));
+            stack.sendFailure(Component.literal("Can only be used in dev environment."));
         }
     }
 
@@ -124,7 +124,7 @@ public class FDCommandsRegistry {
             PacketDistributor.sendToAllPlayers(new TriggerModelReloadPacket());
             stack.sendSystemMessage(Component.literal("Reload complete!"));
         }else{
-            stack.sendFailure(Component.literal("Could only be used in dev environment."));
+            stack.sendFailure(Component.literal("Can only be used in dev environment."));
         }
     }
 

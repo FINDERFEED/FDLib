@@ -25,13 +25,11 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 public class CutsceneCameraHandler {
 
     private static ClientCameraEntity clientCameraEntity;
-    private static Entity previousCameraEntity;
     private static CutsceneExecutor cutsceneExecutor;
 
     @SubscribeEvent
     private static void onLogoff(ClientPlayerNetworkEvent.LoggingOut out){
         clientCameraEntity = null;
-        previousCameraEntity = null;
         cutsceneExecutor = null;
     }
 
@@ -150,7 +148,6 @@ public class CutsceneCameraHandler {
         if (cutsceneExecutor != null && clientCameraEntity != null){
             Entity camera = Minecraft.getInstance().cameraEntity;
             if (!(camera instanceof ClientCameraEntity)){
-                previousCameraEntity = camera;
                 Minecraft.getInstance().setCameraEntity(clientCameraEntity);
             }
         }
@@ -178,7 +175,6 @@ public class CutsceneCameraHandler {
         Minecraft.getInstance().setCameraEntity(camera);
 
         clientCameraEntity = camera;
-        previousCameraEntity = currentCamera;
 
         cutsceneExecutor = new CutsceneExecutor(data);
     }
@@ -209,7 +205,7 @@ public class CutsceneCameraHandler {
             MouseHandler mouseHandler = Minecraft.getInstance().mouseHandler;
             mouseHandler.accumulatedDX = 0;
             mouseHandler.accumulatedDY = 0;
-            Minecraft.getInstance().setCameraEntity(previousCameraEntity);
+            Minecraft.getInstance().setCameraEntity(Minecraft.getInstance().player);
         }
     }
 

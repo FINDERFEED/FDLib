@@ -54,7 +54,18 @@ public abstract class JsonConfig {
             Reader reader = Files.newBufferedReader(path);
             JsonObject object = GSON.fromJson(reader,JsonObject.class);
             reader.close();
-            boolean changesWereMade = this.parseJson(object);
+
+            boolean changesWereMade;
+
+            if (object == null){
+                changesWereMade = true;
+                object = new JsonObject();
+                this.parseJson(object);
+            }else{
+                changesWereMade = this.parseJson(object);
+            }
+
+
             if (changesWereMade){
                 Writer writer = Files.newBufferedWriter(path);
                 GSON.toJson(object,writer);

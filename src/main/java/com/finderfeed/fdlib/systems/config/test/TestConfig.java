@@ -18,7 +18,7 @@ public class TestConfig extends ReflectiveJsonConfig implements ManualSerializea
     public int testField1 = 1;
 
     @ConfigValue
-    @Comment("Параша для параши")
+    @Comment("Testim fignyu")
     public CurveType testField2 = CurveType.LINEAR;
 
     @ConfigValue
