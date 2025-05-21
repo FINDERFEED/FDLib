@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.impact_frames;
 
 import com.finderfeed.fdlib.ClientMixinHandler;
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.init.FDConfigs;
 import com.finderfeed.fdlib.systems.shake.DefaultShake;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -152,7 +153,9 @@ public class ImpactFramesHandler {
     }
 
     public static void addImpactFrame(ImpactFrame frame){
-        impactFrames.offer(frame);
+        if (FDConfigs.CLIENTSIDE_CONFIG.get().impactFramesEnabled) {
+            impactFrames.offer(frame);
+        }
     }
 
 

@@ -50,4 +50,9 @@ public class TestConfig extends ReflectiveJsonConfig implements ManualSerializea
 
         return false;
     }
+
+    @Override
+    public boolean isClientside() {
+        return false;
+    }
 }

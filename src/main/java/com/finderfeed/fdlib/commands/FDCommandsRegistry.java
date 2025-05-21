@@ -11,6 +11,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animated
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
+import com.finderfeed.fdlib.systems.config.packets.TriggerClientsideConfigReloadPacket;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -41,6 +42,7 @@ public class FDCommandsRegistry {
                 .register(
                         Commands.literal("fdlib")
                                 .then(Commands.literal("animation_test")
+                                        .requires(stack -> stack.hasPermission(2))
                                         .then(Commands.argument("animation",new AnimationArgument())
                                                 .then(Commands.argument("layer", StringArgumentType.string())
                                                         .then(Commands.literal("entity")
@@ -71,15 +73,28 @@ public class FDCommandsRegistry {
 
                                 )
                                 .then(Commands.literal("reload")
-                                        .then(Commands.literal("configs").executes((ctx)->{
+                                        .then(Commands.literal("clientsideConfigs")
+                                                .executes((ctx)->{
+                                                    reloadClientConfigs(ctx);
+                                                    return 1;
+                                                })
+                                        )
+
+                                        .then(Commands.literal("configs")
+                                                .requires(stack -> stack.hasPermission(2))
+                                                .executes((ctx)->{
                                             reloadConfigs(ctx);
                                             return 1;
                                         }))
-                                        .then(Commands.literal("models").executes(ctx->{
+                                        .then(Commands.literal("models")
+                                                .requires(stack -> stack.hasPermission(2))
+                                                .executes(ctx->{
                                             reloadModels(ctx);
                                             return 1;
                                         }))
-                                        .then(Commands.literal("animations").executes(ctx->{
+                                        .then(Commands.literal("animations")
+                                                .requires(stack -> stack.hasPermission(2))
+                                                .executes(ctx->{
                                             reloadAnimations(ctx);
                                             return 1;
                                         }))
@@ -130,12 +145,18 @@ public class FDCommandsRegistry {
 
     public static void reloadConfigs(CommandContext<CommandSourceStack> ctx){
         CommandSourceStack stack = ctx.getSource();
-        for (JsonConfig config : FDRegistries.CONFIGS){
-            stack.sendSystemMessage(Component.literal("Loading config: " + config.getName()));
-            config.loadFromDisk();
-            stack.sendSystemMessage(Component.literal("Loaded config: " + config.getName()).withStyle(ChatFormatting.GREEN));
+        for (JsonConfig config : FDRegistries.CONFIGS) {
+            if (!config.isClientside()) {
+                stack.sendSystemMessage(Component.literal("Loading config: " + config.getName()));
+                config.loadFromDisk();
+                stack.sendSystemMessage(Component.literal("Loaded config: " + config.getName()).withStyle(ChatFormatting.GREEN));
+            }
         }
         PacketDistributor.sendToAllPlayers(new JsonConfigSyncPacket());
+    }
+
+    public static void reloadClientConfigs(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        PacketDistributor.sendToPlayer(ctx.getSource().getPlayerOrException(),new TriggerClientsideConfigReloadPacket(true));
     }
 
     public static void executeEntityAnimation(CommandContext<CommandSourceStack> ctx, String animname, String tickerName, Entity entity) throws CommandSyntaxException {

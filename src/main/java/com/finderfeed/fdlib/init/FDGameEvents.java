@@ -5,9 +5,12 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
+import com.finderfeed.fdlib.systems.config.packets.TriggerClientsideConfigReloadPacket;
 import com.finderfeed.fdlib.systems.cutscenes.CameraPos;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesHandler;
 import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticleOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,36 +44,17 @@ public class FDGameEvents {
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event){
         if (event.getEntity() instanceof ServerPlayer player){
             PacketDistributor.sendToPlayer(player,new JsonConfigSyncPacket());
+            PacketDistributor.sendToPlayer(player,new TriggerClientsideConfigReloadPacket(false));
         }
     }
 
-//    @SubscribeEvent
-//    public static void test(InputEvent.Key event){
-//        if (event.getKey() == GLFW.GLFW_KEY_J){
-//
-//            Player player = Minecraft.getInstance().player;
-//
-//            CutsceneData cutsceneData = new CutsceneData();
-//
-//            cutsceneData.time(100);
-//            cutsceneData.addCameraPos(new CameraPos(player.position(), new Vec3(1,0,0)));
-//            cutsceneData.addCameraPos(new CameraPos(player.position().add(10,0,0), new Vec3(0,0,1)));
-//            cutsceneData.stopMode(CutsceneData.StopMode.UNSTOPPABLE);
-//
-//            CutsceneCameraHandler.startCutscene(cutsceneData);
-//
-//
-//        }else if (event.getKey() == GLFW.GLFW_KEY_T){
-//            Player player = Minecraft.getInstance().player;
-//
-//            CutsceneData cutsceneData = new CutsceneData();
-//
-//            cutsceneData.time(100);
-//            cutsceneData.addCameraPos(new CameraPos(player.position(), new Vec3(1,0,0)));
-//            cutsceneData.addCameraPos(new CameraPos(player.position().add(10,0,0), new Vec3(0,0,1)));
-//
-//            CutsceneCameraHandler.moveCamera(cutsceneData);
-//        }
-//    }
+    @SubscribeEvent
+    public static void test(InputEvent.Key event){
+        if (event.getKey() == GLFW.GLFW_KEY_J){
+
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame(0.5f,0.05f,2,false));
+
+        }
+    }
 
 }

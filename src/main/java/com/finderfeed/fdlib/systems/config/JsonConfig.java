@@ -83,6 +83,8 @@ public abstract class JsonConfig {
      */
     public abstract boolean parseJson(JsonObject object);
 
+    public abstract boolean isClientside();
+
     public ResourceLocation getName() {
         return name;
     }

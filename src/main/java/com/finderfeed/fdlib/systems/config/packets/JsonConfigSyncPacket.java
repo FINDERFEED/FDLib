@@ -23,8 +23,10 @@ public class JsonConfigSyncPacket extends FDPacket {
         names = new ArrayList<>();
         configs = new ArrayList<>();
         for (var entry : FDRegistries.CONFIGS){
-            names.add(FDRegistries.CONFIGS.getKey(entry).toString());
-            configs.add(entry.getLoadedJson());
+            if (!entry.isClientside()) {
+                names.add(FDRegistries.CONFIGS.getKey(entry).toString());
+                configs.add(entry.getLoadedJson());
+            }
         }
     }
     public JsonConfigSyncPacket(FriendlyByteBuf buf){
@@ -54,9 +56,11 @@ public class JsonConfigSyncPacket extends FDPacket {
     public void clientAction(IPayloadContext context) {
         for (int i = 0; i < names.size();i++){
             JsonConfig config = FDRegistries.CONFIGS.get(ResourceLocation.parse(names.get(i)));
-            JsonObject object = JsonParser.parseString(configs.get(i)).getAsJsonObject();
-            config.setLoadedJson(object);
-            config.parseJson(object);
+            if (!config.isClientside()) {
+                JsonObject object = JsonParser.parseString(configs.get(i)).getAsJsonObject();
+                config.setLoadedJson(object);
+                config.parseJson(object);
+            }
         }
     }
 
