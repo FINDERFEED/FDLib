@@ -48,13 +48,13 @@ public class FDGameEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void test(InputEvent.Key event){
-        if (event.getKey() == GLFW.GLFW_KEY_J){
-
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame(0.5f,0.05f,2,false));
-
-        }
-    }
+//    @SubscribeEvent
+//    public static void test(InputEvent.Key event){
+//        if (event.getKey() == GLFW.GLFW_KEY_J){
+//
+//            ImpactFramesHandler.addImpactFrame(new ImpactFrame(0.5f,0.05f,2,false));
+//
+//        }
+//    }
 
 }
