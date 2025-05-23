@@ -38,7 +38,12 @@ public class FDBossBarsOverlay implements LayeredDraw.Layer {
     }
 
     public static float calculateBossBarsOffset(){
-        return BASE_BOSS_BAR_TOP_OFFSET;
+
+        var bossOverlay = Minecraft.getInstance().gui.getBossOverlay();
+
+        var size = bossOverlay.events.size();
+
+        return BASE_BOSS_BAR_TOP_OFFSET + size * 25;
     }
 
 }
