@@ -9,7 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
 
 public class FDButton extends FDWidget {
 
@@ -22,9 +24,15 @@ public class FDButton extends FDWidget {
     protected FDButtonTextures buttonTextures;
     protected float xTextOffset = 0;
     protected float yTextOffset = 0;
+    protected SoundEvent sound;
 
     public FDButton(Screen screen, float x, float y, float width, float height) {
         super(screen, x, y, width, height);
+    }
+
+    public FDButton setSound(SoundEvent sound){
+        this.sound = sound;
+        return this;
     }
 
     public FDButton setTexture(FDButtonTextures texture){
@@ -87,8 +95,11 @@ public class FDButton extends FDWidget {
 
     @Override
     public boolean onMouseClick(float mx, float my, int key) {
-
-        return click != null && click.click(this, mx, my, key);
+        boolean result = click != null && click.click(this, mx, my, key);
+        if (result && sound != null){
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(sound,1f,1f));
+        }
+        return result;
     }
 
     @Override
