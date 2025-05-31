@@ -14,11 +14,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 public class ClientCameraEntity extends LivingEntity {
 
     public ClientCameraEntity(EntityType<? extends LivingEntity> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
+
 
     public ClientCameraEntity(Level level){
         this(FDEntities.CLIENT_CAMERA.get(),level);
@@ -59,7 +62,7 @@ public class ClientCameraEntity extends LivingEntity {
 
     @Override
     public Iterable<ItemStack> getArmorSlots() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
