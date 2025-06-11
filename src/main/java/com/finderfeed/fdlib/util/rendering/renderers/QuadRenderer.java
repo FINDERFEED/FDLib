@@ -20,7 +20,8 @@ public class QuadRenderer {
     private PoseStack poseStack = new PoseStack();
     private float directionOffset = 0;
     private float rotation = 0;
-    private float size = 0.5f;
+    private float sizeX = 0.5f;
+    private float sizeY = 0.5f;
 
     private int animationFrames = 0;
     private int currentAnimationFrame = 0;
@@ -70,10 +71,10 @@ public class QuadRenderer {
 
 
         Matrix4f matrix4f = poseStack.last().pose();
-        vertexConsumer.addVertex(matrix4f,-size,0,size).setColor(color4.x,color4.y,color4.z,color4.w).setUv(u1,v2).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
-        vertexConsumer.addVertex(matrix4f,size,0,size).setColor(color3.x,color3.y,color3.z,color3.w).setUv(u2,v2).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
-        vertexConsumer.addVertex(matrix4f,size,0,-size).setColor(color2.x,color2.y,color2.z,color2.w).setUv(u2,v1).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
-        vertexConsumer.addVertex(matrix4f,-size,0,-size).setColor(color1.x,color1.y,color1.z,color1.w).setUv(u1,v1).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
+        vertexConsumer.addVertex(matrix4f,-sizeX,0,sizeY).setColor(color4.x,color4.y,color4.z,color4.w).setUv(u1,v2).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
+        vertexConsumer.addVertex(matrix4f,sizeX,0,sizeY).setColor(color3.x,color3.y,color3.z,color3.w).setUv(u2,v2).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
+        vertexConsumer.addVertex(matrix4f,sizeX,0,-sizeY).setColor(color2.x,color2.y,color2.z,color2.w).setUv(u2,v1).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
+        vertexConsumer.addVertex(matrix4f,-sizeX,0,-sizeY).setColor(color1.x,color1.y,color1.z,color1.w).setUv(u1,v1).setLight(light).setOverlay(OverlayTexture.NO_OVERLAY).setNormal((float)direction.x,(float)direction.y,(float)direction.z);
 
 
 
@@ -96,7 +97,18 @@ public class QuadRenderer {
     }
 
     public QuadRenderer size(float size){
-        this.size = size;
+        this.sizeX = size;
+        this.sizeY = size;
+        return this;
+    }
+
+    public QuadRenderer sizeX(float size){
+        this.sizeX = size;
+        return this;
+    }
+
+    public QuadRenderer sizeY(float size){
+        this.sizeY = size;
         return this;
     }
 
