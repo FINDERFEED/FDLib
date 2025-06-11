@@ -152,4 +152,9 @@ public class FDModel {
         });
         this.partsLookup = allParts;
     }
+
+    public ResourceLocation getModelInfoId() {
+        return modelName;
+    }
+
 }
