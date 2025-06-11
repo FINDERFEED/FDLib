@@ -1,22 +1,26 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system;
 
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import net.minecraft.world.entity.Entity;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public interface AnimatedObject {
 
-    AnimationSystem getSystem();
+    ModelSystem getModelSystem();
 
-    default void tickAnimationSystem(){
-        this.getSystem().tick();
+    default AnimationSystem getAnimationSystem(){
+        return this.getModelSystem().getAnimationSystem();
+    }
+
+    default void tickModelSystem(){
+        this.getModelSystem().tick();
     }
 
     default Matrix4f getModelPartTransformation(String name, FDModel model){
-        var system = this.getSystem();
+        var system = this.getAnimationSystem();
         model.resetTransformations();
         system.applyAnimations(model,0);
         return model.getModelPartTransformation(name);
@@ -34,7 +38,7 @@ public interface AnimatedObject {
     }
 
     default Matrix4f getModelPartTransformation(Entity entity,String name, FDModel model){
-        var system = this.getSystem();
+        var system = this.getAnimationSystem();
         model.resetTransformations();
         system.applyAnimations(model,0);
         float yRot = entity.getYRot();

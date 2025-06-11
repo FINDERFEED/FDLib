@@ -171,7 +171,7 @@ public class FDCommandsRegistry {
             return;
         }
         sourceStack.sendSystemMessage(Component.literal("Playing animation"));
-        object.getSystem().startAnimation(tickerName,new AnimationTicker.Builder(animation)
+        object.getAnimationSystem().startAnimation(tickerName,new AnimationTicker.Builder(animation)
                         .setLoopMode(Animation.LoopMode.ONCE)
                         .setToNullTransitionTime(0)
                 .build());
@@ -190,7 +190,7 @@ public class FDCommandsRegistry {
             return;
         }
         sourceStack.sendSystemMessage(Component.literal("Playing animation"));
-        object.getSystem().startAnimation(tickerName,new AnimationTicker.Builder(animation)
+        object.getAnimationSystem().startAnimation(tickerName,new AnimationTicker.Builder(animation)
                         .setLoopMode(Animation.LoopMode.ONCE)
                         .setToNullTransitionTime(0)
                 .build());

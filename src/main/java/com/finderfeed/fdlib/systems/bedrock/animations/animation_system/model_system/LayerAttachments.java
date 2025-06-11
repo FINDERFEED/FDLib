@@ -1,13 +1,14 @@
-package com.finderfeed.fdlib.systems.bedrock.animations.animation_system;
+package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system;
 
+import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class LayerAttachments implements INBTSerializable<CompoundTag> {
@@ -42,6 +43,17 @@ public class LayerAttachments implements INBTSerializable<CompoundTag> {
         return this.layerAttachments.computeIfAbsent(boneName,v->new BoneAttachments());
     }
 
+    public List<Pair<UUID, FDModel>> getAllAttachedModels(){
+        List<Pair<UUID, FDModel>> list = new ArrayList<>();
+        for (BoneAttachments boneAttachments : layerAttachments.values()){
+            list.addAll(boneAttachments.getAllAttachedModels());
+        }
+        return list;
+    }
+
+    public List<Pair<UUID,FDModel>> getModelsAttachedToBone(String bone){
+        return this.getBoneAttachments(bone).getAllAttachedModels();
+    }
 
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {

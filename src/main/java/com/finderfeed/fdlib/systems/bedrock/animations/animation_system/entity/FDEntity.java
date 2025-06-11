@@ -1,40 +1,37 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.SyncEntityAnimationsPacket;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.entity_model_system.EntityModelSystem;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public abstract class FDEntity extends Entity implements AnimatedObject {
 
-    public AnimationSystem animationSystem;
+    public EntityModelSystem<?> modelSystem;
 
     public FDEntity(EntityType<?> type, Level level) {
         super(type, level);
-        this.animationSystem = EntityAnimationSystem.create(this);
+        this.modelSystem = EntityModelSystem.create(this);
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.tickAnimationSystem();
+        this.tickModelSystem();
     }
 
     @Override
-    public AnimationSystem getSystem() {
-        return animationSystem;
+    public ModelSystem getModelSystem() {
+        return modelSystem;
     }
-
 
     @Override
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
-        SyncEntityAnimationsPacket packet = new SyncEntityAnimationsPacket(this.getId(),this.getSystem().getTickers());
-        PacketDistributor.sendToPlayer(player,packet);
+        this.modelSystem.asServerside().syncToPlayer(player);
     }
 
 }

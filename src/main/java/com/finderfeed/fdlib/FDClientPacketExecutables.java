@@ -4,10 +4,12 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animated
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
-import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
+import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -15,11 +17,31 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.UUID;
 
 public class FDClientPacketExecutables {
 
     public static void testCameraPacket(){
 //        CutsceneCameraHandler.initiateCamera();
+    }
+
+    public static void addEntityAttachmentPacket(int entityId, int layer, String bone, UUID uuid, FDModelInfo modelInfo){
+        if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof AnimatedObject animatedObject){
+            animatedObject.getModelSystem().attachModelToLayer(layer,bone, uuid, modelInfo);
+        }
+    }
+
+    public static void removeEntityAttachment(int entityId, UUID uuid){
+        if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof AnimatedObject animatedObject){
+            animatedObject.getModelSystem().removeAttachedModel(uuid);
+        }
+    }
+
+    public static void syncEntityAttachmentsPacket(int entityId, CompoundTag data){
+        if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof AnimatedObject animatedObject){
+            ModelSystem modelSystem = animatedObject.getModelSystem();
+            modelSystem.loadAttachments(FDClientHelpers.getClientLevel().registryAccess(), data);
+        }
     }
 
     public static void movePlayer(Vec3 movement){
@@ -34,7 +56,7 @@ public class FDClientPacketExecutables {
     public static void entityStartAnimationPacket(int entityId, String tickerName, AnimationTicker ticker){
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         if (entity instanceof AnimatedObject object){
-            AnimationSystem system = object.getSystem();
+            AnimationSystem system = object.getAnimationSystem();
             system.startAnimation(tickerName,ticker);
         }
     }
@@ -42,7 +64,7 @@ public class FDClientPacketExecutables {
     public static void entityStopAnimationPacket(int entityId, String tickerName){
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         if (entity instanceof AnimatedObject object){
-            AnimationSystem system = object.getSystem();
+            AnimationSystem system = object.getAnimationSystem();
             system.stopAnimation(tickerName);
         }
     }
@@ -50,7 +72,7 @@ public class FDClientPacketExecutables {
     public static void entitySyncAnimationsPacket(int entityId, List<TickerSyncInstance> syncInstances){
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         if (entity instanceof AnimatedObject object){
-            AnimationSystem system = object.getSystem();
+            AnimationSystem system = object.getAnimationSystem();
             var map = system.getTickers();
             map.clear();
             for (var inst : syncInstances){
@@ -62,24 +84,24 @@ public class FDClientPacketExecutables {
     public static void tileEntityFreezeAnimations(BlockPos pos,boolean state){
         Level level = Minecraft.getInstance().level;
         if (!((level.getBlockEntity(pos)) instanceof AnimatedObject object)) return;
-        object.getSystem().setFrozen(state);
+        object.getAnimationSystem().setFrozen(state);
     }
     public static void tileEntityStartAnimation(BlockPos pos,AnimationTicker ticker,String layer){
         Level level = Minecraft.getInstance().level;
         if (!((level.getBlockEntity(pos)) instanceof AnimatedObject object)) return;
-        object.getSystem().startAnimation(layer,ticker);
+        object.getAnimationSystem().startAnimation(layer,ticker);
     }
 
     public static void tileEntityStopAnimation(BlockPos pos,String layer){
         Level level = Minecraft.getInstance().level;
         if (!((level.getBlockEntity(pos)) instanceof AnimatedObject object)) return;
-        object.getSystem().stopAnimation(layer);
+        object.getAnimationSystem().stopAnimation(layer);
     }
 
     public static void tileEntitySyncAnimations(BlockPos pos,List<TickerSyncInstance> syncInstances){
         Level level = Minecraft.getInstance().level;
         if (!((level.getBlockEntity(pos)) instanceof AnimatedObject object)) return;
-        AnimationSystem system = object.getSystem();
+        AnimationSystem system = object.getAnimationSystem();
         var map = system.getTickers();
         map.clear();
         for (var inst : syncInstances){
@@ -90,7 +112,7 @@ public class FDClientPacketExecutables {
     public static void entityFreezeAnimations(int entityId,boolean state){
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
         if (entity instanceof AnimatedObject object){
-            AnimationSystem system = object.getSystem();
+            AnimationSystem system = object.getAnimationSystem();
             system.setFrozen(state);
         }
     }

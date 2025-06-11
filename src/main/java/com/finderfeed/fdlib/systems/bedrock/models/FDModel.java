@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
+import com.finderfeed.fdlib.systems.bedrock.models.model_render_info.IFDModelAdditionalInfo;
 import com.finderfeed.fdlib.util.math.RaycastUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -25,7 +26,11 @@ public class FDModel {
     }
 
     public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a){
-        main.render(matrices,vertex,light,overlay,r,g,b,a);
+        this.render(matrices,vertex,light,overlay,r,g,b,a, IFDModelAdditionalInfo.empty());
+    }
+
+    public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a, IFDModelAdditionalInfo additionalInfo){
+        main.render(matrices,vertex,light,overlay,r,g,b,a, additionalInfo);
     }
 
 

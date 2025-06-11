@@ -65,7 +65,7 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
 
 
     public void applyAnimations(T entity, float partialTicks, PoseStack matrices, MultiBufferSource src, int light,int overlay){
-        AnimationSystem system = entity.getSystem();
+        AnimationSystem system = entity.getAnimationSystem();
         if (system == null) return;
         for (var layer : this.layers){
             FDModel model = layer.model();

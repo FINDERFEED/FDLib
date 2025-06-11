@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
+import com.finderfeed.fdlib.systems.bedrock.models.model_render_info.IFDModelAdditionalInfo;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.neoforged.api.distmarker.Dist;
@@ -8,10 +9,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FDModelPart {
 
@@ -56,7 +54,7 @@ public class FDModelPart {
     }
 
 
-    public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay,float r,float g,float b,float a){
+    public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a, IFDModelAdditionalInfo additionalInfo){
         matrices.pushPose();
 
         if (isVisible){
@@ -66,13 +64,22 @@ public class FDModelPart {
                 cube.render(matrices,vertex,light,overlay,r,g,b,a);
             }
 
+            this.renderAttachments(matrices,vertex,light,overlay,r,g,b,a,additionalInfo);
+
             for (FDModelPart child : children.values()){
-                child.render(matrices,vertex,light,overlay,r,g,b,a);
+                child.render(matrices,vertex,light,overlay,r,g,b,a, additionalInfo);
             }
 
         }
 
         matrices.popPose();
+    }
+
+    private void renderAttachments(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a, IFDModelAdditionalInfo additionalInfo){
+        var attachments = additionalInfo.getBoneModelAttachments(this.name);
+        for (FDModel fdModel : attachments){
+            fdModel.render(matrices,vertex,light,overlay,r,g,b,a);
+        }
     }
 
 

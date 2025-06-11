@@ -2,7 +2,10 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.LayerAttachments;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.systems.bedrock.models.model_render_info.IFDModelAdditionalInfo;
 import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -53,16 +56,31 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
     }
 
     public void applyAnimations(T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
-        AnimationSystem system = entity.getSystem();
+        AnimationSystem system = entity.getAnimationSystem();
+
+        ModelSystem modelSystem = entity.getModelSystem();
+
+        int layerId = 0;
         for (var layer : this.layers){
+
+            var models = modelSystem.getModelsAttachedToLayer(layerId);
+            for (var md : models){
+                FDModel model = md.second;
+                system.applyAnimations(model, partialTicks);
+            }
+
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
             model.main.addYRot(-yaw);
+
+            layerId++;
         }
     }
 
     public void renderLayers(T entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
+        int layerId = 0;
         for (var layer : this.layers){
+
 
             var condition = layer.renderCondition();
             if (!condition.apply(entity)) continue;
@@ -82,9 +100,12 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
             FDColor color = layer.color().getValue(entity,partialTicks);
 
-            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a);
+            LayerAttachments layerAttachments = entity.getModelSystem().getLayerAttachments(layerId);
+
+            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a, IFDModelAdditionalInfo.attachmentData(layerAttachments));
 
             matrices.popPose();
+            layerId++;
         }
     }
 

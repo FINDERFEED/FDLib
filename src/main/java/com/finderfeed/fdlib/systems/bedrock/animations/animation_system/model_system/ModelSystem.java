@@ -1,5 +1,7 @@
-package com.finderfeed.fdlib.systems.bedrock.animations.animation_system;
+package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system;
 
+import com.finderfeed.fdlib.data_structures.Pair;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.core.HolderLookup;
@@ -47,6 +49,11 @@ public abstract class ModelSystem {
         }
     }
 
+    public List<Pair<UUID, FDModel>> getModelsAttachedToLayer(int layerId){
+        LayerAttachments layerAttachments = this.getLayerAttachments(layerId);
+        return layerAttachments.getAllAttachedModels();
+    }
+
     public boolean hasAttachment(UUID uuid){
         for (var entry : this.layerBoneModelMap.entrySet()){
             var layerAttachments = entry.getValue();
@@ -62,7 +69,7 @@ public abstract class ModelSystem {
         return this.layerBoneModelMap.computeIfAbsent(layerId,v->new LayerAttachments());
     }
 
-    public void save(HolderLookup.Provider provider, CompoundTag compoundTag){
+    public void saveAttachments(HolderLookup.Provider provider, CompoundTag compoundTag){
 
         CompoundTag modelSystemData = new CompoundTag();
 
@@ -84,7 +91,7 @@ public abstract class ModelSystem {
         compoundTag.put("attachmentsData", modelSystemData);
     }
 
-    public void load(HolderLookup.Provider provider, CompoundTag tag){
+    public void loadAttachments(HolderLookup.Provider provider, CompoundTag tag){
         this.layerBoneModelMap = new HashMap<>();
 
         int id = 0;

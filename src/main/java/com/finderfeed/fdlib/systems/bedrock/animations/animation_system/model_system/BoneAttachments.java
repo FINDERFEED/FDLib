@@ -1,4 +1,4 @@
-package com.finderfeed.fdlib.systems.bedrock.animations.animation_system;
+package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system;
 
 import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.systems.FDRegistries;
@@ -47,6 +47,10 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
             }
         }
         return false;
+    }
+
+    public List<Pair<UUID, FDModel>> getAllAttachedModels(){
+        return boneAttachments;
     }
 
 
