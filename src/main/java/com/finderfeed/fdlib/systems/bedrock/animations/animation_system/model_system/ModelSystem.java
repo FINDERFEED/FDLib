@@ -2,8 +2,9 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_s
 
 import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
@@ -29,16 +30,19 @@ public abstract class ModelSystem {
     }
 
 
-    public void attachModelToLayer(int layer, String boneName, UUID attachmentUUID, FDModelInfo fdModelInfo){
+    public void attachToLayer(int layer, String boneName, UUID attachmentUUID, ModelAttachmentData<?> attachmentData){
         if (!this.hasAttachment(attachmentUUID)) {
             var layerAttachments = this.getLayerAttachments(layer);
-            FDModel fdModel = new FDModel(fdModelInfo);
-            layerAttachments.attach(boneName, attachmentUUID, fdModel);
-            this.onAttachment(layer, boneName, attachmentUUID, fdModelInfo);
+
+            ModelAttachmentType attachmentType = attachmentData.type();
+            var modelAttachment = attachmentType.attachmentFromData(attachmentData);
+
+            layerAttachments.attach(boneName, attachmentUUID, modelAttachment);
+            this.onAttachment(layer, boneName, attachmentUUID, attachmentData);
         }
     }
 
-    public void removeAttachedModel(UUID attachmentUUID){
+    public void removeAttachment(UUID attachmentUUID){
         for (var entry : this.layerBoneModelMap.entrySet()){
 
             var layerAttachments = entry.getValue();
@@ -49,9 +53,13 @@ public abstract class ModelSystem {
         }
     }
 
-    public List<Pair<UUID, FDModel>> getModelsAttachedToLayer(int layerId){
+    public List<Pair<UUID, ModelAttachment<?,?>>> getAllLayerAttachments(int layerId){
         LayerAttachments layerAttachments = this.getLayerAttachments(layerId);
-        return layerAttachments.getAllAttachedModels();
+        return layerAttachments.getAllAttachments();
+    }
+
+    public Collection<Integer> allLayers(){
+        return this.layerBoneModelMap.keySet();
     }
 
     public boolean hasAttachment(UUID uuid){
@@ -88,7 +96,7 @@ public abstract class ModelSystem {
             id++;
         }
 
-        compoundTag.put("attachmentsData", modelSystemData);
+        compoundTag.put("modelAttachmentsData", modelSystemData);
     }
 
     public void loadAttachments(HolderLookup.Provider provider, CompoundTag tag){
@@ -96,7 +104,7 @@ public abstract class ModelSystem {
 
         int id = 0;
 
-        CompoundTag attachmentsData = tag.getCompound("attachmentsData");
+        CompoundTag attachmentsData = tag.getCompound("modelAttachmentsData");
         while (attachmentsData.contains("attachments_" + id)){
             CompoundTag attachments = attachmentsData.getCompound("attachments_" + id);
 
@@ -110,7 +118,7 @@ public abstract class ModelSystem {
         }
     }
 
-    public abstract void onAttachment(int layer, String bone, UUID modelUUID, FDModelInfo attachedModel);
+    public abstract void onAttachment(int layer, String bone, UUID modelUUID, ModelAttachmentData<?> attachedModel);
 
     public abstract void onAttachmentRemoved(UUID modelUUID);
 

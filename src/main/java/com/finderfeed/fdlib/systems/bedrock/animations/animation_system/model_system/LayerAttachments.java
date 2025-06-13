@@ -1,24 +1,22 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system;
 
 import com.finderfeed.fdlib.data_structures.Pair;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class LayerAttachments implements INBTSerializable<CompoundTag> {
 
     private HashMap<String, BoneAttachments> layerAttachments = new HashMap<>();
 
 
-    protected void attach(String boneName, UUID uuid, FDModel model){
+    protected void attach(String boneName, UUID uuid, ModelAttachment<?,?> attachment){
         var boneAttachments = this.getBoneAttachments(boneName);
-        boneAttachments.attach(uuid,model);
+        boneAttachments.attach(uuid,attachment);
     }
 
     protected boolean removeAttachment(UUID uuid){
@@ -43,16 +41,20 @@ public class LayerAttachments implements INBTSerializable<CompoundTag> {
         return this.layerAttachments.computeIfAbsent(boneName,v->new BoneAttachments());
     }
 
-    public List<Pair<UUID, FDModel>> getAllAttachedModels(){
-        List<Pair<UUID, FDModel>> list = new ArrayList<>();
+    public Collection<String> getAllBones(){
+        return layerAttachments.keySet();
+    }
+
+    public List<Pair<UUID, ModelAttachment<?,?>>> getAllAttachments(){
+        List<Pair<UUID, ModelAttachment<?,?>>> list = new ArrayList<>();
         for (BoneAttachments boneAttachments : layerAttachments.values()){
-            list.addAll(boneAttachments.getAllAttachedModels());
+            list.addAll(boneAttachments.getAttachments());
         }
         return list;
     }
 
-    public List<Pair<UUID,FDModel>> getModelsAttachedToBone(String bone){
-        return this.getBoneAttachments(bone).getAllAttachedModels();
+    public List<Pair<UUID, ModelAttachment<?,?>>> getAllBoneAttachments(String bone){
+        return this.getBoneAttachments(bone).getAttachments();
     }
 
     @Override

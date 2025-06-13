@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -25,15 +26,15 @@ public class FDClientPacketExecutables {
 //        CutsceneCameraHandler.initiateCamera();
     }
 
-    public static void addEntityAttachmentPacket(int entityId, int layer, String bone, UUID uuid, FDModelInfo modelInfo){
+    public static void addEntityAttachmentPacket(int entityId, int layer, String bone, UUID uuid, ModelAttachmentData<?> modelInfo){
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof AnimatedObject animatedObject){
-            animatedObject.getModelSystem().attachModelToLayer(layer,bone, uuid, modelInfo);
+            animatedObject.getModelSystem().attachToLayer(layer,bone, uuid, modelInfo);
         }
     }
 
     public static void removeEntityAttachment(int entityId, UUID uuid){
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof AnimatedObject animatedObject){
-            animatedObject.getModelSystem().removeAttachedModel(uuid);
+            animatedObject.getModelSystem().removeAttachment(uuid);
         }
     }
 

@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.entity_model_system.EntityModelSystem;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -34,4 +35,13 @@ public abstract class FDEntity extends Entity implements AnimatedObject {
         this.modelSystem.asServerside().syncToPlayer(player);
     }
 
+    @Override
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        this.modelSystem.saveAttachments(level().registryAccess(),tag);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        this.modelSystem.loadAttachments(level().registryAccess(),tag);
+    }
 }

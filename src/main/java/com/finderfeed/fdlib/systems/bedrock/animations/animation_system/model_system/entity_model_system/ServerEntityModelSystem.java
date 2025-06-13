@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_s
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.SyncEntityAnimationsPacket;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.entity_model_system.packets.AddEntityAttachmentPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.entity_model_system.packets.RemoveEntityAttachmentPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.entity_model_system.packets.SyncEntityAttachmentsPacket;
@@ -29,7 +30,7 @@ public class ServerEntityModelSystem<T extends Entity & AnimatedObject> extends 
     }
 
     @Override
-    public void onAttachment(int layer, String bone, UUID modelUUID, FDModelInfo attachedModel) {
+    public void onAttachment(int layer, String bone, UUID modelUUID, ModelAttachmentData<?> attachedModel) {
 
         AddEntityAttachmentPacket addEntityAttachmentPacket = new AddEntityAttachmentPacket(this.getEntity(),layer,bone,modelUUID,attachedModel);
         PacketDistributor.sendToPlayersTrackingEntity(this.getEntity(), addEntityAttachmentPacket);

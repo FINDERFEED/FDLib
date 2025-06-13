@@ -26,11 +26,7 @@ public class FDModel {
     }
 
     public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a){
-        this.render(matrices,vertex,light,overlay,r,g,b,a, IFDModelAdditionalInfo.empty());
-    }
-
-    public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a, IFDModelAdditionalInfo additionalInfo){
-        main.render(matrices,vertex,light,overlay,r,g,b,a, additionalInfo);
+        this.render(matrices,vertex,light,overlay,r,g,b,a);
     }
 
 

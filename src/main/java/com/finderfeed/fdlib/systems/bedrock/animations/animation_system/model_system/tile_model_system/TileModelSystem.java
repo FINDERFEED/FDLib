@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_s
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.TileAnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -18,7 +19,7 @@ public class TileModelSystem extends ModelSystem {
     }
 
     @Override
-    public void onAttachment(int layer, String bone, UUID modelUUID, FDModelInfo attachedModel) {
+    public void onAttachment(int layer, String bone, UUID modelUUID, ModelAttachmentData<?> attachedModel) {
         throw new RuntimeException("Not yet supported");
     }
 

@@ -36,6 +36,7 @@ public class FDLib {
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDScreenEffects.SCREEN_EFFECT_TYPES.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
+        FDModelAttachmentTypes.MODEL_ATTACHMENT_TYPES.register(bus);
     }
 
 

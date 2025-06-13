@@ -54,7 +54,7 @@ public class FDModelPart {
     }
 
 
-    public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a, IFDModelAdditionalInfo additionalInfo){
+    public void render(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a){
         matrices.pushPose();
 
         if (isVisible){
@@ -64,22 +64,13 @@ public class FDModelPart {
                 cube.render(matrices,vertex,light,overlay,r,g,b,a);
             }
 
-            this.renderAttachments(matrices,vertex,light,overlay,r,g,b,a,additionalInfo);
-
             for (FDModelPart child : children.values()){
-                child.render(matrices,vertex,light,overlay,r,g,b,a, additionalInfo);
+                child.render(matrices,vertex,light,overlay,r,g,b,a);
             }
 
         }
 
         matrices.popPose();
-    }
-
-    private void renderAttachments(PoseStack matrices, VertexConsumer vertex, int light, int overlay, float r, float g, float b, float a, IFDModelAdditionalInfo additionalInfo){
-        var attachments = additionalInfo.getBoneModelAttachments(this.name);
-        for (FDModel fdModel : attachments){
-            fdModel.render(matrices,vertex,light,overlay,r,g,b,a);
-        }
     }
 
 

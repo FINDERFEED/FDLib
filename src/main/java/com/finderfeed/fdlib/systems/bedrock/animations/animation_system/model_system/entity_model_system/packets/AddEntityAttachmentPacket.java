@@ -4,10 +4,11 @@ import com.finderfeed.fdlib.FDClientPacketExecutables;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.FDRegistries;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
-import net.minecraft.network.FriendlyByteBuf;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -20,23 +21,26 @@ public class AddEntityAttachmentPacket extends FDPacket {
     private int layer;
     private String bone;
     private UUID uuid;
-    private FDModelInfo fdModelInfo;
+    private ModelAttachmentData<?> modelAttachmentData;
 
-    public AddEntityAttachmentPacket(Entity entity, int layer, String bone, UUID uuid, FDModelInfo modelInfo){
+    public AddEntityAttachmentPacket(Entity entity, int layer, String bone, UUID uuid, ModelAttachmentData<?> modelAttachmentData){
         this.entityId = entity.getId();
         this.layer = layer;
         this.bone = bone;
         this.uuid = uuid;
-        this.fdModelInfo = modelInfo;
+        this.modelAttachmentData = modelAttachmentData;
     }
 
-    public AddEntityAttachmentPacket(FriendlyByteBuf buf){
+    public AddEntityAttachmentPacket(RegistryFriendlyByteBuf buf){
         this.entityId = buf.readInt();
         this.layer = buf.readInt();
         this.bone = buf.readUtf();
         this.uuid = buf.readUUID();
-        ResourceLocation loc = buf.readResourceLocation();
-        this.fdModelInfo = FDRegistries.MODELS.get(loc);
+
+        var registry = buf.registryAccess().registryOrThrow(FDRegistries.MODEL_ATTACHMENT_TYPE_KEY);
+        var type = registry.get(buf.readResourceLocation());
+        modelAttachmentData = type.dataStreamCodec().decode(buf);
+
     }
 
     @Override
@@ -45,17 +49,26 @@ public class AddEntityAttachmentPacket extends FDPacket {
         buf.writeInt(layer);
         buf.writeUtf(bone);
         buf.writeUUID(uuid);
-        ResourceLocation key = FDRegistries.MODELS.getKey(fdModelInfo);
-        buf.writeResourceLocation(key);
+
+        ModelAttachmentType<?,? extends ModelAttachmentData<?>> type = modelAttachmentData.type();
+        var registry = buf.registryAccess().registryOrThrow(FDRegistries.MODEL_ATTACHMENT_TYPE_KEY);
+        buf.writeResourceLocation(registry.getKey(type));
+
+        this.hackyEncode(buf, type);
     }
 
     @Override
     public void clientAction(IPayloadContext context) {
-        FDClientPacketExecutables.addEntityAttachmentPacket(entityId,layer,bone,uuid,fdModelInfo);
+        FDClientPacketExecutables.addEntityAttachmentPacket(entityId,layer,bone,uuid, modelAttachmentData);
     }
 
     @Override
     public void serverAction(IPayloadContext context) {
 
     }
+
+    private <T extends ModelAttachmentData<?>> void hackyEncode(RegistryFriendlyByteBuf buf, ModelAttachmentType<?,T> type){
+        type.dataStreamCodec().encode(buf,(T) modelAttachmentData);
+    }
+
 }

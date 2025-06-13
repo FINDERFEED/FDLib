@@ -4,8 +4,11 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animated
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.LayerAttachments;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderContext;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderer;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
-import com.finderfeed.fdlib.systems.bedrock.models.model_render_info.IFDModelAdditionalInfo;
 import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -20,6 +23,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
         this.applyAnimations(entity,yaw,partialTicks,matrices,src,light);
         this.renderLayers(entity,yaw,partialTicks,matrices,src,light);
+        renderModelAttachments(layers,  entity, yaw, partialTicks, matrices, src, light);
 
         if (freeRender != null){
             freeRender.render(entity,yaw,partialTicks,matrices,src,light);
@@ -57,28 +62,14 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
     public void applyAnimations(T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
         AnimationSystem system = entity.getAnimationSystem();
-
-        ModelSystem modelSystem = entity.getModelSystem();
-
-        int layerId = 0;
         for (var layer : this.layers){
-
-            var models = modelSystem.getModelsAttachedToLayer(layerId);
-            for (var md : models){
-                FDModel model = md.second;
-                system.applyAnimations(model, partialTicks);
-            }
-
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
             model.main.addYRot(-yaw);
-
-            layerId++;
         }
     }
 
     public void renderLayers(T entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
-        int layerId = 0;
         for (var layer : this.layers){
 
 
@@ -100,12 +91,55 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
             FDColor color = layer.color().getValue(entity,partialTicks);
 
-            LayerAttachments layerAttachments = entity.getModelSystem().getLayerAttachments(layerId);
-
-            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a, IFDModelAdditionalInfo.attachmentData(layerAttachments));
+            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a);
 
             matrices.popPose();
-            layerId++;
+        }
+    }
+
+    public static <T extends Entity & AnimatedObject> void renderModelAttachments(List<FDEntityRenderLayer<T>> layers, T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
+
+
+
+        ModelSystem modelSystem = entity.getModelSystem();
+        for (int layer : modelSystem.allLayers()){
+
+            if (layer < 0 || layer >= layers.size()){
+                continue;
+            }
+
+            FDEntityRenderLayer<T> layer1 = layers.get(layer);
+
+            var condition = layer1.renderCondition();
+            if (!condition.apply(entity)) continue;
+
+            LayerAttachments layerAttachments = modelSystem.getLayerAttachments(layer);
+
+            int overlay = OverlayTexture.NO_OVERLAY;
+            if (entity instanceof LivingEntity livingEntity && !layer1.ignoreHurtOverlay()){
+                overlay = LivingEntityRenderer.getOverlayCoords(livingEntity,0);
+            }
+
+            for (String bone : layerAttachments.getAllBones()){
+
+                matrices.pushPose();
+
+                Matrix4f transform = layer1.model().getModelPartTransformation(bone);
+
+                layer1.matrixTransform().apply(entity,matrices,partialTicks);
+
+                matrices.mulPose(transform);
+
+
+                for (var pair : layerAttachments.getAllBoneAttachments(bone)){
+                    ModelAttachment attachment = pair.second;
+                    ModelAttachmentType type = attachment.attachmentData().type();
+                    ModelAttachmentRenderer renderer = type.renderer();
+                    renderer.render(attachment, ModelAttachmentRenderContext.create(entity), matrices, src, partialTicks, light, overlay);
+                }
+
+                matrices.popPose();
+            }
         }
     }
 
