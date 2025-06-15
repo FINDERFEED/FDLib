@@ -91,7 +91,7 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
         int id = 0;
         while (tag.contains("attachment_"+id)){
 
-            var attachment = tag.getCompound("attachment"+id);
+            var attachment = tag.getCompound("attachment_"+id);
 
             var uuid = attachment.getUUID("uuid");
 
