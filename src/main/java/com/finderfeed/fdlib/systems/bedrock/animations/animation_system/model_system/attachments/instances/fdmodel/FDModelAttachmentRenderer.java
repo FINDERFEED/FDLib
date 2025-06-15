@@ -36,7 +36,12 @@ public class FDModelAttachmentRenderer extends ModelAttachmentRenderer<FDModelAt
 
         poseStack.scale(data.getScaleX(),data.getScaleY(),data.getScaleZ());
 
-        fdModel.render(poseStack, vertexConsumer, light, overlay, 1f, 1f, 1f, 1f);
+        fdModel.render(poseStack, vertexConsumer, light, overlay,
+                attachment.getColor().r,
+                attachment.getColor().g,
+                attachment.getColor().b,
+                attachment.getColor().a
+        );
 
         poseStack.popPose();
     }
