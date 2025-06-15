@@ -51,20 +51,12 @@ public class FDByteBufCodecs {
     public static final StreamCodec<ByteBuf,FDColor> COLOR = new StreamCodec<ByteBuf, FDColor>() {
         @Override
         public FDColor decode(ByteBuf buf) {
-            return new FDColor(
-                    buf.readFloat(),
-                    buf.readFloat(),
-                    buf.readFloat(),
-                    buf.readFloat()
-            );
+            return FDColor.decode(buf.readInt());
         }
 
         @Override
         public void encode(ByteBuf buf, FDColor color) {
-            buf.writeFloat(color.r);
-            buf.writeFloat(color.g);
-            buf.writeFloat(color.b);
-            buf.writeFloat(color.a);
+            buf.writeInt(color.encode());
         }
     };
 

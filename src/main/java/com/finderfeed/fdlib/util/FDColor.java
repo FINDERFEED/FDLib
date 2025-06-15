@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.util;
 
+import com.finderfeed.fdlib.util.math.FDMathUtil;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -15,6 +17,26 @@ public class FDColor {
         this.g = g;
         this.b = b;
         this.a = a;
+    }
+
+    public int encode(){
+        int r = Math.clamp(Math.round(this.r * 255),0,255);
+        int g = Math.clamp(Math.round(this.g * 255),0,255);
+        int b = Math.clamp(Math.round(this.b * 255),0,255);
+        int a = Math.clamp(Math.round(this.a * 255),0,255);
+
+        int color = (a << 24) + (r << 16) + (g << 8) + b;
+
+        return color;
+    }
+
+    public static FDColor decode(int color){
+        return new FDColor(
+                ((color >> 16) & 0x00ff) / 255f,
+                ((color >> 8) & 0x0000ff) / 255f,
+                (color & 0x000000ff) / 255f,
+                ((color >> 24) & 0xff) / 255f
+        );
     }
 
 }

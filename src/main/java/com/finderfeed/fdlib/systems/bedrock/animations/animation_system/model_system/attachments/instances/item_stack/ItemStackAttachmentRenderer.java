@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.item_stack;
 
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.BaseModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderer;
@@ -18,7 +19,7 @@ public class ItemStackAttachmentRenderer extends ModelAttachmentRenderer<ItemSta
     public static final ItemStackAttachmentRenderer INSTANCE = new ItemStackAttachmentRenderer();
 
     @Override
-    public void render(ItemStackAttachment attachment, ModelAttachmentRenderContext ctx, PoseStack poseStack, MultiBufferSource src, float partialTicks, int light, int overlay) {
+    public void render(ItemStackAttachment attachment, ModelAttachmentRenderContext ctx, ModelSystem modelSystem, PoseStack poseStack, MultiBufferSource src, float partialTicks, int light, int overlay) {
 
         ItemStack itemStack = attachment.getItemStack();
 

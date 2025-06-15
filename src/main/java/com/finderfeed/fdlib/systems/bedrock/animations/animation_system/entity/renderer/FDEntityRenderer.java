@@ -135,7 +135,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
                     ModelAttachment attachment = pair.second;
                     ModelAttachmentType type = attachment.attachmentData().type();
                     ModelAttachmentRenderer renderer = type.renderer();
-                    renderer.render(attachment, ModelAttachmentRenderContext.create(entity), matrices, src, partialTicks, light, overlay);
+                    renderer.render(attachment, ModelAttachmentRenderContext.create(entity), modelSystem, matrices, src, partialTicks, light, overlay);
                 }
 
                 matrices.popPose();

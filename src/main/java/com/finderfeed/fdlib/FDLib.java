@@ -32,6 +32,7 @@ public class FDLib {
         FDAnims.ANIMATIONS.register(bus);
         FDParticles.PARTICLES.register(bus);
         FDEntities.ENTITY_TYPES.register(bus);
+        FDRenderTypes.RENDER_TYPES.register(bus);
         FDBlockEntities.BLOCK_ENTITIES.register(bus);
         FDEDataSerializers.SERIALIZERS.register(bus);
         FDScreenEffects.SCREEN_EFFECT_TYPES.register(bus);
