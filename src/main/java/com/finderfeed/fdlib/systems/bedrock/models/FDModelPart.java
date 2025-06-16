@@ -1,6 +1,5 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
-import com.finderfeed.fdlib.systems.bedrock.models.model_render_info.IFDModelAdditionalInfo;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.neoforged.api.distmarker.Dist;
@@ -148,6 +147,18 @@ public class FDModelPart {
 
     public void addZRot(float value){
         this.zRot = (this.zRot + value) % 360;
+    }
+
+    public void setXRot(float xRot) {
+        this.xRot = xRot % 360;
+    }
+
+    public void setYRot(float yRot) {
+        this.yRot = yRot;
+    }
+
+    public void setZRot(float zRot) {
+        this.zRot = zRot % 360;
     }
 
     public float getXScale() {
