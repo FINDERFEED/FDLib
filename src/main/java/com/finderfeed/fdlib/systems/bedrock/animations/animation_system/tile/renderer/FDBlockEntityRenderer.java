@@ -2,8 +2,10 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.re
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.BoneTransformationController;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.RenderFunction;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.systems.bedrock.models.FDModelPart;
 import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -42,7 +44,7 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
         this.renderBox = renderBox;
         for (FDBlockRenderLayerOptions<T> layer : layers){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.light);
+            FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.boneControllers, layer.light);
             this.layers.add(l);
         }
 
@@ -70,6 +72,17 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
         for (var layer : this.layers){
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
+
+            for (var entry : layer.boneControllers().entrySet()){
+
+                FDModelPart modelPart = model.getModelPart(entry.getKey());
+
+                BoneTransformationController<T> controller = entry.getValue();
+
+                controller.transformBone(entity, modelPart, matrices, src, light, overlay, partialTicks);
+
+            }
+
         }
     }
 

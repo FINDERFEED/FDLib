@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.BoneTransformationController;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.LayerAttachments;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
@@ -9,6 +10,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_sy
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderer;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.systems.bedrock.models.FDModelPart;
 import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -42,7 +44,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         this.layers = new ArrayList<>();
         for (FDEntityRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.ignoreHurtOverlay, layer.light);
+            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.boneControllers, layer.ignoreHurtOverlay, layer.light);
             this.layers.add(l);
         }
     }
@@ -66,6 +68,23 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
             model.main.addYRot(-yaw);
+
+            for (var entry : layer.boneControllers().entrySet()){
+
+                FDModelPart modelPart = model.getModelPart(entry.getKey());
+
+                BoneTransformationController<T> controller = entry.getValue();
+
+                int overlay = OverlayTexture.NO_OVERLAY;
+                if (entity instanceof LivingEntity livingEntity && !layer.ignoreHurtOverlay()){
+                    overlay = LivingEntityRenderer.getOverlayCoords(livingEntity,0);
+                }
+
+                controller.transformBone(entity, modelPart, matrices, src, light, overlay, partialTicks);
+
+            }
+
+
         }
     }
 

@@ -1,12 +1,14 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.renderer;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.BoneTransformationController;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.RenderFunction;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import com.finderfeed.fdlib.util.FDColor;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.Entity;
 
+import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -17,6 +19,7 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
     public Function<T,Boolean> renderCondition;
     public FDEntityTransformation<T> transform;
     public RenderFunction<T,FDColor> layerColor;
+    public HashMap<String, BoneTransformationController<T>> boneControllers;
     public int light = -1;
     public boolean ignoreHurtOverlay;
 
@@ -35,10 +38,16 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
         private Function<T,Boolean> renderCondition = (entity)->true;
         private FDEntityTransformation<T> transform = (entity, stack, ticks)->{};
         private RenderFunction<T,FDColor> layerColor = (entity,partialTicks)->new FDColor(1,1,1,1);
+        public HashMap<String, BoneTransformationController<T>> boneControllers = new HashMap<>();
         private boolean ignoreHurtOverlay = false;
         private int light = -1;
 
         public Builder(){}
+
+        public Builder<T> addBoneController(String bone, BoneTransformationController<T> controller){
+            this.boneControllers.put(bone, controller);
+            return this;
+        }
 
         public Builder<T> color(RenderFunction<T,FDColor> layerColorFunction){
             this.layerColor = layerColorFunction;

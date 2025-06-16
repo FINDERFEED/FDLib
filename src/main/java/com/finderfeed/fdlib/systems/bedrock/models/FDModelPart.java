@@ -150,6 +150,30 @@ public class FDModelPart {
         this.zRot = (this.zRot + value) % 360;
     }
 
+    public float getXScale() {
+        return xScale;
+    }
+
+    public float getYScale() {
+        return yScale;
+    }
+
+    public float getZScale() {
+        return zScale;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
+    }
+
     public float getXRot() {
         return xRot;
     }
