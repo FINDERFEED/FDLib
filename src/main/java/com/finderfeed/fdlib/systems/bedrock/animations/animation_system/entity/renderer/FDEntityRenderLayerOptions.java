@@ -104,6 +104,7 @@ public class FDEntityRenderLayerOptions<T extends Entity & AnimatedObject> {
             layer.layerColor = layerColor;
             layer.ignoreHurtOverlay = ignoreHurtOverlay;
             layer.light = light;
+            layer.boneControllers = boneControllers;
             return layer;
         }
 
