@@ -77,6 +77,8 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
 
                 FDModelPart modelPart = model.getModelPart(entry.getKey());
 
+                if (modelPart == null) continue;
+
                 BoneTransformationController<T> controller = entry.getValue();
 
                 controller.transformBone(entity, modelPart, matrices, src, light, overlay, partialTicks);

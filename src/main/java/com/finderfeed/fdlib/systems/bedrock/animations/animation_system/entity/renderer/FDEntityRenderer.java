@@ -73,6 +73,8 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
                 FDModelPart modelPart = model.getModelPart(entry.getKey());
 
+                if (modelPart == null) continue;
+
                 BoneTransformationController<T> controller = entry.getValue();
 
                 int overlay = OverlayTexture.NO_OVERLAY;

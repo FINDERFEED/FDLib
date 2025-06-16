@@ -107,9 +107,8 @@ public class FDModel {
         FDModelPart part;
         if ((part = partsLookup.get(name)) != null) {
             return part;
-        }else{
-            throw new RuntimeException("Couldn't find part: \"" + name + "\" in model: " + modelName);
         }
+        return null;
     }
 
     public FDModelPart getPartOrNull(String name){
