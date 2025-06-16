@@ -13,6 +13,7 @@ public record FDBlockEntityRenderLayer<T extends BlockEntity & AnimatedObject>(F
                                                                                RenderFunction<T, RenderType> renderType,
                                                                                Function<T,Boolean> renderCondition,
                                                                                FDBlockEntityTransformation<T> matrixTransform,
-                                                                               RenderFunction<T, FDColor> color
+                                                                               RenderFunction<T, FDColor> color,
+                                                                               int light
 ) {
 }

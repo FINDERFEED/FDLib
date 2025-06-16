@@ -14,6 +14,7 @@ public record FDEntityRenderLayer<T extends Entity & AnimatedObject>(FDModel mod
                                                                      Function<T,Boolean> renderCondition,
                                                                      FDEntityTransformation<T> matrixTransform,
                                                                      RenderFunction<T, FDColor> color,
-                                                                     boolean ignoreHurtOverlay
+                                                                     boolean ignoreHurtOverlay,
+                                                                     int light
 ) {
 }

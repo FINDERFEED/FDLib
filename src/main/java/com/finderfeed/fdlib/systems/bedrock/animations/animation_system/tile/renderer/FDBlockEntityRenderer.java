@@ -42,7 +42,7 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
         this.renderBox = renderBox;
         for (FDBlockRenderLayerOptions<T> layer : layers){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor);
+            FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.light);
             this.layers.add(l);
         }
 
@@ -89,7 +89,12 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
 
             FDColor color = layer.color().getValue(entity,partialTicks);
 
-            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a);
+            int l = light;
+            if (layer.light() != -1){
+                l = layer.light();
+            }
+
+            model.render(matrices,consumer,l, overlay,color.r,color.g,color.b,color.a);
 
             matrices.popPose();
         }

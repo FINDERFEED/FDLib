@@ -19,6 +19,7 @@ public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
     public Function<T,Boolean> renderCondition;
     public FDBlockEntityTransformation<T> transform;
     public RenderFunction<T, FDColor> layerColor;
+    public int light = -1;
 
     private FDBlockRenderLayerOptions(){
     }
@@ -34,6 +35,7 @@ public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
         private Function<T,Boolean> renderCondition = (entity)->true;
         private FDBlockEntityTransformation<T> transform = (entity, stack, ticks)->{};
         private RenderFunction<T, FDColor> layerColor = (tile,partialTicks)->new FDColor(1,1,1,1);
+        private int light = -1;
 
         public Builder(){}
 
@@ -70,6 +72,11 @@ public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
             return this;
         }
 
+        public FDBlockRenderLayerOptions.Builder<T> light(int light){
+            this.light = light;
+            return this;
+        }
+
         public FDBlockRenderLayerOptions<T> build(){
             if (layerModel == null) throw new RuntimeException("Model for render layer is not registered.");
             if (renderType == null) throw new RuntimeException("RenderType for render layer is not registered.");
@@ -79,6 +86,7 @@ public class FDBlockRenderLayerOptions<T extends BlockEntity & AnimatedObject> {
             layer.renderCondition = renderCondition;
             layer.transform = transform;
             layer.layerColor = layerColor;
+            layer.light = light;
             return layer;
         }
 

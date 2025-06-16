@@ -42,7 +42,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         this.layers = new ArrayList<>();
         for (FDEntityRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
-            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.ignoreHurtOverlay);
+            FDEntityRenderLayer<T> l = new FDEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.ignoreHurtOverlay, layer.light);
             this.layers.add(l);
         }
     }
@@ -91,7 +91,12 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
             FDColor color = layer.color().getValue(entity,partialTicks);
 
-            model.render(matrices,consumer,light, overlay,color.r,color.g,color.b,color.a);
+            int l = light;
+            if (layer.light() != -1){
+                l = layer.light();
+            }
+
+            model.render(matrices,consumer,l, overlay,color.r,color.g,color.b,color.a);
 
             matrices.popPose();
         }
