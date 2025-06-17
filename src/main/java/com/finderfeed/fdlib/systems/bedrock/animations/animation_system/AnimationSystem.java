@@ -120,6 +120,7 @@ public abstract class AnimationSystem {
                     AnimationTicker newTicker = new AnimationTicker(ticker);
                     newTicker.setLoopMode(Animation.LoopMode.ONCE);
                     newTicker.setAnimation(toNull);
+                    newTicker.resetTime();
                     this.tickers.put(name,newTicker);
                 }else{
                     this.tickers.remove(name);
