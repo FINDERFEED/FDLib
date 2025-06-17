@@ -20,9 +20,13 @@ public interface AnimatedObject {
     }
 
     default Matrix4f getModelPartTransformation(String name, FDModel model){
+        return this.getModelPartTransformation(name,model,0);
+    }
+
+    default Matrix4f getModelPartTransformation(String name, FDModel model, float pticks){
         var system = this.getAnimationSystem();
         model.resetTransformations();
-        system.applyAnimations(model,0);
+        system.applyAnimations(model,pticks);
         return model.getModelPartTransformation(name);
     }
 
@@ -37,13 +41,17 @@ public interface AnimatedObject {
         return this.transformPoint(new Vector3f(0,0,0),name,model);
     }
 
-    default Matrix4f getModelPartTransformation(Entity entity,String name, FDModel model){
+    default Matrix4f getModelPartTransformation(Entity entity,String name, FDModel model, float pticks){
         var system = this.getAnimationSystem();
         model.resetTransformations();
-        system.applyAnimations(model,0);
+        system.applyAnimations(model,pticks);
         float yRot = entity.getYRot();
         model.main.addYRot(-yRot);
         return model.getModelPartTransformation(name);
+    }
+
+    default Matrix4f getModelPartTransformation(Entity entity,String name, FDModel model){
+        return this.getModelPartTransformation(entity,name,model,0);
     }
 
     default Vector3f transformPoint(Entity entity,Vector3f initPoint,String name,FDModel model){
