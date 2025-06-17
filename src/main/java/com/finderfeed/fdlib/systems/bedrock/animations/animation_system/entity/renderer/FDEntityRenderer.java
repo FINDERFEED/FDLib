@@ -82,7 +82,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
                     overlay = LivingEntityRenderer.getOverlayCoords(livingEntity,0);
                 }
 
-                controller.transformBone(entity, modelPart, matrices, src, light, overlay, partialTicks);
+                controller.transformBone(entity, model, modelPart, matrices, src, entry.getKey(), light, overlay, partialTicks);
 
             }
 
