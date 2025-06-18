@@ -61,7 +61,11 @@ public class AnimationTicker {
     }
 
     public void tick(){
-        elapsedTime = Mth.clamp(elapsedTime + speedModifier,0,animation.getAnimTime());
+        if (this.getLoopMode() != Animation.LoopMode.LOOP) {
+            elapsedTime = Mth.clamp(elapsedTime + speedModifier, 0, animation.getAnimTime());
+        }else{
+            elapsedTime = (elapsedTime + speedModifier) % animation.getAnimTime();
+        }
     }
 
     public void resetTime(){
@@ -74,6 +78,9 @@ public class AnimationTicker {
     }
 
     public boolean hasEnded(){
+        if (loopMode == Animation.LoopMode.LOOP){
+            return false;
+        }
         return elapsedTime == animation.getAnimTime();
     }
 
@@ -93,10 +100,26 @@ public class AnimationTicker {
 
         partialTicks *= this.getSpeedModifier();
 
-        if (reversed){
-            return Mth.clamp(this.animation.getAnimTime() - this.getElapsedTime() - partialTicks,0,this.animation.getAnimTime());
+        if (loopMode != Animation.LoopMode.LOOP) {
+            if (reversed) {
+                return Mth.clamp(this.animation.getAnimTime() - this.getElapsedTime() - partialTicks, 0, this.animation.getAnimTime());
+            } else {
+                return Mth.clamp(this.getElapsedTime() + partialTicks, 0, this.animation.getAnimTime());
+            }
         }else{
-            return Mth.clamp(this.getElapsedTime() + partialTicks,0,this.animation.getAnimTime());
+            if (reversed) {
+
+                float time = this.animation.getAnimTime() - this.getElapsedTime() - partialTicks;
+
+                if (time < 0){
+                    return this.animation.getAnimTime() + time;
+                }else{
+                    return time;
+                }
+
+            } else {
+                return (this.getElapsedTime() + partialTicks) % this.animation.getAnimTime();
+            }
         }
     }
 

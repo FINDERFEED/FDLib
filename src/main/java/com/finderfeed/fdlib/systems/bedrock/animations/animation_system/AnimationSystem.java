@@ -29,7 +29,7 @@ public abstract class AnimationSystem {
                     entryIterator.remove();
                     continue;
                 }
-                AnimationContext context = new AnimationContext(animation);
+                AnimationContext context = new AnimationContext(animation, mode);
                 context.variables = this.variables;
                 ticker.addVariables(context,0);
                 switch (mode) {
@@ -44,12 +44,12 @@ public abstract class AnimationSystem {
                             continue;
                         }
                     }
-                    case LOOP -> {
-                        ticker.resetTime();
-                        if (animation.isTransition()){
-                            ticker.setAnimation(((TransitionAnimation)animation).getTransitionTo());
-                        }
-                    }
+//                    case LOOP -> {
+//                        ticker.resetTime();
+//                        if (animation.isTransition()){
+//                            ticker.setAnimation(((TransitionAnimation)animation).getTransitionTo());
+//                        }
+//                    }
                     case HOLD_ON_LAST_FRAME -> {
                         continue;
                     }
@@ -65,7 +65,7 @@ public abstract class AnimationSystem {
         model.resetTransformations();
         for (var entry : tickers.values()){
             Animation animation = entry.getAnimation();
-            AnimationContext context = new AnimationContext(animation);
+            AnimationContext context = new AnimationContext(animation, entry.getLoopMode());
             context.variables = variables;
             entry.addVariables(context,partialTicks);
             animation.applyAnimation(context,model,entry.getTime(partialTicks));
@@ -89,7 +89,7 @@ public abstract class AnimationSystem {
         }else{
             if (ticker.equals(current)) return;
             Animation anim = current.getAnimation();
-            AnimationContext context = new AnimationContext(anim);
+            AnimationContext context = new AnimationContext(anim, ticker.getLoopMode());
             context.variables = this.variables;
             current.addVariables(context,0);
             Animation transition = current.getAnimation().createTransitionTo(context,
@@ -112,7 +112,7 @@ public abstract class AnimationSystem {
             Animation animation = ticker.getAnimation();
             if (!animation.isToNullTransition()){
                 if (ticker.getToNullTransitionTime() != 0) {
-                    AnimationContext context = new AnimationContext(animation);
+                    AnimationContext context = new AnimationContext(animation, Animation.LoopMode.ONCE);
                     context.variables = this.variables;
                     ticker.addVariables(context,0);
                     Animation toNull = animation.createTransitionTo(context, null, ticker.getTime(0),

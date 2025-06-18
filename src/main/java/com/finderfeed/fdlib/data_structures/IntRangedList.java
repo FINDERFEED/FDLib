@@ -128,6 +128,18 @@ public class IntRangedList<T> implements Iterable<T> {
         return this.entries.get(index).value;
     }
 
+    public int size(){
+        return this.entries.size();
+    }
+
+    public T getFirst(){
+        return this.entries.getFirst().value;
+    }
+
+    public T getLast(){
+        return this.entries.getLast().value;
+    }
+
     @NotNull
     @Override
     public Iterator<T> iterator() {
