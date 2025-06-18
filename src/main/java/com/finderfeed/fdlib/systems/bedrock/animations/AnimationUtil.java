@@ -13,7 +13,7 @@ public class AnimationUtil {
 
         Animation.LoopMode loopMode = context.getCurrentLoopMode();
 
-        if (loopMode != Animation.LoopMode.LOOP || keyFrames.size() <= 2) {
+        if (loopMode != Animation.LoopMode.LOOP || keyFrames.size() <= 2 || context.getAnimation().isTransition()) {
 
             List<KeyFrame> frames = keyFrames.getValues((int) Math.floor(time), 1, 2);
             KeyFrame current = frames.get(1);

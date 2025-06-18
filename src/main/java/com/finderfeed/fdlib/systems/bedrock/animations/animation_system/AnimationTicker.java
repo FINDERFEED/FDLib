@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.AnimationContext;
+import com.finderfeed.fdlib.systems.bedrock.animations.TransitionAnimation;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -64,7 +65,11 @@ public class AnimationTicker {
         if (this.getLoopMode() != Animation.LoopMode.LOOP) {
             elapsedTime = Mth.clamp(elapsedTime + speedModifier, 0, animation.getAnimTime());
         }else{
-            elapsedTime = (elapsedTime + speedModifier) % animation.getAnimTime();
+            elapsedTime = (elapsedTime + speedModifier);
+            if (this.animation instanceof TransitionAnimation transitionAnimation && elapsedTime >= this.animation.getAnimTime()){
+                this.animation = transitionAnimation.getTransitionTo();
+            }
+            elapsedTime = elapsedTime % this.animation.getAnimTime();
         }
     }
 
