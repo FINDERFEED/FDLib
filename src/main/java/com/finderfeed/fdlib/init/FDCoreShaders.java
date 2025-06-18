@@ -15,12 +15,17 @@ import java.io.IOException;
 public class FDCoreShaders {
 
     public static ShaderInstance NOISE = null;
+    public static ShaderInstance PARTICLE_NO_DISCARD = null;
 
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
 
         event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.tryBuild(FDLib.MOD_ID,"noise"), DefaultVertexFormat.POSITION_TEX_COLOR),(inst)->{
             NOISE = inst;
+        });
+
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.tryBuild(FDLib.MOD_ID,"particle"), DefaultVertexFormat.PARTICLE),(inst)->{
+            PARTICLE_NO_DISCARD = inst;
         });
 
     }
