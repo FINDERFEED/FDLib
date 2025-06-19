@@ -1,11 +1,14 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system;
 
+import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.AnimationContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.TransitionAnimation;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class AnimationSystem {
 
@@ -18,6 +21,9 @@ public abstract class AnimationSystem {
     public void tick(){
         if (this.isFrozen()) return;
         var entryIterator = tickers.entrySet().iterator();
+
+        List<Pair<String, AnimationTicker>> nextAnimations = new ArrayList<>();
+
         while (entryIterator.hasNext()){
             var entry = entryIterator.next();
             AnimationTicker ticker = entry.getValue();
@@ -34,22 +40,21 @@ public abstract class AnimationSystem {
                 ticker.addVariables(context,0);
                 switch (mode) {
                     case ONCE -> {
-                        int toNullTime = ticker.getToNullTransitionTime();
-                        if (toNullTime != 0) {
-                            Animation nullTransition = animation.createTransitionTo(context, null, ticker.getTime(0), ticker.getToNullTransitionTime(),false);
-                            ticker.resetTime();
-                            ticker.setAnimation(nullTransition);
+                        if (ticker.getNext() == null) {
+                            int toNullTime = ticker.getToNullTransitionTime();
+                            if (toNullTime != 0) {
+                                Animation nullTransition = animation.createTransitionTo(context, null, ticker.getTime(0), ticker.getToNullTransitionTime(), false);
+                                ticker.resetTime();
+                                ticker.setAnimation(nullTransition);
+                            } else {
+                                entryIterator.remove();
+                                continue;
+                            }
                         }else{
                             entryIterator.remove();
-                            continue;
+                            nextAnimations.add(new Pair<>(entry.getKey(),ticker.getNext()));
                         }
                     }
-//                    case LOOP -> {
-//                        ticker.resetTime();
-//                        if (animation.isTransition()){
-//                            ticker.setAnimation(((TransitionAnimation)animation).getTransitionTo());
-//                        }
-//                    }
                     case HOLD_ON_LAST_FRAME -> {
                         continue;
                     }
@@ -57,6 +62,11 @@ public abstract class AnimationSystem {
             }
             ticker.tick();
         }
+
+        for (var pair : nextAnimations){
+            this.startAnimation(pair.first, pair.second);
+        }
+
     }
 
 

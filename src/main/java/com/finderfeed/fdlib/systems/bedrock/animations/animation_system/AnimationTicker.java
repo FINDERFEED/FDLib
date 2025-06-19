@@ -16,7 +16,8 @@ import java.util.function.Supplier;
 
 public class AnimationTicker {
 
-    public static final StreamCodec<FriendlyByteBuf,AnimationTicker> NETWORK_CODEC = StreamCodec.composite(
+
+    public static final StreamCodec<FriendlyByteBuf,AnimationTicker> NO_NEXT_NETWORK_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT,ticker->ticker.elapsedTime,
             ByteBufCodecs.FLOAT,ticker->ticker.speedModifier,
             ByteBufCodecs.INT,ticker->ticker.toNullTransitionTime,
@@ -38,6 +39,32 @@ public class AnimationTicker {
                 ticker.toNullTransitionTime = toNull;
                 return ticker;
             });
+
+    public static final StreamCodec<FriendlyByteBuf, AnimationTicker> NETWORK_CODEC = new StreamCodec<FriendlyByteBuf, AnimationTicker>() {
+        @Override
+        public AnimationTicker decode(FriendlyByteBuf buf) {
+            boolean hasNext = buf.readBoolean();
+            AnimationTicker next = null;
+            if (hasNext){
+                next = NETWORK_CODEC.decode(buf);
+            }
+            AnimationTicker thisTicker = NO_NEXT_NETWORK_CODEC.decode(buf);
+            thisTicker.next = next;
+            return thisTicker;
+        }
+
+        @Override
+        public void encode(FriendlyByteBuf buf, AnimationTicker ticker) {
+            AnimationTicker next = ticker.next;
+            buf.writeBoolean(next != null);
+            if (next != null){
+                NETWORK_CODEC.encode(buf,next);
+            }
+            NO_NEXT_NETWORK_CODEC.encode(buf, ticker);
+        }
+    };
+
+    private AnimationTicker next = null;
     private float elapsedTime = 0;
     private float speedModifier = 1;
     private int toNullTransitionTime;
@@ -53,6 +80,7 @@ public class AnimationTicker {
         this.loopMode = other.loopMode;
         this.animation = other.getAnimation();
         this.reversed = other.reversed;
+        this.next = other.next;
     }
 
     public AnimationTicker(Animation animation){
@@ -87,6 +115,10 @@ public class AnimationTicker {
             return false;
         }
         return elapsedTime == animation.getAnimTime();
+    }
+
+    public AnimationTicker getNext() {
+        return next;
     }
 
     public boolean isReversed() {
@@ -173,7 +205,7 @@ public class AnimationTicker {
                 && this.loopMode == that.loopMode
                 && Float.compare(this.speedModifier, that.speedModifier) == 0
                 && (this.reversed == that.reversed)
-                ;
+                && Objects.equals(next,that.next);
     }
 
     @Override
@@ -187,6 +219,11 @@ public class AnimationTicker {
 
         public Builder(Animation animation){
             this.ticker = new AnimationTicker(animation);
+        }
+
+        public Builder nextAnimation(AnimationTicker ticker){
+            this.ticker.next = ticker;
+            return this;
         }
 
         public Builder setLoopMode(Animation.LoopMode mode){
