@@ -97,7 +97,7 @@ public abstract class AnimationSystem {
         if (current == null){
             this.tickers.put(name,ticker);
         }else{
-            if (ticker.equals(current)) return;
+            if (ticker.equals(current) && !ticker.isImportant()) return;
             Animation anim = current.getAnimation();
             AnimationContext context = new AnimationContext(anim, ticker.getLoopMode());
             context.variables = this.variables;

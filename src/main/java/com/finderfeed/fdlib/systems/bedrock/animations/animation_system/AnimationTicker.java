@@ -4,6 +4,8 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.AnimationContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.TransitionAnimation;
+import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.FDCodecs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -17,14 +19,15 @@ import java.util.function.Supplier;
 public class AnimationTicker {
 
 
-    public static final StreamCodec<FriendlyByteBuf,AnimationTicker> NO_NEXT_NETWORK_CODEC = StreamCodec.composite(
+    public static final StreamCodec<FriendlyByteBuf,AnimationTicker> NO_NEXT_NETWORK_CODEC = FDByteBufCodecs.composite(
             ByteBufCodecs.FLOAT,ticker->ticker.elapsedTime,
             ByteBufCodecs.FLOAT,ticker->ticker.speedModifier,
             ByteBufCodecs.INT,ticker->ticker.toNullTransitionTime,
             ByteBufCodecs.BOOL,ticker->ticker.reversed,
             ByteBufCodecs.STRING_UTF8,ticker->ticker.loopMode.name(),
             ByteBufCodecs.STRING_UTF8,ticker->ticker.animation.getName().toString(),
-            (elapsedTime,speedModifier,toNull,reversed,loopModeName,animationName)->{
+            ByteBufCodecs.BOOL,v->v.important,
+            (elapsedTime,speedModifier,toNull,reversed,loopModeName,animationName,important)->{
                 ResourceLocation location = ResourceLocation.tryParse(animationName);
                 Animation animation = FDRegistries.ANIMATIONS.get(location);
                 if (animation == null){
@@ -37,6 +40,7 @@ public class AnimationTicker {
                 ticker.elapsedTime = elapsedTime;
                 ticker.speedModifier = speedModifier;
                 ticker.toNullTransitionTime = toNull;
+                ticker.important = important;
                 return ticker;
             });
 
@@ -71,6 +75,7 @@ public class AnimationTicker {
     private boolean reversed;
     private Animation.LoopMode loopMode;
     private Animation animation;
+    private boolean important = false;
 
 
     public AnimationTicker(AnimationTicker other){
@@ -81,6 +86,7 @@ public class AnimationTicker {
         this.animation = other.getAnimation();
         this.reversed = other.reversed;
         this.next = other.next;
+        this.important = other.important;
     }
 
     public AnimationTicker(Animation animation){
@@ -115,6 +121,10 @@ public class AnimationTicker {
             return false;
         }
         return elapsedTime == animation.getAnimTime();
+    }
+
+    public boolean isImportant() {
+        return important;
     }
 
     public AnimationTicker getNext() {
@@ -219,6 +229,12 @@ public class AnimationTicker {
 
         public Builder(Animation animation){
             this.ticker = new AnimationTicker(animation);
+        }
+
+
+        public Builder important(){
+            this.ticker.important = true;
+            return this;
         }
 
         public Builder nextAnimation(AnimationTicker ticker){
