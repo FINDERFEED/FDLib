@@ -51,7 +51,7 @@ public abstract class AnimationSystem {
                                 continue;
                             }
                         }else{
-                            entryIterator.remove();
+//                            entryIterator.remove();
                             nextAnimations.add(new Pair<>(entry.getKey(),ticker.getNext()));
                         }
                     }
