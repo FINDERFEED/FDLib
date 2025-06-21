@@ -45,6 +45,7 @@ public class HeadControllerContainer<T extends Mob & AnimatedObject & IHasHead<T
         if (mode != this.mode) {
             if (!entity.level().isClientSide){
                 PacketDistributor.sendToPlayersTrackingEntity(entity,new ChangeHeadControllerModePacket<>(entity, mode));
+                return;
             }
             Mode old = this.mode;
             this.mode = mode;
