@@ -43,12 +43,12 @@ public class HeadControllerContainer<T extends Mob & AnimatedObject & IHasHead<T
 
     public void setControllersMode(Mode mode) {
         if (mode != this.mode) {
+            Mode old = this.mode;
+            this.mode = mode;
             if (!entity.level().isClientSide){
                 PacketDistributor.sendToPlayersTrackingEntity(entity,new ChangeHeadControllerModePacket<>(entity, mode));
                 return;
             }
-            Mode old = this.mode;
-            this.mode = mode;
             for (var entry : headControllers.entrySet()) {
                 var value = entry.getValue();
                 value.onControllerModeChanged(old, mode);
