@@ -108,6 +108,18 @@ public class ProjectileMovementPath implements AutoSerializable {
         this.next = next;
     }
 
+    public int getTime() {
+        return time;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public Vec3 getSpeedOnEnd() {
+        return speedOnEnd;
+    }
+
     @Override
     public void autoSave(CompoundTag tag) {
         AutoSerializable.super.autoSave(tag);
