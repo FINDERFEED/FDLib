@@ -190,6 +190,23 @@ public class FDMathUtil {
         return catmullrom(prev,cur,next,next2,lp);
     }
 
+    public static Vector3f catmullRom(Vector3f[] points,float p){
+        if (p < 0){
+            return new Vector3f(points[0]);
+        }else if (p >= 1){
+            return new Vector3f(points[points.length - 1]);
+        }
+
+        float glP = p * (points.length - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vector3f prev = id1 > 0 ? points[id1] : null;
+        Vector3f cur = points[id1];
+        Vector3f next = points[id1 + 1];
+        Vector3f next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
+        return catmullrom(prev,cur,next,next2,lp);
+    }
+
 
     public static Vec3 linear(List<Vec3> points,float p){
         if (p < 0){

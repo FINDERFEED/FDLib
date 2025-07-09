@@ -2,6 +2,9 @@ package com.finderfeed.fdlib.util.rendering;
 
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
+import com.finderfeed.fdlib.systems.shapes.FD2DShape;
+import com.finderfeed.fdlib.util.FDColor;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -34,6 +37,106 @@ import java.util.Stack;
 import java.util.function.Function;
 
 public class FDRenderUtil {
+
+    public static void renderShapeOnCatmullromSpline(FD2DShape shape, PoseStack matrices, VertexConsumer vertexConsumer, FDColor color, int light, int lod, Vector3f... splinePoints){
+        matrices.pushPose();
+
+
+
+        Vector3f between = splinePoints[1].sub(splinePoints[0], new Vector3f()).normalize();
+
+        Vector3f directionPrev = between;
+
+        Quaternionf oldRot = new Quaternionf().rotationTo(new Vector3f(0,1,0),between);
+
+        List<Vector3f> previousPoints = rotateAndTranslatePoints(oldRot, new Vector3f(), shape.getPoints());
+
+        int totalShapePoints = shape.getPoints().size();
+
+        Matrix4f mt = matrices.last().pose();
+
+        for (int i = 0; i < lod - 1; i++) {
+
+            float p1 = (float) (i) / lod;
+            float p2 = (float) (i + 1) / lod;
+            float p3 = (float) (i + 2) / lod;
+
+            Vector3f point2 = FDMathUtil.catmullRom(splinePoints, p2);
+            Vector3f point3 = FDMathUtil.catmullRom(splinePoints, p3);
+            Vector3f directionNew = point3.sub(point2,new Vector3f());
+
+            Quaternionf rotationTowards = new Quaternionf().rotationTo(directionPrev, directionNew);
+
+            Quaternionf newRot = rotationTowards.mul(oldRot);
+
+            List<Vector3f> nextPoints = rotateAndTranslatePoints(newRot, point2, shape.getPoints());
+
+            for (int g = 0; g < totalShapePoints; g++){
+
+                Vector3f sp1 = previousPoints.get(g);
+                Vector3f sp2 = nextPoints.get(g);
+                Vector3f sp3 = nextPoints.get((g + 1) % totalShapePoints);
+                Vector3f sp4 = previousPoints.get((g + 1) % totalShapePoints);
+
+                Vector3f r1 = sp2.sub(sp1,new Vector3f());
+                Vector3f r2 = sp4.sub(sp1, new Vector3f());
+                Vector3f normal = r1.cross(r2);
+
+                vertexConsumer.addVertex(mt,(float)sp1.x,(float)sp1.y,(float)sp1.z)
+                .setColor(color.r,color.g,color.b,color.a)
+                .setUv(0,0)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(normal.x, normal.y, normal.z);
+
+                vertexConsumer.addVertex(mt,(float)sp2.x,(float)sp2.y,(float)sp2.z)
+                .setColor(color.r,color.g,color.b,color.a)
+                .setUv(1,0)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(normal.x, normal.y, normal.z);
+
+                vertexConsumer.addVertex(mt,(float)sp3.x,(float)sp3.y,(float)sp3.z)
+                .setColor(color.r,color.g,color.b,color.a)
+                .setUv(1,1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(normal.x, normal.y, normal.z);
+
+                vertexConsumer.addVertex(mt,(float)sp4.x,(float)sp4.y,(float)sp4.z)
+                .setColor(color.r,color.g,color.b,color.a)
+                .setUv(0,1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(normal.x, normal.y, normal.z);
+
+            }
+
+            previousPoints = nextPoints;
+
+            directionPrev = directionNew;
+
+            oldRot = newRot;
+
+        }
+
+
+
+        matrices.popPose();
+    }
+
+    private static List<Vector3f> rotateAndTranslatePoints(Quaternionf quaternionf, Vector3f translatePoint, List<Vector3f> points){
+        List<Vector3f> newList = new ArrayList<>();
+        for (Vector3f point : points){
+            newList.add(rotatePoint(quaternionf, point).add(translatePoint));
+        }
+        return newList;
+    }
+
+    private static Vector3f rotatePoint(Quaternionf quaternionf, Vector3f v){
+        return quaternionf.transform(v, new Vector3f());
+    }
+
 
     public static void renderCenteredScaledItemStack(GuiGraphics graphics, float x, float y, float scale, ItemStack itemStack){
         Matrix4fStack stack = RenderSystem.getModelViewStack();
