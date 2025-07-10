@@ -72,14 +72,14 @@ public class FDClientModEvents {
 
                                 VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutoutNoCull(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
 
-                                FD2DShape square = FD2DShape.createSimpleCircleNVertexShape(0.5f, 3);
+                                FD2DShape square = FD2DShape.createSimpleCircleNVertexShape(0.5f, 30);
 
-                                FDRenderUtil.renderShapeOnCatmullromSpline(square, matrices, vertexConsumer, new FDColor(1,0,0,1), light, 40,
+                                FDRenderUtil.renderShapeOnCatmullromSpline(square, matrices, vertexConsumer, new FDColor(1,0,0,1), light, 10,
                                         new Vector3f(),
-                                        new Vector3f(5,0,0),
-                                        new Vector3f(10,1,0),
+                                        new Vector3f(5,3,0),
+                                        new Vector3f(10,-2,0),
                                         new Vector3f(15,-1,5),
-                                        new Vector3f(20,1,5)
+                                        new Vector3f(0,2,10)
                                 );
 
 //                                Vector3f dir1 = new Vector3f(0.5f,0.5f,0);

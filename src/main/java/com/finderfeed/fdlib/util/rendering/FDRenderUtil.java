@@ -43,7 +43,7 @@ public class FDRenderUtil {
 
 
 
-        Vector3f between = splinePoints[1].sub(splinePoints[0], new Vector3f()).normalize();
+        Vector3f between = FDMathUtil.catmullRomDerivative(splinePoints, 0);
 
         Vector3f directionPrev = between;
 
@@ -55,71 +55,60 @@ public class FDRenderUtil {
 
         Matrix4f mt = matrices.last().pose();
 
-        for (int i = 0; i < lod - 1; i++) {
+        int start = 1;
 
-            float p1 = (float) (i) / lod;
-            float p2 = (float) (i + 1) / lod;
-            float p3 = (float) (i + 2) / lod;
 
-            Vector3f point2 = FDMathUtil.catmullRom(splinePoints, p2);
-            Vector3f point3 = FDMathUtil.catmullRom(splinePoints, p3);
-            Vector3f directionNew = point3.sub(point2,new Vector3f());
+        for (int k = 0; k < splinePoints.length - 1; k++) {
 
-            Quaternionf rotationTowards = new Quaternionf().rotationTo(directionPrev, directionNew);
+            Vector3f splinePoint1 = k > 0 ? splinePoints[k-1] : null;
+            Vector3f splinePoint2 = splinePoints[k];
+            Vector3f splinePoint3 = k + 1 < splinePoints.length ? splinePoints[k + 1] : null;
+            Vector3f splinePoint4 = k + 2 < splinePoints.length ? splinePoints[k + 2] : null;
 
-            Quaternionf newRot = rotationTowards.mul(oldRot);
 
-            List<Vector3f> nextPoints = rotateAndTranslatePoints(newRot, point2, shape.getPoints());
 
-            for (int g = 0; g < totalShapePoints; g++){
+            for (int i = start; i < lod; i++) {
 
-                Vector3f sp1 = previousPoints.get(g);
-                Vector3f sp2 = nextPoints.get(g);
-                Vector3f sp3 = nextPoints.get((g + 1) % totalShapePoints);
-                Vector3f sp4 = previousPoints.get((g + 1) % totalShapePoints);
+                float p2 = (float) i / (lod - 1);
 
-                Vector3f r1 = sp2.sub(sp1,new Vector3f());
-                Vector3f r2 = sp4.sub(sp1, new Vector3f());
-                Vector3f normal = r1.cross(r2);
+                Vector3f point2 = FDMathUtil.catmullrom(splinePoint1, splinePoint2, splinePoint3, splinePoint4, p2);
+                Vector3f directionNew = FDMathUtil.catmullromDerivative(splinePoint1, splinePoint2, splinePoint3, splinePoint4, p2);
 
-                vertexConsumer.addVertex(mt,(float)sp1.x,(float)sp1.y,(float)sp1.z)
-                .setColor(color.r,color.g,color.b,color.a)
-                .setUv(0,0)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(normal.x, normal.y, normal.z);
+                Quaternionf rotationTowards = new Quaternionf().rotationTo(directionPrev, directionNew);
 
-                vertexConsumer.addVertex(mt,(float)sp2.x,(float)sp2.y,(float)sp2.z)
-                .setColor(color.r,color.g,color.b,color.a)
-                .setUv(1,0)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(normal.x, normal.y, normal.z);
+                Quaternionf newRot = rotationTowards.mul(oldRot);
 
-                vertexConsumer.addVertex(mt,(float)sp3.x,(float)sp3.y,(float)sp3.z)
-                .setColor(color.r,color.g,color.b,color.a)
-                .setUv(1,1)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(normal.x, normal.y, normal.z);
+                List<Vector3f> nextPoints = rotateAndTranslatePoints(newRot, point2, shape.getPoints());
 
-                vertexConsumer.addVertex(mt,(float)sp4.x,(float)sp4.y,(float)sp4.z)
-                .setColor(color.r,color.g,color.b,color.a)
-                .setUv(0,1)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(normal.x, normal.y, normal.z);
+                for (int g = 0; g < totalShapePoints; g++) {
+
+                    Vector3f sp1 = previousPoints.get(g);
+                    Vector3f sp2 = nextPoints.get(g);
+                    Vector3f sp3 = nextPoints.get((g + 1) % totalShapePoints);
+                    Vector3f sp4 = previousPoints.get((g + 1) % totalShapePoints);
+
+                    Vector3f r1 = sp2.sub(sp1, new Vector3f());
+                    Vector3f r2 = sp4.sub(sp1, new Vector3f());
+                    Vector3f normal = r1.cross(r2).mul(-1);
+
+                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal.x, normal.y, normal.z);
+
+                }
+
+                previousPoints = nextPoints;
+
+                directionPrev = directionNew;
+
+                oldRot = newRot;
 
             }
 
-            previousPoints = nextPoints;
-
-            directionPrev = directionNew;
-
-            oldRot = newRot;
+            start = 0;
 
         }
-
 
 
         matrices.popPose();

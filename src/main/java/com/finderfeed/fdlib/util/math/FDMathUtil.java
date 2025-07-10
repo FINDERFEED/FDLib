@@ -207,6 +207,23 @@ public class FDMathUtil {
         return catmullrom(prev,cur,next,next2,lp);
     }
 
+    public static Vector3f catmullRomDerivative(Vector3f[] points,float p){
+        if (p < 0){
+            return new Vector3f(points[0]);
+        }else if (p >= 1){
+            return new Vector3f(points[points.length - 1]);
+        }
+
+        float glP = p * (points.length - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vector3f prev = id1 > 0 ? points[id1] : null;
+        Vector3f cur = points[id1];
+        Vector3f next = points[id1 + 1];
+        Vector3f next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
+        return catmullromDerivative(prev,cur,next,next2,lp);
+    }
+
 
     public static Vec3 linear(List<Vec3> points,float p){
         if (p < 0){
@@ -239,6 +256,23 @@ public class FDMathUtil {
         return catmullrom(prev,cur,next,next2,lp);
     }
 
+    public static Vec3 catmullRomDerivative(List<Vec3> points, float p){
+        if (p < 0){
+            return points.getFirst();
+        }else if (p >= 1){
+            return points.getLast();
+        }
+
+        float glP = p * (points.size() - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vec3 prev = id1 > 0 ? points.get(id1) : null;
+        Vec3 cur = points.get(id1);
+        Vec3 next = points.get(id1 + 1);
+        Vec3 next2 = id1 < points.size() - 2 ? points.get(id1 + 2) : null;
+        return catmullromDerivative(prev,cur,next,next2,lp);
+    }
+
     //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
     public static float catmullrom(Float previous,Float current,Float next,Float next2,float p) {
         if (next == null){return current;}
@@ -249,6 +283,16 @@ public class FDMathUtil {
         return bernstein(current,current + xvc,next + xvn,next,p);
     }
 
+    //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
+    public static float catmullromDerivative(Float previous,Float current,Float next,Float next2,float p) {
+        if (next == null){return current;}
+        if (previous == null){previous = current + (current - next);}
+        if (next2 == null){next2 = next + (next - current);}
+        float xvc = (next - previous) / 6;
+        float xvn = (current - next2) / 6;
+        return bernsteinDerivative(current,current + xvc,next + xvn,next,p);
+    }
+
     public static double catmullrom(Double previous,Double current,Double next,Double next2,float p) {
         if (next == null){return current;}
         if (previous == null){previous = current + (current - next);}
@@ -256,6 +300,15 @@ public class FDMathUtil {
         double xvc = (next - previous) / 6;
         double xvn = (current - next2) / 6;
         return bernstein(current,current + xvc,next + xvn,next,p);
+    }
+
+    public static double catmullromDerivative(Double previous,Double current,Double next,Double next2,float p) {
+        if (next == null){return current;}
+        if (previous == null){previous = current + (current - next);}
+        if (next2 == null){next2 = next + (next - current);}
+        double xvc = (next - previous) / 6;
+        double xvn = (current - next2) / 6;
+        return bernsteinDerivative(current,current + xvc,next + xvn,next,p);
     }
 
     //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
@@ -271,6 +324,18 @@ public class FDMathUtil {
     }
 
     //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
+    public static Vector3f catmullromDerivative(Vector3f previous,Vector3f current,Vector3f next,Vector3f next2,float p) {
+        if (next == null){return current;}
+        if (previous == null) {previous = current.add(current.sub(next,new Vector3f()),new Vector3f());}
+        if (next2 == null){next2 = next.add(next.sub(current,new Vector3f()),new Vector3f());}
+        return new Vector3f(
+                catmullromDerivative(previous.x,current.x,next.x,next2.x,p),
+                catmullromDerivative(previous.y,current.y,next.y,next2.y,p),
+                catmullromDerivative(previous.z,current.z,next.z,next2.z,p)
+        );
+    }
+
+    //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
     public static Vec3 catmullrom(Vec3 previous,Vec3 current,Vec3 next,Vec3 next2,float p) {
         if (next == null){return current;}
         if (previous == null) {previous = current.add(current.subtract(next));}
@@ -279,6 +344,18 @@ public class FDMathUtil {
                 catmullrom(previous.x,current.x,next.x,next2.x,p),
                 catmullrom(previous.y,current.y,next.y,next2.y,p),
                 catmullrom(previous.z,current.z,next.z,next2.z,p)
+        );
+    }
+
+    //"Safe" version of catmullrom that computes previous and "after" next points if they are null.
+    public static Vec3 catmullromDerivative(Vec3 previous,Vec3 current,Vec3 next,Vec3 next2,float p) {
+        if (next == null){return current;}
+        if (previous == null) {previous = current.add(current.subtract(next));}
+        if (next2 == null){next2 = next.add(next.subtract(current));}
+        return new Vec3(
+                catmullromDerivative(previous.x,current.x,next.x,next2.x,p),
+                catmullromDerivative(previous.y,current.y,next.y,next2.y,p),
+                catmullromDerivative(previous.z,current.z,next.z,next2.z,p)
         );
     }
 
@@ -291,6 +368,14 @@ public class FDMathUtil {
                 x4 * t3;
     }
 
+    private static float bernsteinDerivative(float x1,float x2,float x3,float x4,float t){
+        float t2 = (float) Math.pow(t,2);
+        return x1 * (-3*t2 + 6*t - 3) +
+                x2 * (9*t2 - 12*t + 3) +
+                x3 * (-9*t2 + 6*t) +
+                x4 * 3 * t2;
+    }
+
     private static double bernstein(double x1,double x2,double x3,double x4,double t){
         double t3 = Math.pow(t,3);
         double t2 = Math.pow(t,2);
@@ -298,6 +383,14 @@ public class FDMathUtil {
                 x2 * (3*t3 - 6*t2 + 3*t) +
                 x3 * (-3*t3 + 3*t2) +
                 x4 * t3;
+    }
+
+    private static double bernsteinDerivative(double x1,double x2,double x3,double x4,double t){
+        float t2 = (float) Math.pow(t,2);
+        return x1 * (-3*t2 + 6*t - 3) +
+                x2 * (9*t2 - 12*t + 3) +
+                x3 * (-9*t2 + 6*t) +
+                x4 * 3 * t2;
     }
 
     // the one that peak goes on y = 1 is o = 0, m = ~0.399
