@@ -14,6 +14,7 @@ import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
 import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticle;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.finderfeed.fdlib.util.rendering.renderers.QuadRenderer;
+import com.finderfeed.fdlib.util.rendering.renderers.ShapeOnCurveRenderer;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -70,17 +71,31 @@ public class FDClientModEvents {
 
                             .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
 
-                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutoutNoCull(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
+                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutout(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
 
-                                FD2DShape square = FD2DShape.createSimpleCircleNVertexShape(0.5f, 30);
+                                FD2DShape square = FD2DShape.createSimpleCircleNVertexShape(0.5f, 2);
 
-                                FDRenderUtil.renderShapeOnCatmullromSpline(square, matrices, vertexConsumer, new FDColor(1,0,0,1), light, 10,
-                                        new Vector3f(),
-                                        new Vector3f(5,3,0),
-                                        new Vector3f(10,-2,0),
-                                        new Vector3f(15,-1,5),
-                                        new Vector3f(0,2,10)
-                                );
+//                                FDRenderUtil.renderShapeOnCatmullromSpline(square, matrices, vertexConsumer, new FDColor(1,0,0,1), light, 10,
+//                                        new Vector3f(),
+//                                        new Vector3f(5,3,0),
+//                                        new Vector3f(10,-2,0),
+//                                        new Vector3f(15,-1,5),
+//                                        new Vector3f(0,2,10)
+//                                );
+
+                                ShapeOnCurveRenderer.start(vertexConsumer)
+                                        .shape(square)
+                                        .lod(100)
+                                        .curvePositions(
+                                                new Vector3f(),
+                                                new Vector3f(0,3,3),
+                                                new Vector3f(10,-2,0),
+                                                new Vector3f(15,-1,5),
+                                                new Vector3f(0,2,10),
+                                                new Vector3f()
+                                        )
+                                        .pose(matrices)
+                                        .render();
 
 //                                Vector3f dir1 = new Vector3f(0.5f,0.5f,0);
 //                                Vector3f dir2 = new Vector3f(-0.25f,0.5f,0);

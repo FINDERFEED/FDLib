@@ -224,6 +224,23 @@ public class FDMathUtil {
         return catmullromDerivative(prev,cur,next,next2,lp);
     }
 
+    public static Vector3f catmullromDerivative(List<Vector3f> points,float p){
+        if (p < 0){
+            return new Vector3f(points.get(0));
+        }else if (p >= 1){
+            return new Vector3f(points.get(points.size() - 1));
+        }
+
+        float glP = p * (points.size() - 1);
+        int id1 = (int)glP;
+        float lp = glP - id1;
+        Vector3f prev = id1 > 0 ? points.get(id1) : null;
+        Vector3f cur = points.get(id1);
+        Vector3f next = points.get(id1 + 1);
+        Vector3f next2 = id1 < points.size() - 2 ? points.get(id1 + 2) : null;
+        return catmullromDerivative(prev,cur,next,next2,lp);
+    }
+
 
     public static Vec3 linear(List<Vec3> points,float p){
         if (p < 0){
