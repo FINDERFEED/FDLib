@@ -71,7 +71,8 @@ public class FDClientModEvents {
 
                             .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
 
-                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutout(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
+//                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutout(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
+                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 
                                 FD2DShape square = FD2DShape.createSimpleCircleNVertexShape(0.5f, 2);
 
@@ -83,11 +84,17 @@ public class FDClientModEvents {
 //                                        new Vector3f(0,2,10)
 //                                );
 
+                                float time = (blockEntity.getLevel().getGameTime() + pticks);
+                                float percent = (float) Math.sin(time / 100) / 2f + 0.5f;
+
                                 ShapeOnCurveRenderer.start(vertexConsumer)
                                         .shape(square)
-                                        .lod(100)
+                                        .lod(30)
+                                        .color(new FDColor(1,0,0,0.25f))
+                                        .startPercent(0)
+                                        .endPercent(0.75f)
                                         .curvePositions(
-                                                new Vector3f(),
+                                                new Vector3f(0,0,0),
                                                 new Vector3f(0,3,3),
                                                 new Vector3f(10,-2,0),
                                                 new Vector3f(15,-1,5),

@@ -97,10 +97,17 @@ public class ShapeOnCurveRenderer {
     }
 
     public void render(){
+
+        if (startPercent >= endPercent){
+            return;
+        }
+
         matrices.pushPose();
 
 
         Vector3f between = FDMathUtil.catmullromDerivative(splinePoints, 0);
+
+        Vector3f oldPoint = splinePoints.getFirst();
 
         Vector3f directionPrev = between;
 
@@ -110,7 +117,7 @@ public class ShapeOnCurveRenderer {
 
         List<Vector3f> rotatedShape = rotateAndTranslatePoints(new Quaternionf(new AxisAngle4d(angle, 0, 1, 0)), new Vector3f(), shape.getPoints());
 
-        List<Vector3f> previousPoints = rotateAndTranslatePoints(oldRot, new Vector3f(), rotatedShape);
+        List<Vector3f> previousPoints = rotateAndTranslatePoints(oldRot, splinePoints.getFirst(), rotatedShape);
 
         int totalShapePoints = shape.getPoints().size();
 
@@ -118,18 +125,28 @@ public class ShapeOnCurveRenderer {
 
 
 
+        boolean passedStartPercent = startPercent == 0;
 
         for (int i = 1; i < lod; i++) {
 
             float p2 = (float) i / (lod - 1);
-            float p2next = (float) (i + 1) / (lod - 1);
-
-            if (p2 <= startPercent && p2next > startPercent){
-
-            }
+            float p2prev = (float) (i - 1) / (lod - 1);
 
             Vector3f point2 = catmullRom(splinePoints, p2);
             Vector3f directionNew = catmullRomDerivative(splinePoints, p2);
+
+            if (!passedStartPercent && startPercent > p2prev && startPercent < p2){
+                Vector3f b = point2.sub(oldPoint, new Vector3f());
+                float pdist = p2 - p2prev;
+                float pcdist = startPercent - p2prev;
+                float pl = pcdist / pdist;
+                b.mul(pl);
+                for (Vector3f ppoint : previousPoints){
+                    ppoint.add(b);
+                }
+                passedStartPercent = true;
+            }
+
 
 
             Quaternionf rotationTowards = new Quaternionf().rotationTo(directionPrev, directionNew);
@@ -138,25 +155,27 @@ public class ShapeOnCurveRenderer {
 
             List<Vector3f> nextPoints = rotateAndTranslatePoints(newRot, point2, rotatedShape);
 
-            for (int g = 0; g < totalShapePoints; g++) {
+            if (passedStartPercent) {
+                for (int g = 0; g < totalShapePoints; g++) {
 
-                Vector3f sp1 = previousPoints.get(g);
-                Vector3f sp2 = nextPoints.get(g);
-                Vector3f sp3 = nextPoints.get((g + 1) % totalShapePoints);
-                Vector3f sp4 = previousPoints.get((g + 1) % totalShapePoints);
+                    Vector3f sp1 = previousPoints.get(g);
+                    Vector3f sp2 = nextPoints.get(g);
+                    Vector3f sp3 = nextPoints.get((g + 1) % totalShapePoints);
+                    Vector3f sp4 = previousPoints.get((g + 1) % totalShapePoints);
 
-                Vector3f r1 = sp2.sub(sp1, new Vector3f());
-                Vector3f r2 = sp4.sub(sp1, new Vector3f());
-                Vector3f normal = r1.cross(r2).mul(-1);
+                    Vector3f r1 = sp2.sub(sp1, new Vector3f());
+                    Vector3f r2 = sp4.sub(sp1, new Vector3f());
+                    Vector3f normal = r1.cross(r2).mul(-1);
 
-                float v1 = (float) g / (totalShapePoints);
-                float v2 = (g + 1f) / (totalShapePoints);
+                    float v1 = (float) g / (totalShapePoints);
+                    float v2 = (g + 1f) / (totalShapePoints);
 
-                vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(0, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(1, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(1, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(0, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(0, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(1, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(1, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(0, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
 
+                }
             }
 
             previousPoints = nextPoints;
@@ -164,6 +183,8 @@ public class ShapeOnCurveRenderer {
             directionPrev = directionNew;
 
             oldRot = newRot;
+
+            oldPoint = point2;
 
         }
 
