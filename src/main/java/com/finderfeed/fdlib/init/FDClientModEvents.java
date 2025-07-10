@@ -12,6 +12,7 @@ import com.finderfeed.fdlib.util.client.particles.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.particles.InvisibleParticle;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
 import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticle;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.finderfeed.fdlib.util.rendering.renderers.QuadRenderer;
 import com.finderfeed.fdlib.util.rendering.renderers.ShapeOnCurveRenderer;
@@ -71,10 +72,10 @@ public class FDClientModEvents {
 
                             .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
 
-//                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutout(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
-                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
+                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutoutNoCull(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
+//                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 
-                                FD2DShape square = FD2DShape.createSimpleCircleNVertexShape(0.5f, 2);
+                                FD2DShape shape = FD2DShape.createSimpleCircleNVertexShape(1f, 5);
 
 //                                FDRenderUtil.renderShapeOnCatmullromSpline(square, matrices, vertexConsumer, new FDColor(1,0,0,1), light, 10,
 //                                        new Vector3f(),
@@ -86,20 +87,24 @@ public class FDClientModEvents {
 
                                 float time = (blockEntity.getLevel().getGameTime() + pticks);
                                 float percent = (float) Math.sin(time / 100) / 2f + 0.5f;
+                                float percent2 = (float) Math.sin(time / 100 - FDMathUtil.FPI / 8) / 2f + 0.5f;
 
                                 ShapeOnCurveRenderer.start(vertexConsumer)
-                                        .shape(square)
-                                        .lod(30)
+                                        .scalingFunction(v->{
+                                            return (float) Math.sin(v  * FDMathUtil.FPI * 2 * 10 + time / 20f) / 4 + 1f;
+                                        })
+                                        .startPercent(percent2)
+                                        .endPercent(percent)
+                                        .shape(shape)
+                                        .lod(100)
                                         .color(new FDColor(1,0,0,0.25f))
-                                        .startPercent(0)
-                                        .endPercent(0.75f)
                                         .curvePositions(
-                                                new Vector3f(0,0,0),
+                                                new Vector3f(0,10,0),
                                                 new Vector3f(0,3,3),
-                                                new Vector3f(10,-2,0),
-                                                new Vector3f(15,-1,5),
+                                                new Vector3f(10.1f,-2,0),
+                                                new Vector3f(10,-1,5),
                                                 new Vector3f(0,2,10),
-                                                new Vector3f()
+                                                new Vector3f(-2,-4,0)
                                         )
                                         .pose(matrices)
                                         .render();

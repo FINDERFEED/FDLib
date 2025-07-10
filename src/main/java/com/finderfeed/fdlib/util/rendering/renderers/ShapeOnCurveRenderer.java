@@ -16,6 +16,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class ShapeOnCurveRenderer {
 
@@ -25,6 +26,8 @@ public class ShapeOnCurveRenderer {
     private int overlay = OverlayTexture.NO_OVERLAY;
     private int lod = 20;
     private VertexConsumer vertexConsumer;
+
+    private Function<Float, Float> scaleCoefficient = v->1f;
 
     private float startPercent = 0;
     private float endPercent = 1;
@@ -96,6 +99,18 @@ public class ShapeOnCurveRenderer {
         return this;
     }
 
+    public ShapeOnCurveRenderer scalingFunction(Function<Float, Float> scaleCoefficient){
+        this.scaleCoefficient = scaleCoefficient;
+        return this;
+    }
+
+    public ShapeOnCurveRenderer trailScalingFunction(){
+        this.scaleCoefficient = v->{
+            return v;
+        };
+        return this;
+    }
+
     public void render(){
 
         if (startPercent >= endPercent){
@@ -115,9 +130,11 @@ public class ShapeOnCurveRenderer {
 
         double angle = -Math.atan2(between.z,between.x);
 
-        List<Vector3f> rotatedShape = rotateAndTranslatePoints(new Quaternionf(new AxisAngle4d(angle, 0, 1, 0)), new Vector3f(), shape.getPoints());
+        float initScale = this.scaleCoefficient.apply(0f);
 
-        List<Vector3f> previousPoints = rotateAndTranslatePoints(oldRot, splinePoints.getFirst(), rotatedShape);
+        List<Vector3f> rotatedShape = scaleRotateAndTranslatePoints(new Quaternionf(new AxisAngle4d(angle, 0, 1, 0)), new Vector3f(), shape.getPoints(),1f);
+
+        List<Vector3f> previousPoints = scaleRotateAndTranslatePoints(oldRot, splinePoints.getFirst(), rotatedShape,initScale);
 
         int totalShapePoints = shape.getPoints().size();
 
@@ -132,20 +149,51 @@ public class ShapeOnCurveRenderer {
             float p2 = (float) i / (lod - 1);
             float p2prev = (float) (i - 1) / (lod - 1);
 
+            float p2c = p2;
+
+            boolean passedEnd = false;
+            float endPercentU = 1;
+            if (endPercent > p2prev && endPercent < p2){
+                float pdist = p2c - p2prev;
+                float pcdist = endPercent - p2prev;
+                float pl = pcdist / pdist;
+                endPercentU = pl;
+                p2 = endPercent;
+                passedEnd = true;
+            }
+
+
+            float scaleCurrent = this.scaleCoefficient.apply(p2);
+            float scalePrev = this.scaleCoefficient.apply(p2prev);
+
+
             Vector3f point2 = catmullRom(splinePoints, p2);
             Vector3f directionNew = catmullRomDerivative(splinePoints, p2);
 
-            if (!passedStartPercent && startPercent > p2prev && startPercent < p2){
+            float startPercentU = 0;
+            if (!passedStartPercent && startPercent > p2prev && startPercent < p2c){
                 Vector3f b = point2.sub(oldPoint, new Vector3f());
-                float pdist = p2 - p2prev;
+                float pdist = p2c - p2prev;
                 float pcdist = startPercent - p2prev;
                 float pl = pcdist / pdist;
+
+
+                float scaleCurrentc = this.scaleCoefficient.apply(p2c);
+
+                float currentScale = FDMathUtil.lerp(scalePrev,scaleCurrentc,pl);
+
+                rescalePoints(previousPoints, oldPoint, scalePrev, currentScale);
+
+                startPercentU = pl;
                 b.mul(pl);
                 for (Vector3f ppoint : previousPoints){
                     ppoint.add(b);
                 }
+
                 passedStartPercent = true;
             }
+
+
 
 
 
@@ -153,7 +201,13 @@ public class ShapeOnCurveRenderer {
 
             Quaternionf newRot = rotationTowards.mul(oldRot);
 
-            List<Vector3f> nextPoints = rotateAndTranslatePoints(newRot, point2, rotatedShape);
+            if (!newRot.isFinite()){
+                newRot = oldRot;
+            }
+
+
+
+            List<Vector3f> nextPoints = scaleRotateAndTranslatePoints(newRot, point2, rotatedShape, scaleCurrent);
 
             if (passedStartPercent) {
                 for (int g = 0; g < totalShapePoints; g++) {
@@ -170,12 +224,16 @@ public class ShapeOnCurveRenderer {
                     float v1 = (float) g / (totalShapePoints);
                     float v2 = (g + 1f) / (totalShapePoints);
 
-                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(0, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(1, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(1, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(0, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
 
                 }
+            }
+
+            if (passedEnd){
+                break;
             }
 
             previousPoints = nextPoints;
@@ -280,10 +338,16 @@ public class ShapeOnCurveRenderer {
         return FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent);
     }
 
-    private static List<Vector3f> rotateAndTranslatePoints(Quaternionf quaternionf, Vector3f translatePoint, List<Vector3f> points){
+    private static void rescalePoints(List<Vector3f> points, Vector3f translation, float oldScale, float newScale){
+        for (Vector3f point : points){
+            point.sub(translation).mul(newScale/oldScale).add(translation);
+        }
+    }
+
+    private static List<Vector3f> scaleRotateAndTranslatePoints(Quaternionf quaternionf, Vector3f translatePoint, List<Vector3f> points, float scale){
         List<Vector3f> newList = new ArrayList<>();
         for (Vector3f point : points){
-            newList.add(rotatePoint(quaternionf, point).add(translatePoint));
+            newList.add(rotatePoint(quaternionf, point).mul(scale,scale,scale).add(translatePoint));
         }
         return newList;
     }
