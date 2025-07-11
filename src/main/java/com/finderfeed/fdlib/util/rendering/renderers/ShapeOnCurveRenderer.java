@@ -155,7 +155,7 @@ public class ShapeOnCurveRenderer {
 
 
 
-        boolean passedStartPercent = startPercent == 0;
+        boolean passedStartPercent = startPercent <= 0;
 
         for (int i = 1; i < lod; i++) {
 
