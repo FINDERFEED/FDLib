@@ -86,13 +86,15 @@ public class FDClientModEvents {
 //                                );
 
                                 float time = (blockEntity.getLevel().getGameTime() + pticks);
-                                float percent = (float) Math.sin(time / 100) / 2f + 0.5f;
-                                float percent2 = (float) Math.sin(time / 100 - FDMathUtil.FPI / 8) / 2f + 0.5f;
+                                float percent = (float) Math.sin(time / 50) / 2f + 0.5f;
+                                float percent2 = (float) Math.sin(time / 50 - FDMathUtil.FPI / 8) / 2f + 0.5f;
 
                                 ShapeOnCurveRenderer.start(vertexConsumer)
                                         .scalingFunction(v->{
                                             return (float) Math.sin(v  * FDMathUtil.FPI * 2 * 10 + time / 20f) / 4 + 1f;
                                         })
+                                        .uModifier(10)
+                                        .vModifier(2)
                                         .startPercent(percent2)
                                         .endPercent(percent)
                                         .shape(shape)

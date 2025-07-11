@@ -36,6 +36,9 @@ public class ShapeOnCurveRenderer {
 
     private PoseStack matrices;
 
+    private float uModifier = 1f;
+    private float vModifier = 2f;
+
     public static ShapeOnCurveRenderer start(VertexConsumer vertexConsumer){
         return new ShapeOnCurveRenderer(vertexConsumer);
     }
@@ -111,6 +114,16 @@ public class ShapeOnCurveRenderer {
         return this;
     }
 
+    public ShapeOnCurveRenderer uModifier(float mod){
+        this.uModifier = mod;
+        return this;
+    }
+
+    public ShapeOnCurveRenderer vModifier(float mod){
+        this.vModifier = mod;
+        return this;
+    }
+
     public void render(){
 
         if (startPercent >= endPercent){
@@ -152,12 +165,9 @@ public class ShapeOnCurveRenderer {
             float p2c = p2;
 
             boolean passedEnd = false;
-            float endPercentU = 1;
+            float endPercentU = p2;
             if (endPercent > p2prev && endPercent < p2){
-                float pdist = p2c - p2prev;
-                float pcdist = endPercent - p2prev;
-                float pl = pcdist / pdist;
-                endPercentU = pl;
+                endPercentU = endPercent;
                 p2 = endPercent;
                 passedEnd = true;
             }
@@ -170,7 +180,7 @@ public class ShapeOnCurveRenderer {
             Vector3f point2 = catmullRom(splinePoints, p2);
             Vector3f directionNew = catmullRomDerivative(splinePoints, p2);
 
-            float startPercentU = 0;
+            float startPercentU = p2prev;
             if (!passedStartPercent && startPercent > p2prev && startPercent < p2c){
                 Vector3f b = point2.sub(oldPoint, new Vector3f());
                 float pdist = p2c - p2prev;
@@ -184,7 +194,7 @@ public class ShapeOnCurveRenderer {
 
                 rescalePoints(previousPoints, oldPoint, scalePrev, currentScale);
 
-                startPercentU = pl;
+                startPercentU = startPercent;
                 b.mul(pl);
                 for (Vector3f ppoint : previousPoints){
                     ppoint.add(b);
@@ -224,10 +234,10 @@ public class ShapeOnCurveRenderer {
                     float v1 = (float) g / (totalShapePoints);
                     float v2 = (g + 1f) / (totalShapePoints);
 
-                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU, v2).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU, v1).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
 
                 }
             }
