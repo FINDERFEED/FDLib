@@ -13,6 +13,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
@@ -59,7 +60,10 @@ public class BallParticle extends TextureSheetParticle {
     @Override
     public void render(VertexConsumer vertex, Camera camera, float pticks) {
         this.quadSize = FDMathUtil.lerp(quadSizeO,quadSizeC,pticks);
-        super.render(vertex, camera, pticks);
+        for (int i = 0; i < Math.min(options.brightness,30); i++) {
+            //exploiting additive rendering uheeee
+            super.render(vertex, camera, pticks);
+        }
     }
 
     @Override
@@ -121,8 +125,6 @@ public class BallParticle extends TextureSheetParticle {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-
-
 
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);

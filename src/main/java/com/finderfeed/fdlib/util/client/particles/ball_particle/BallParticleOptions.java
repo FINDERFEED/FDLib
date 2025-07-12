@@ -25,8 +25,9 @@ public class BallParticleOptions implements ParticleOptions {
             FDCodecs.COLOR.fieldOf("color").forGetter(v->v.color),
             Codec.FLOAT.fieldOf("friction").forGetter(v->v.friction),
             Codec.BOOL.fieldOf("hasPhysics").forGetter(v->v.hasPhysics),
-            Codec.FLOAT.fieldOf("size").forGetter(v->v.size)
-    ).apply(p,(processor,scaling,color,friction,physics,size)->{
+            Codec.FLOAT.fieldOf("size").forGetter(v->v.size),
+            Codec.INT.fieldOf("brightness").forGetter(v->v.brightness)
+    ).apply(p,(processor,scaling,color,friction,physics,size,brightness)->{
         BallParticleOptions ballParticleOptions = new BallParticleOptions();
         ballParticleOptions.size = size;
         ballParticleOptions.particleProcessor = processor;
@@ -34,25 +35,28 @@ public class BallParticleOptions implements ParticleOptions {
         ballParticleOptions.friction = friction;
         ballParticleOptions.hasPhysics = physics;
         ballParticleOptions.scalingOptions = scaling;
+        ballParticleOptions.brightness = brightness;
         return ballParticleOptions;
     }));
 
     public static final MapCodec<BallParticleOptions> MAP_CODEC = CODEC.fieldOf("options");
 
-    public static final StreamCodec<FriendlyByteBuf,BallParticleOptions> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<FriendlyByteBuf,BallParticleOptions> STREAM_CODEC = FDByteBufCodecs.composite(
             ParticleProcessor.STREAM_CODEC,v->v.particleProcessor,
             AlphaOptions.STREAM_CODEC,v->v.scalingOptions,
             FDByteBufCodecs.COLOR,v->v.color,
             ByteBufCodecs.FLOAT,v->v.friction,
             ByteBufCodecs.BOOL,v->v.hasPhysics,
             ByteBufCodecs.FLOAT,v->v.size,
-            (processor,scaling,color,friction,physics,size)->{
+            ByteBufCodecs.INT,v->v.brightness,
+            (processor,scaling,color,friction,physics,size,brightness)->{
                 BallParticleOptions ballParticleOptions = new BallParticleOptions();
                 ballParticleOptions.size = size;
                 ballParticleOptions.particleProcessor = processor;
                 ballParticleOptions.color = color;
                 ballParticleOptions.friction = friction;
                 ballParticleOptions.hasPhysics = physics;
+                ballParticleOptions.brightness = brightness;
                 ballParticleOptions.scalingOptions = scaling;
                 return ballParticleOptions;
             }
@@ -65,7 +69,7 @@ public class BallParticleOptions implements ParticleOptions {
     public float friction = 1f;
     public boolean hasPhysics = false;
     public float size = 0.25f;
-
+    public int brightness = 1;
 
     public static Builder builder(){
         return new Builder();
@@ -84,6 +88,11 @@ public class BallParticleOptions implements ParticleOptions {
 
         public Builder particleProcessor(ParticleProcessor<?> particleProcessor){
             this.options.particleProcessor = particleProcessor;
+            return this;
+        }
+
+        public Builder brightness(int brightness){
+            this.options.brightness = brightness;
             return this;
         }
 
