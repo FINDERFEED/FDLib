@@ -1,5 +1,7 @@
 package com.finderfeed.fdlib.util.math;
 
+import com.finderfeed.fdlib.FDLibCalls;
+import com.finderfeed.fdlib.data_structures.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -7,6 +9,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FDMathUtil {
@@ -173,72 +176,154 @@ public class FDMathUtil {
         );
     }
 
-    public static Vec3 catmullRom(Vec3[] points,float p){
-        if (p < 0){
-            return points[0];
-        }else if (p >= 1){
-            return points[points.length - 1];
-        }
 
-        float glP = p * (points.length - 1);
-        int id1 = (int)glP;
-        float lp = glP - id1;
-        Vec3 prev = id1 > 0 ? points[id1] : null;
-        Vec3 cur = points[id1];
-        Vec3 next = points[id1 + 1];
-        Vec3 next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
-        return catmullrom(prev,cur,next,next2,lp);
+
+    public static Pair<Float, List<Float>> approximateCatmullromLength(List<Vector3f> catmullromPoints, int stepsCount){
+
+        float fullLength = 0;
+        List<Float> segmentLengths = new ArrayList<>();
+
+        for (int i = 0; i < catmullromPoints.size() - 1; i++){
+            Vector3f p1 = FDLibCalls.getListValueSafe(i - 1, catmullromPoints);
+            Vector3f p2 = FDLibCalls.getListValueSafe(i, catmullromPoints);
+            Vector3f p3 = FDLibCalls.getListValueSafe(i + 1, catmullromPoints);
+            Vector3f p4 = FDLibCalls.getListValueSafe(i + 2, catmullromPoints);
+            float step = 1f / stepsCount;
+            float l = 0;
+            for (float p = 0; p < 1; p += step){
+                Vector3f point1 = FDMathUtil.catmullrom(p1,p2,p3,p4,p);
+                Vector3f point2 = FDMathUtil.catmullrom(p1,p2,p3,p4,p + step);
+                Vector3f b = point2.sub(point1);
+                l += b.length();
+            }
+            segmentLengths.add(l);
+            fullLength += l;
+        }
+        return new Pair<>(fullLength, segmentLengths);
     }
 
-    public static Vector3f catmullRom(Vector3f[] points,float p){
-        if (p < 0){
-            return new Vector3f(points[0]);
-        }else if (p >= 1){
-            return new Vector3f(points[points.length - 1]);
+    private static Vector3f catmullRom(List<Vector3f> points, float p){
+
+        var lengths = approximateCatmullromLength(points,1);
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
         }
 
-        float glP = p * (points.length - 1);
-        int id1 = (int)glP;
-        float lp = glP - id1;
-        Vector3f prev = id1 > 0 ? points[id1] : null;
-        Vector3f cur = points[id1];
-        Vector3f next = points[id1 + 1];
-        Vector3f next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
-        return catmullrom(prev,cur,next,next2,lp);
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return FDMathUtil.catmullrom(p1,p2,p3,p4,segmentPercent);
     }
 
-    public static Vector3f catmullRomDerivative(Vector3f[] points,float p){
-        if (p < 0){
-            return new Vector3f(points[0]);
-        }else if (p >= 1){
-            return new Vector3f(points[points.length - 1]);
+    private static Vector3f catmullRomDerivative(List<Vector3f> points, float p){
+
+        var lengths = approximateCatmullromLength(points,1);
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
         }
 
-        float glP = p * (points.length - 1);
-        int id1 = (int)glP;
-        float lp = glP - id1;
-        Vector3f prev = id1 > 0 ? points[id1] : null;
-        Vector3f cur = points[id1];
-        Vector3f next = points[id1 + 1];
-        Vector3f next2 = id1 < points.length - 2 ? points[id1 + 2] : null;
-        return catmullromDerivative(prev,cur,next,next2,lp);
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent);
     }
 
-    public static Vector3f catmullromDerivative(List<Vector3f> points,float p){
-        if (p < 0){
-            return new Vector3f(points.get(0));
-        }else if (p >= 1){
-            return new Vector3f(points.get(points.size() - 1));
+    private static Vector3f catmullRomPrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
         }
 
-        float glP = p * (points.size() - 1);
-        int id1 = (int)glP;
-        float lp = glP - id1;
-        Vector3f prev = id1 > 0 ? points.get(id1) : null;
-        Vector3f cur = points.get(id1);
-        Vector3f next = points.get(id1 + 1);
-        Vector3f next2 = id1 < points.size() - 2 ? points.get(id1 + 2) : null;
-        return catmullromDerivative(prev,cur,next,next2,lp);
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return FDMathUtil.catmullrom(p1,p2,p3,p4,segmentPercent);
+    }
+
+    private static Vector3f catmullRomDerivativePrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
+        }
+
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent);
     }
 
 
@@ -254,40 +339,6 @@ public class FDMathUtil {
         Vec3 cur = points.get(id1);
         Vec3 next = points.get(id1 + 1);
         return interpolateVectors(cur,next,lp);
-    }
-
-    public static Vec3 catmullRom(List<Vec3> points, float p){
-        if (p < 0){
-            return points.getFirst();
-        }else if (p >= 1){
-            return points.getLast();
-        }
-
-        float glP = p * (points.size() - 1);
-        int id1 = (int)glP;
-        float lp = glP - id1;
-        Vec3 prev = id1 > 0 ? points.get(id1) : null;
-        Vec3 cur = points.get(id1);
-        Vec3 next = points.get(id1 + 1);
-        Vec3 next2 = id1 < points.size() - 2 ? points.get(id1 + 2) : null;
-        return catmullrom(prev,cur,next,next2,lp);
-    }
-
-    public static Vec3 catmullRomDerivative(List<Vec3> points, float p){
-        if (p < 0){
-            return points.getFirst();
-        }else if (p >= 1){
-            return points.getLast();
-        }
-
-        float glP = p * (points.size() - 1);
-        int id1 = (int)glP;
-        float lp = glP - id1;
-        Vec3 prev = id1 > 0 ? points.get(id1) : null;
-        Vec3 cur = points.get(id1);
-        Vec3 next = points.get(id1 + 1);
-        Vec3 next2 = id1 < points.size() - 2 ? points.get(id1 + 2) : null;
-        return catmullromDerivative(prev,cur,next,next2,lp);
     }
 
     //"Safe" version of catmullrom that computes previous and "after" next points if they are null.

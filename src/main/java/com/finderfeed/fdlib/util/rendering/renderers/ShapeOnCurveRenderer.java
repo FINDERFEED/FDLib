@@ -132,8 +132,9 @@ public class ShapeOnCurveRenderer {
 
         matrices.pushPose();
 
+        var precomputedLengths = approximateCatmullromLength(splinePoints, 2);
 
-        Vector3f between = FDMathUtil.catmullromDerivative(splinePoints, 0);
+        Vector3f between = catmullRomDerivativePrecomputedLengths(splinePoints, 0, precomputedLengths);
 
         Vector3f oldPoint = splinePoints.getFirst();
 
@@ -153,6 +154,9 @@ public class ShapeOnCurveRenderer {
 
         Matrix4f mt = matrices.last().pose();
 
+
+        List<Vector3f> shapeCache = new ArrayList<>();
+        List<Vector3f> shapeCache2 = new ArrayList<>();
 
 
         boolean passedStartPercent = startPercent <= 0;
@@ -177,8 +181,12 @@ public class ShapeOnCurveRenderer {
             float scalePrev = this.scaleCoefficient.apply(p2prev);
 
 
-            Vector3f point2 = catmullRom(splinePoints, p2);
-            Vector3f directionNew = catmullRomDerivative(splinePoints, p2);
+            var pair = catmullRomAndDerivativePrecomputedLengths(splinePoints, p2, precomputedLengths);
+
+            Vector3f point2 = pair.first;
+            Vector3f directionNew = pair.second;
+
+
 
             float startPercentU = p2prev;
             if (!passedStartPercent && startPercent > p2prev && startPercent < p2c){
@@ -217,7 +225,7 @@ public class ShapeOnCurveRenderer {
 
 
 
-            List<Vector3f> nextPoints = scaleRotateAndTranslatePoints(newRot, point2, rotatedShape, scaleCurrent);
+            List<Vector3f> nextPoints = scaleRotateAndTranslatePointsToCache(newRot, point2, rotatedShape, scaleCurrent, i % 2 == 0 ? shapeCache : shapeCache2);
 
             if (passedStartPercent) {
                 for (int g = 0; g < totalShapePoints; g++) {
@@ -286,7 +294,7 @@ public class ShapeOnCurveRenderer {
 
     private static Vector3f catmullRom(List<Vector3f> points, float p){
 
-        var lengths = approximateCatmullromLength(points,5);
+        var lengths = approximateCatmullromLength(points,1);
 
         int segmentId = 0;
         float segmentPercent = 0;
@@ -318,7 +326,7 @@ public class ShapeOnCurveRenderer {
 
     private static Vector3f catmullRomDerivative(List<Vector3f> points, float p){
 
-        var lengths = approximateCatmullromLength(points,5);
+        var lengths = approximateCatmullromLength(points,1);
 
         int segmentId = 0;
         float segmentPercent = 0;
@@ -348,6 +356,96 @@ public class ShapeOnCurveRenderer {
         return FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent);
     }
 
+    private static Vector3f catmullRomPrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
+        }
+
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return FDMathUtil.catmullrom(p1,p2,p3,p4,segmentPercent);
+    }
+
+    private static Vector3f catmullRomDerivativePrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
+        }
+
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent);
+    }
+
+    private static Pair<Vector3f, Vector3f> catmullRomAndDerivativePrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+
+        int segmentId = 0;
+        float segmentPercent = 0;
+
+        float fullLength = lengths.first;
+        var segmentLengths = lengths.second;
+
+        float accumulatedPercent = 0;
+
+        for (float segmentLength : segmentLengths){
+            float lengthPercent = segmentLength / fullLength;
+            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+                float local = p - accumulatedPercent;
+                segmentPercent = local / lengthPercent;
+                break;
+            }else{
+                accumulatedPercent += lengthPercent;
+                segmentId++;
+            }
+        }
+
+        Vector3f p1 = FDLibCalls.getListValueSafe(segmentId - 1, points);
+        Vector3f p2 = FDLibCalls.getListValueSafe(segmentId, points);
+        Vector3f p3 = FDLibCalls.getListValueSafe(segmentId + 1, points);
+        Vector3f p4 = FDLibCalls.getListValueSafe(segmentId + 2, points);
+
+        return new Pair<>(FDMathUtil.catmullrom(p1,p2,p3,p4,segmentPercent), FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent));
+    }
+
     private static void rescalePoints(List<Vector3f> points, Vector3f translation, float oldScale, float newScale){
         for (Vector3f point : points){
             point.sub(translation).mul(newScale/oldScale).add(translation);
@@ -356,6 +454,14 @@ public class ShapeOnCurveRenderer {
 
     private static List<Vector3f> scaleRotateAndTranslatePoints(Quaternionf quaternionf, Vector3f translatePoint, List<Vector3f> points, float scale){
         List<Vector3f> newList = new ArrayList<>();
+        for (Vector3f point : points){
+            newList.add(rotatePoint(quaternionf, point).mul(scale,scale,scale).add(translatePoint));
+        }
+        return newList;
+    }
+
+    private static List<Vector3f> scaleRotateAndTranslatePointsToCache(Quaternionf quaternionf, Vector3f translatePoint, List<Vector3f> points, float scale, List<Vector3f> newList){
+        newList.clear();
         for (Vector3f point : points){
             newList.add(rotatePoint(quaternionf, point).mul(scale,scale,scale).add(translatePoint));
         }

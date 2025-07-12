@@ -75,7 +75,7 @@ public class FDClientModEvents {
                                 VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutoutNoCull(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
 //                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 
-                                FD2DShape shape = FD2DShape.createSimpleCircleNVertexShape(1f, 5);
+                                FD2DShape shape = FD2DShape.createSimpleCircleNVertexShape(1f, 4);
 
 //                                FDRenderUtil.renderShapeOnCatmullromSpline(square, matrices, vertexConsumer, new FDColor(1,0,0,1), light, 10,
 //                                        new Vector3f(),
@@ -89,27 +89,47 @@ public class FDClientModEvents {
                                 float percent = (float) Math.sin(time / 50) / 2f + 0.5f;
                                 float percent2 = (float) Math.sin(time / 50 - FDMathUtil.FPI / 8) / 2f + 0.5f;
 
-                                ShapeOnCurveRenderer.start(vertexConsumer)
-                                        .scalingFunction(v->{
-                                            return (float) Math.sin(v  * FDMathUtil.FPI * 2 * 10 + time / 20f) / 4 + 1f;
-                                        })
-                                        .uModifier(10)
-                                        .vModifier(2)
-                                        .startPercent(percent2)
-                                        .endPercent(percent)
-                                        .shape(shape)
-                                        .lod(100)
-                                        .color(new FDColor(1,0,0,0.25f))
-                                        .curvePositions(
-                                                new Vector3f(0,10,0),
-                                                new Vector3f(0,3,3),
-                                                new Vector3f(10.1f,-2,0),
-                                                new Vector3f(10,-1,5),
-                                                new Vector3f(0,2,10),
-                                                new Vector3f(-2,-4,0)
-                                        )
-                                        .pose(matrices)
-                                        .render();
+                                if (false) {
+                                    ShapeOnCurveRenderer.start(vertexConsumer)
+                                            .scalingFunction(v -> {
+                                                return (float) Math.sin(v * FDMathUtil.FPI * 2 * 10 + time / 20f) / 4 + 1f;
+                                            })
+                                            .uModifier(10)
+                                            .vModifier(2)
+                                            .shape(shape)
+                                            .lod(50)
+                                            .color(new FDColor(1, 0, 0, 0.25f))
+                                            .curvePositions(
+                                                    new Vector3f(0, 10, 0),
+                                                    new Vector3f(0, 3, 3),
+                                                    new Vector3f(10.1f, -2, 0),
+                                                    new Vector3f(10, -1, 5),
+                                                    new Vector3f(0, 2, 10),
+                                                    new Vector3f(-2, -4, 0)
+                                            )
+                                            .pose(matrices)
+                                            .render();
+                                }
+
+                                for (int i = 0; i < 200;i++){
+
+                                    ShapeOnCurveRenderer.start(vertexConsumer)
+                                            .uModifier(10)
+                                            .vModifier(2)
+                                            .shape(shape)
+                                            .lod(25)
+                                            .color(new FDColor(1,0,0,0.25f))
+                                            .curvePositions(
+                                                    new Vector3f(0,10,0),
+                                                    new Vector3f(0,3,3),
+                                                    new Vector3f(10.1f,-2,0),
+                                                    new Vector3f(10,-1,5),
+                                                    new Vector3f(0,2,10),
+                                                    new Vector3f(-2,-4,0)
+                                            )
+                                            .pose(matrices)
+                                            .render();
+                                }
 
 //                                Vector3f dir1 = new Vector3f(0.5f,0.5f,0);
 //                                Vector3f dir2 = new Vector3f(-0.25f,0.5f,0);
