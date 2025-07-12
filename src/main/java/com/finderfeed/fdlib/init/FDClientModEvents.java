@@ -72,7 +72,7 @@ public class FDClientModEvents {
 
                             .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
 
-                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.entityCutoutNoCull(ResourceLocation.withDefaultNamespace("textures/block/magma.png")));
+                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 //                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 
                                 FD2DShape shape = FD2DShape.createSimpleCircleNVertexShape(1f, 4);
@@ -111,14 +111,15 @@ public class FDClientModEvents {
                                             .render();
                                 }
 
-                                for (int i = 0; i < 200;i++){
+                                for (int i = 0; i < 1;i++){
 
                                     ShapeOnCurveRenderer.start(vertexConsumer)
                                             .uModifier(10)
                                             .vModifier(2)
                                             .shape(shape)
                                             .lod(25)
-                                            .color(new FDColor(1,0,0,0.25f))
+                                            .startColor(new FDColor(1,0,0,0.25f))
+                                            .endColor(new FDColor(0,1,0,0.25f))
                                             .curvePositions(
                                                     new Vector3f(0,10,0),
                                                     new Vector3f(0,3,3),

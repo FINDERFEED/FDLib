@@ -32,7 +32,8 @@ public class ShapeOnCurveRenderer {
     private float startPercent = 0;
     private float endPercent = 1;
 
-    private FDColor color = new FDColor(1,1,1,1);
+    private FDColor startColor = new FDColor(1,1,1,1);
+    private FDColor endColor = new FDColor(1,1,1,1);
 
     private PoseStack matrices;
 
@@ -53,14 +54,29 @@ public class ShapeOnCurveRenderer {
     }
 
     public ShapeOnCurveRenderer color(float r, float g, float b, float a){
-        this.color = new FDColor(r,g,b,a);
+        this.startColor = new FDColor(r,g,b,a);
+        this.endColor = new FDColor(r,g,b,a);
         return this;
     }
 
     public ShapeOnCurveRenderer color(FDColor color){
-        this.color = color;
+        this.startColor = color;
+        this.endColor = color;
         return this;
     }
+
+
+    public ShapeOnCurveRenderer startColor(FDColor color){
+        this.startColor = color;
+        return this;
+    }
+
+    public ShapeOnCurveRenderer endColor(FDColor color){
+        this.endColor = color;
+        return this;
+    }
+
+
 
     public ShapeOnCurveRenderer pose(PoseStack matrices){
         this.matrices = matrices;
@@ -242,10 +258,19 @@ public class ShapeOnCurveRenderer {
                     float v1 = (float) g / (totalShapePoints);
                     float v2 = (g + 1f) / (totalShapePoints);
 
-                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(color.r, color.g, color.b, color.a).setUv(endPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(color.r, color.g, color.b, color.a).setUv(startPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    float rc1 = FDMathUtil.lerp(startColor.r,endColor.r,p2prev);
+                    float rc2 = FDMathUtil.lerp(startColor.r,endColor.r,p2);
+                    float gc1 = FDMathUtil.lerp(startColor.g,endColor.g,p2prev);
+                    float gc2 = FDMathUtil.lerp(startColor.g,endColor.g,p2);
+                    float bc1 = FDMathUtil.lerp(startColor.b,endColor.b,p2prev);
+                    float bc2 = FDMathUtil.lerp(startColor.b,endColor.b,p2);
+                    float ac1 = FDMathUtil.lerp(startColor.a,endColor.a,p2prev);
+                    float ac2 = FDMathUtil.lerp(startColor.a,endColor.a,p2);
+
+                    vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(rc1,gc1,bc1,ac1).setUv(startPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(rc2,gc2,bc2,ac2).setUv(endPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(rc2,gc2,bc2,ac2).setUv(endPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                    vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(rc1,gc1,bc1,ac1).setUv(startPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
 
                 }
             }
