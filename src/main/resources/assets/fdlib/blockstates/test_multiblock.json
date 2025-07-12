@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "main_block=true": { "model": "minecraft:block/obsidian" },
+    "main_block=false": { "model": "minecraft:block/stone" }
+  }
+}

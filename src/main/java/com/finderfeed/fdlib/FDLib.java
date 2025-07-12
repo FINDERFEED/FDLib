@@ -26,6 +26,7 @@ public class FDLib {
     }
 
     public FDLib(IEventBus bus, ModContainer modContainer) {
+        FDItems.ITEMS.register(bus);
         FDBlocks.BLOCKS.register(bus);
         FDModels.MODELS.register(bus);
         FDConfigs.CONFIGS.register(bus);
