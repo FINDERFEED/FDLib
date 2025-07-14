@@ -219,11 +219,9 @@ public class ShapeOnCurveRenderer {
                 float pl = pcdist / pdist;
 
 
-                float scaleCurrentc = this.scaleCoefficient.apply(p2c);
+                float scaleCurrentc = this.scaleCoefficient.apply(startPercent);
 
-                float currentScale = FDMathUtil.lerp(scalePrev,scaleCurrentc,pl);
-
-                rescalePoints(previousPoints, oldPoint, scalePrev, currentScale);
+                rescalePoints(previousPoints, oldPoint, scalePrev, scaleCurrentc);
 
                 startPercentU = startPercent;
                 b.mul(pl);
@@ -480,8 +478,16 @@ public class ShapeOnCurveRenderer {
     }
 
     private static void rescalePoints(List<Vector3f> points, Vector3f translation, float oldScale, float newScale){
+
+        float scaleFactor;
+        if (oldScale != 0){
+            scaleFactor = newScale / oldScale;
+        }else{
+            scaleFactor = newScale;
+        }
+
         for (Vector3f point : points){
-            point.sub(translation).mul(newScale/oldScale).add(translation);
+            point.sub(translation).mul(scaleFactor).add(translation);
         }
     }
 
