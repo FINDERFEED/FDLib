@@ -3,20 +3,17 @@ package com.finderfeed.fdlib.systems.entity.action_chain;
 import net.minecraft.util.random.Weight;
 import net.minecraft.util.random.WeightedEntry;
 
-public class AttackDefinition implements WeightedEntry {
+public class AttackDefinition {
 
     private String name;
     private AttackOptions attack;
-    protected int weight;
 
-    protected AttackDefinition(String name, int weight){
+    protected AttackDefinition(String name){
         this.name = name;
-        this.weight = weight;
     }
 
-    protected AttackDefinition(AttackOptions attack, int weight){
+    protected AttackDefinition(AttackOptions attack){
         this.attack = attack;
-        this.weight = weight;
     }
 
     public String getExecutorName() {
@@ -27,8 +24,4 @@ public class AttackDefinition implements WeightedEntry {
         return this.attack;
     }
 
-    @Override
-    public Weight getWeight() {
-        return Weight.of(this.weight);
-    }
 }

@@ -162,20 +162,24 @@ public class AttackChain {
 
     private void addOptionsToQueue(AttackOptions options){
 
-        AttackOptions pre = options.getPreAttackOptions();
+        AttackOptions<?> pre = options.getPreAttackOptions();
         if (pre != null){
             this.addOptionsToQueue(pre);
         }
 
-        AttackOptions next = options;
+        AttackOptions<?> next = options;
         while (next != null){
 
-            AttackDefinition definition = next.getAttack(source);
-            if (definition.getExecutorName() != null) {
-                this.chain.offer(definition.getExecutorName());
-            }else{
-                this.addOptionsToQueue(definition.getOptions());
+            Collection<? extends AttackDefinition> definitions = next.getAttacks(source);
+
+            for (var definition : definitions) {
+                if (definition.getExecutorName() != null) {
+                    this.chain.offer(definition.getExecutorName());
+                } else {
+                    this.addOptionsToQueue(definition.getOptions());
+                }
             }
+
             next = next.getNextAttackOptions();
         }
     }
