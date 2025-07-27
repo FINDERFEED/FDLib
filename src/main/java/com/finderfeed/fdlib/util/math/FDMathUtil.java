@@ -216,7 +216,7 @@ public class FDMathUtil {
 
         for (float segmentLength : segmentLengths){
             float lengthPercent = segmentLength / fullLength;
-            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+            if (p >= accumulatedPercent && p <= accumulatedPercent + lengthPercent){
                 float local = p - accumulatedPercent;
                 segmentPercent = local / lengthPercent;
                 break;
@@ -248,7 +248,7 @@ public class FDMathUtil {
 
         for (float segmentLength : segmentLengths){
             float lengthPercent = segmentLength / fullLength;
-            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+            if (p >= accumulatedPercent && p <= accumulatedPercent + lengthPercent){
                 float local = p - accumulatedPercent;
                 segmentPercent = local / lengthPercent;
                 break;
@@ -278,7 +278,7 @@ public class FDMathUtil {
 
         for (float segmentLength : segmentLengths){
             float lengthPercent = segmentLength / fullLength;
-            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+            if (p >= accumulatedPercent && p <= accumulatedPercent + lengthPercent){
                 float local = p - accumulatedPercent;
                 segmentPercent = local / lengthPercent;
                 break;
@@ -308,7 +308,7 @@ public class FDMathUtil {
 
         for (float segmentLength : segmentLengths){
             float lengthPercent = segmentLength / fullLength;
-            if (p > accumulatedPercent && p <= accumulatedPercent + lengthPercent){
+            if (p >= accumulatedPercent && p <= accumulatedPercent + lengthPercent){
                 float local = p - accumulatedPercent;
                 segmentPercent = local / lengthPercent;
                 break;
