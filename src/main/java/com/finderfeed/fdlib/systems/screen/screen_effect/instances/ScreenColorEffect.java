@@ -25,7 +25,6 @@ public class ScreenColorEffect extends ScreenEffect<ScreenColorData> {
         }else if (this.isOutTime(currentTick)){
             p = 1 - this.getOutTimePercent(currentTick,pticks);
         }
-        System.out.println(p);
         FDRenderUtil.fill(graphics.pose(),0,0,screenWidth,screenHeight,colorData.r,colorData.g,colorData.b,colorData.a * p);
     }
 }
