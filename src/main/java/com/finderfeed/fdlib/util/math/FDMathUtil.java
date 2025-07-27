@@ -202,7 +202,7 @@ public class FDMathUtil {
         return new Pair<>(fullLength, segmentLengths);
     }
 
-    private static Vector3f catmullRom(List<Vector3f> points, float p){
+    public static Vector3f catmullRom(List<Vector3f> points, float p){
 
         var lengths = approximateCatmullromLength(points,1);
 
@@ -234,7 +234,7 @@ public class FDMathUtil {
         return FDMathUtil.catmullrom(p1,p2,p3,p4,segmentPercent);
     }
 
-    private static Vector3f catmullRomDerivative(List<Vector3f> points, float p){
+    public static Vector3f catmullRomDerivative(List<Vector3f> points, float p){
 
         var lengths = approximateCatmullromLength(points,1);
 
@@ -266,7 +266,7 @@ public class FDMathUtil {
         return FDMathUtil.catmullromDerivative(p1,p2,p3,p4,segmentPercent);
     }
 
-    private static Vector3f catmullRomPrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+    public static Vector3f catmullRomPrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
 
         int segmentId = 0;
         float segmentPercent = 0;
@@ -296,7 +296,7 @@ public class FDMathUtil {
         return FDMathUtil.catmullrom(p1,p2,p3,p4,segmentPercent);
     }
 
-    private static Vector3f catmullRomDerivativePrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
+    public static Vector3f catmullRomDerivativePrecomputedLengths(List<Vector3f> points, float p, Pair<Float, List<Float>> lengths){
 
         int segmentId = 0;
         float segmentPercent = 0;
@@ -427,7 +427,7 @@ public class FDMathUtil {
         );
     }
 
-    private static float bernstein(float x1,float x2,float x3,float x4,float t){
+    public static float bernstein(float x1,float x2,float x3,float x4,float t){
         float t3 = (float) Math.pow(t,3);
         float t2 = (float) Math.pow(t,2);
         return x1 * (-t3 + 3*t2 - 3*t  + 1) +
@@ -436,7 +436,7 @@ public class FDMathUtil {
                 x4 * t3;
     }
 
-    private static float bernsteinDerivative(float x1,float x2,float x3,float x4,float t){
+    public static float bernsteinDerivative(float x1,float x2,float x3,float x4,float t){
         float t2 = (float) Math.pow(t,2);
         return x1 * (-3*t2 + 6*t - 3) +
                 x2 * (9*t2 - 12*t + 3) +
@@ -444,7 +444,7 @@ public class FDMathUtil {
                 x4 * 3 * t2;
     }
 
-    private static double bernstein(double x1,double x2,double x3,double x4,double t){
+    public static double bernstein(double x1,double x2,double x3,double x4,double t){
         double t3 = Math.pow(t,3);
         double t2 = Math.pow(t,2);
         return x1 * (-t3 + 3*t2 - 3*t  + 1) +
@@ -453,7 +453,7 @@ public class FDMathUtil {
                 x4 * t3;
     }
 
-    private static double bernsteinDerivative(double x1,double x2,double x3,double x4,double t){
+    public static double bernsteinDerivative(double x1,double x2,double x3,double x4,double t){
         float t2 = (float) Math.pow(t,2);
         return x1 * (-3*t2 + 6*t - 3) +
                 x2 * (9*t2 - 12*t + 3) +
