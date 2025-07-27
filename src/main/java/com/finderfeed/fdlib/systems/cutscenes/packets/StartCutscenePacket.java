@@ -14,11 +14,8 @@ public class StartCutscenePacket extends FDPacket {
 
     private CutsceneData data;
 
-    public StartCutscenePacket(FriendlyByteBuf buf){
-        CompoundTag tag = buf.readNbt();
-        CutsceneData d = new CutsceneData();
-        d.autoLoad(tag);
-        this.data = d;
+    public StartCutscenePacket(RegistryFriendlyByteBuf buf){
+        this.data = CutsceneData.decode(buf);
     }
 
     public StartCutscenePacket(CutsceneData data){
@@ -27,9 +24,7 @@ public class StartCutscenePacket extends FDPacket {
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        CompoundTag tag = new CompoundTag();
-        data.autoSave(tag);
-        buf.writeNbt(tag);
+        this.data.encode(buf);
     }
 
     @Override

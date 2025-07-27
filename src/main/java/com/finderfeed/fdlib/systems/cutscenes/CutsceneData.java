@@ -1,10 +1,17 @@
 package com.finderfeed.fdlib.systems.cutscenes;
 
+import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.nbt.AutoSerializable;
 import com.finderfeed.fdlib.nbt.SerializableField;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffect;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CutsceneData implements AutoSerializable {
@@ -25,6 +32,11 @@ public class CutsceneData implements AutoSerializable {
 
     @SerializableField
     private StopMode stopMode = StopMode.AUTOMATIC;
+
+    @SerializableField
+    private CutsceneData nextCutscene;
+
+    private CutsceneScreenEffectData screenEffectData;
 
     // Cutscenes do not load chunks! Use them near player!
     public CutsceneData(){}
@@ -71,6 +83,16 @@ public class CutsceneData implements AutoSerializable {
         return this;
     }
 
+    public CutsceneData nextCutscene(CutsceneData next){
+        this.nextCutscene = next;
+        return this;
+    }
+
+    public <A extends ScreenEffectData,B extends ScreenEffect<A>> CutsceneData addScreenEffect(int tick, ScreenEffectType<A,B> type, A screenEffectData, int inTime, int stayTime, int outTime){
+        this.screenEffectData.putScreenEffectOnTick(tick, type, screenEffectData, inTime, stayTime, outTime);
+        return this;
+    }
+
     public CurveType getMoveType() {
         return moveType;
     }
@@ -95,10 +117,46 @@ public class CutsceneData implements AutoSerializable {
         return stopMode;
     }
 
+    public CutsceneData getNextCutscene() {
+        return nextCutscene;
+    }
+
+    public CutsceneScreenEffectData getScreenEffectData() {
+        return screenEffectData;
+    }
+
     public static CutsceneData create(){
         return new CutsceneData();
     }
 
+    public void encode(RegistryFriendlyByteBuf buf){
+        CompoundTag c = new CompoundTag();
+        this.autoSave(c);
+        buf.writeNbt(c);
+
+        buf.writeBoolean(this.nextCutscene != null);
+
+        if (this.nextCutscene != null){
+            this.nextCutscene.encode(buf);
+        }
+
+        this.screenEffectData.encode(buf);
+
+    }
+
+
+    public static CutsceneData decode(RegistryFriendlyByteBuf buf){
+        CutsceneData cutsceneData1 = new CutsceneData();
+        cutsceneData1.autoLoad(buf.readNbt());
+
+        if (buf.readBoolean()){
+            cutsceneData1.nextCutscene = CutsceneData.decode(buf);
+        }
+
+        cutsceneData1.screenEffectData = CutsceneScreenEffectData.decode(buf);
+
+        return cutsceneData1;
+    }
 
     @Override
     public void autoLoad(CompoundTag tag) {

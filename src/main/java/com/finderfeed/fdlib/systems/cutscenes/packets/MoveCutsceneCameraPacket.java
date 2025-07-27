@@ -21,17 +21,13 @@ public class MoveCutsceneCameraPacket extends FDPacket {
         this.cutsceneData = cutsceneData;
     }
 
-    public MoveCutsceneCameraPacket(FriendlyByteBuf buf){
-        CutsceneData cutsceneData1 = new CutsceneData();
-        cutsceneData1.autoLoad(buf.readNbt());
-        this.cutsceneData = cutsceneData1;
+    public MoveCutsceneCameraPacket(RegistryFriendlyByteBuf buf){
+        this.cutsceneData = CutsceneData.decode(buf);
     }
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        CompoundTag c = new CompoundTag();
-        cutsceneData.autoSave(c);
-        buf.writeNbt(c);
+        this.cutsceneData.encode(buf);
     }
 
     @Override
@@ -43,4 +39,5 @@ public class MoveCutsceneCameraPacket extends FDPacket {
     public void serverAction(IPayloadContext context) {
 
     }
+
 }

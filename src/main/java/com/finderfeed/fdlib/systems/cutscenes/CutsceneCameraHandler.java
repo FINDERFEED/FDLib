@@ -74,9 +74,13 @@ public class CutsceneCameraHandler {
         }
         ensurePlayerIsACamera();
         cutsceneExecutor.tick(clientCameraEntity);
-        if (cutsceneExecutor.hasEnded() && cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC) {
-            stopCutscene();
+        if (cutsceneExecutor.hasEnded()) {
+            var nextCutscene = cutsceneExecutor.getData().getNextCutscene();
 
+
+            if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC) {
+                stopCutscene();
+            }
         }
 
     }

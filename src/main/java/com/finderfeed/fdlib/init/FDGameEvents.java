@@ -48,6 +48,13 @@ public class FDGameEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void testCutscenes(PlayerTickEvent.Pre event){
+
+
+
+    }
+
 //    @SubscribeEvent
 //    public static void test(InputEvent.Key event){
 //        if (event.getKey() == GLFW.GLFW_KEY_J){

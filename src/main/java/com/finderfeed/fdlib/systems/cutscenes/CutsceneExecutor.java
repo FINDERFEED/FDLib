@@ -2,8 +2,14 @@ package com.finderfeed.fdlib.systems.cutscenes;
 
 import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import com.finderfeed.fdlib.systems.cutscenes.camera_motion.*;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffect;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectOverlay;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 public class CutsceneExecutor {
 
@@ -31,16 +37,33 @@ public class CutsceneExecutor {
         camera.yo = camera.getY();
         camera.zo = camera.getZ();
 
-        if (currentTime >= data.getCutsceneTime()){
+        if (currentTime > data.getCutsceneTime()){
             return true;
         }
+
+        List<CutsceneScreenEffectData.ScreenEffectInstance<?, ?>> effects = data.getScreenEffectData().getAllEffectsOnTick(currentTime);
+
+        for (var effect : effects){
+            var data = effect.data();
+            var type = effect.type();
+            var screenEffect = this.useScreenEffectFactory(type,data,effect.inTime(),effect.stayTime(),effect.outTime());
+            ScreenEffectOverlay.addScreenEffect(screenEffect);
+        }
+
 
         Vec3 newPos = this.getCameraPos();
 
         camera.setPos(newPos);
 
         currentTime = Mth.clamp(currentTime + 1,0,data.getCutsceneTime());
+
         return false;
+    }
+
+    private <A extends ScreenEffectData, B extends ScreenEffect<A>> ScreenEffect<A> useScreenEffectFactory(ScreenEffectType<A,B> screenEffectType, ScreenEffectData data, int inTime, int stayTime, int outTime){
+        var factory = screenEffectType.factory;
+        var effect = factory.create((A) data, inTime, outTime, stayTime);
+        return effect;
     }
 
     public Vec3 getCameraPos(){
