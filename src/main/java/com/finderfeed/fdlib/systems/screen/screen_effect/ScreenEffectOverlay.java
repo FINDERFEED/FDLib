@@ -32,6 +32,9 @@ public class ScreenEffectOverlay implements LayeredDraw.Layer {
 
     @SubscribeEvent
     public static void tickEvent(ClientTickEvent.Post event){
+
+        if (Minecraft.getInstance().isPaused()) return;
+
         Iterator<ScreenEffectInstance> screenEffectInstanceIterator = screenEffects.iterator();
         while (screenEffectInstanceIterator.hasNext()){
             ScreenEffectInstance instance = screenEffectInstanceIterator.next();

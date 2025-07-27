@@ -51,6 +51,8 @@ public class CutsceneCameraHandler {
     public static void tickEvent(ClientTickEvent.Pre event){
         LocalPlayer player = Minecraft.getInstance().player;
 
+        if (Minecraft.getInstance().isPaused()) return;
+
         if (player == null){
             stopCutscene();
             return;
