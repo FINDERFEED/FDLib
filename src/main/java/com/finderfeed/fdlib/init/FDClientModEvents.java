@@ -8,6 +8,7 @@ import com.finderfeed.fdlib.systems.render_types.FDRenderType;
 import com.finderfeed.fdlib.systems.shapes.FD2DShape;
 import com.finderfeed.fdlib.test.FDTestBlockEntity;
 import com.finderfeed.fdlib.util.FDColor;
+import com.finderfeed.fdlib.util.client.NullEntityRenderer;
 import com.finderfeed.fdlib.util.client.particles.FDTerrainParticle;
 import com.finderfeed.fdlib.util.client.particles.InvisibleParticle;
 import com.finderfeed.fdlib.util.client.particles.ball_particle.BallParticle;
@@ -32,6 +33,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -63,6 +65,11 @@ public class FDClientModEvents {
         event.registerSpriteSet(FDParticles.BALL_PARTICLE.get(),BallParticle.Factory::new);
         event.registerSpecial(FDParticles.LIGHTNING_PARTICLE.get(), new LightningParticle.Factory());
         event.registerSpecial(FDParticles.TERRAIN_PARTICLE.get(), new FDTerrainParticle.Provider());
+    }
+
+    @SubscribeEvent
+    public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event){
+        event.registerEntityRenderer(FDEntities.CLIENT_CAMERA.get(), NullEntityRenderer::new);
     }
 
     @SubscribeEvent

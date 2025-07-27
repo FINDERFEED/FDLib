@@ -41,13 +41,8 @@ public class CutsceneExecutor {
             return true;
         }
 
-        List<CutsceneScreenEffectData.ScreenEffectInstance<?, ?>> effects = data.getScreenEffectData().getAllEffectsOnTick(currentTime);
-
-        for (var effect : effects){
-            var data = effect.data();
-            var type = effect.type();
-            var screenEffect = this.useScreenEffectFactory(type,data,effect.inTime(),effect.stayTime(),effect.outTime());
-            ScreenEffectOverlay.addScreenEffect(screenEffect);
+        if (currentTime != 0) {
+            useScreenEffectsOnTick(this.data.getScreenEffectData(), currentTime);
         }
 
 
@@ -60,9 +55,24 @@ public class CutsceneExecutor {
         return false;
     }
 
-    private <A extends ScreenEffectData, B extends ScreenEffect<A>> ScreenEffect<A> useScreenEffectFactory(ScreenEffectType<A,B> screenEffectType, ScreenEffectData data, int inTime, int stayTime, int outTime){
+    protected static void useScreenEffectsOnTick(CutsceneScreenEffectData screenEffectData, int tick){
+
+        List<CutsceneScreenEffectData.ScreenEffectInstance<?, ?>> effects = screenEffectData.getAllEffectsOnTick(tick);
+
+        if (effects != null) {
+            for (var effect : effects) {
+                var data = effect.data();
+                var type = effect.type();
+                var screenEffect = useScreenEffectFactory(type, data, effect.inTime(), effect.stayTime(), effect.outTime());
+                ScreenEffectOverlay.addScreenEffect(screenEffect);
+            }
+        }
+
+    }
+
+    protected static <A extends ScreenEffectData, B extends ScreenEffect<A>> ScreenEffect<A> useScreenEffectFactory(ScreenEffectType<A,B> screenEffectType, ScreenEffectData data, int inTime, int stayTime, int outTime){
         var factory = screenEffectType.factory;
-        var effect = factory.create((A) data, inTime, outTime, stayTime);
+        var effect = factory.create((A) data, inTime, stayTime, outTime);
         return effect;
     }
 

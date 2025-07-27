@@ -29,17 +29,28 @@ public abstract class ScreenEffect<T extends ScreenEffectData> {
     }
 
     public boolean isInTime(int currentTick){
+        if (inTime == 0) return false;
         return currentTick <= inTime;
     }
 
     public boolean isStayTime(int currentTick) {
+        if (stayTime == 0) return false;
         int time = currentTick - inTime;
-        return time > 0 && time <= stayTime;
+        if (inTime == 0) {
+            return time > 0 && time <= stayTime;
+        } else {
+            return time > 0 && time <= stayTime;
+        }
     }
 
     public boolean isOutTime(int currentTick) {
+        if (outTime == 0) return false;
         int time = currentTick - inTime - stayTime;
-        return time > 0 && time <= outTime;
+        if (stayTime == 0 && inTime == 0){
+            return time >= 0 && time <= outTime;
+        }else {
+            return time > 0 && time <= outTime;
+        }
     }
 
     public float getInTimePercent(int currentTick, float pticks){

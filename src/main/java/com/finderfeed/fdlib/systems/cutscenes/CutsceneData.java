@@ -13,6 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class CutsceneData implements AutoSerializable {
 
@@ -36,7 +37,7 @@ public class CutsceneData implements AutoSerializable {
     @SerializableField
     private CutsceneData nextCutscene;
 
-    private CutsceneScreenEffectData screenEffectData;
+    private CutsceneScreenEffectData screenEffectData = new CutsceneScreenEffectData();
 
     // Cutscenes do not load chunks! Use them near player!
     public CutsceneData(){}
@@ -47,6 +48,8 @@ public class CutsceneData implements AutoSerializable {
         this.timeEasing = cutsceneData.timeEasing;
         this.stopMode = cutsceneData.stopMode;
         this.cameraPositions = new ArrayList<>(cutsceneData.cameraPositions);
+        this.nextCutscene = cutsceneData.getNextCutscene();
+        this.screenEffectData = cutsceneData.getScreenEffectData();
     }
 
     public CutsceneData stopMode(StopMode stopMode){
@@ -91,6 +94,10 @@ public class CutsceneData implements AutoSerializable {
     public <A extends ScreenEffectData,B extends ScreenEffect<A>> CutsceneData addScreenEffect(int tick, ScreenEffectType<A,B> type, A screenEffectData, int inTime, int stayTime, int outTime){
         this.screenEffectData.putScreenEffectOnTick(tick, type, screenEffectData, inTime, stayTime, outTime);
         return this;
+    }
+
+    public <A extends ScreenEffectData,B extends ScreenEffect<A>> CutsceneData addScreenEffect(int tick, Supplier<ScreenEffectType<A, B>> type, A screenEffectData, int inTime, int stayTime, int outTime){
+        return this.addScreenEffect(tick, type.get(), screenEffectData, inTime, stayTime, outTime);
     }
 
     public CurveType getMoveType() {

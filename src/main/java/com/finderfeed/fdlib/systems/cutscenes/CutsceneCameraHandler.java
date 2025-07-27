@@ -76,10 +76,12 @@ public class CutsceneCameraHandler {
         cutsceneExecutor.tick(clientCameraEntity);
         if (cutsceneExecutor.hasEnded()) {
             var nextCutscene = cutsceneExecutor.getData().getNextCutscene();
-
-
-            if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC) {
-                stopCutscene();
+            if (nextCutscene != null) {
+                startCutscene(nextCutscene);
+            }else {
+                if (cutsceneExecutor.getData().getStopMode() == CutsceneData.StopMode.AUTOMATIC) {
+                    stopCutscene();
+                }
             }
         }
 
@@ -163,22 +165,34 @@ public class CutsceneCameraHandler {
         Level level = FDClientHelpers.getClientLevel();
 
         Entity currentCamera = Minecraft.getInstance().cameraEntity;
-        if (currentCamera instanceof ClientCameraEntity) return;
 
-        ClientCameraEntity camera = new ClientCameraEntity(level);
+        CutsceneScreenEffectData cutsceneScreenEffectData = data.getScreenEffectData();
 
-        CameraPos pos = data.getCameraPositions().get(0);
+        CutsceneExecutor.useScreenEffectsOnTick(cutsceneScreenEffectData, 0);
 
-        Vec3 p = pos.getPos();
+        CameraPos pos = data.getCameraPositions().getFirst();
 
-        camera.setPos(p);
-        camera.xo = p.x;
-        camera.yo = p.y;
-        camera.zo = p.z;
+        if (!(currentCamera instanceof ClientCameraEntity) || clientCameraEntity == null) {
+            ClientCameraEntity camera = new ClientCameraEntity(level);
 
-        Minecraft.getInstance().setCameraEntity(camera);
 
-        clientCameraEntity = camera;
+            Vec3 p = pos.getPos();
+
+            camera.setPos(p);
+            camera.xo = p.x;
+            camera.yo = p.y;
+            camera.zo = p.z;
+
+            Minecraft.getInstance().setCameraEntity(camera);
+
+            clientCameraEntity = camera;
+        }else{
+            Vec3 p = pos.getPos();
+            currentCamera.setPos(p);
+            currentCamera.xo = p.x;
+            currentCamera.yo = p.y;
+            currentCamera.zo = p.z;
+        }
 
         cutsceneExecutor = new CutsceneExecutor(data);
     }
@@ -188,6 +202,10 @@ public class CutsceneCameraHandler {
         if (!isCutsceneActive()) return;
 
         cutsceneData = new CutsceneData(cutsceneData);
+
+        var screenEffects = cutsceneData.getScreenEffectData();
+
+        CutsceneExecutor.useScreenEffectsOnTick(screenEffects, 0);
 
         Vec3 pos = cutsceneExecutor.getCameraPos();
 
