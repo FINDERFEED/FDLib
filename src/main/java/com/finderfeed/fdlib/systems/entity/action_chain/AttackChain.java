@@ -9,12 +9,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class AttackChain {
 
     private HashMap<String,AttackExecutor> registeredAttackExecutors = new HashMap<>();
 
-    private List<Pair<Integer,AttackOptions>> attackOptions = new ArrayList<>();
+    private List<Pair<Integer,AttackOptions<?>>> attackOptions = new ArrayList<>();
+
+    private List<Pair<Supplier<Boolean>, String>> alwaysTryCastAttacks = new ArrayList<>();
 
     private Queue<String> chain = new ArrayDeque<>();
 
@@ -44,6 +47,14 @@ public class AttackChain {
                 });
             }
         }
+        return this;
+    }
+
+    /**
+     * Will always try to cast this attack whenever current attack is not yet decided
+     */
+    public AttackChain addAlwaysTryCastAttack(Supplier<Boolean> condition, String attack){
+        this.alwaysTryCastAttacks.add(new Pair<>(condition, attack));
         return this;
     }
 
@@ -90,6 +101,18 @@ public class AttackChain {
         }
     }
 
+    private boolean tryCastAlwaysAttack(){
+        for (var attack : this.alwaysTryCastAttacks){
+            var predicate = attack.getFirst();
+            if (predicate.get()){
+                var attackName = attack.getSecond();
+                this.currentAttack = new AttackInstance(attackName, this.registeredAttackExecutors.get(attackName));
+                return true;
+            }
+        }
+        return false;
+    }
+
     //polls an attack, executes it once, if its immediately finished polls next and does this until attack is not
     //executed immediately or whole chain is drain, then goes to next tick
     private void pollAndExecuteAttack(){
@@ -99,17 +122,23 @@ public class AttackChain {
 
             AttackAction attackAction = this.attackListener.apply(executorName);
 
+
             if (attackAction == AttackAction.WAIT){
                 break;
-            }else if (attackAction == AttackAction.PROCEED){
-                this.chain.poll();
             }else if (attackAction == AttackAction.SKIP){
                 this.chain.poll();
                 continue;
             }else{
-                break;
+                if (attackAction != AttackAction.PROCEED) {
+                    break;
+                }
             }
 
+            if (this.tryCastAlwaysAttack()){
+                return;
+            }
+
+            this.chain.poll();
 
             AttackExecutor executor = this.registeredAttackExecutors.get(executorName);
             if (executor == null) {
@@ -134,7 +163,7 @@ public class AttackChain {
         List<AttackOptions> samePriority = new ArrayList<>();
         int currentValue = attackOptions.get(0).getFirst();
 
-        for (Pair<Integer, AttackOptions> pair : attackOptions) {
+        for (Pair<Integer, AttackOptions<?>> pair : attackOptions) {
             if (pair.getFirst() == currentValue) {
                 samePriority.add(pair.getSecond());
             } else {
