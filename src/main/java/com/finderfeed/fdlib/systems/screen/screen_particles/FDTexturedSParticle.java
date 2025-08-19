@@ -51,10 +51,14 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
         var atlasSprite = atlas.getTextures().get(location);
 
         if (atlasSprite != null){
-            this.u0 = atlasSprite.getU0();
-            this.v0 = atlasSprite.getV0();
-            this.u1 = atlasSprite.getU1();
-            this.v1 = atlasSprite.getV1();
+
+            float width = engine.textureAtlas.width;
+            float height = engine.textureAtlas.height;
+
+            this.u0 = atlasSprite.getU0() + 1 / width;
+            this.v0 = atlasSprite.getV0() + 1 / height;
+            this.u1 = atlasSprite.getU1() - 1 / width;
+            this.v1 = atlasSprite.getV1() - 1 / height;
             this.renderType = factory.apply(atlas.location());
         }else{
             this.renderType = factory.apply(location);
