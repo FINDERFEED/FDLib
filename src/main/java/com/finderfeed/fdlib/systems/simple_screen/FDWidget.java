@@ -346,26 +346,6 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
         this.y = y;
     }
 
-    public float getScreenX(){
-        float x = this.getX();
-        FDWidget parent = this.getParent();
-        while (parent != null){
-            x += parent.getX();
-            parent = parent.getParent();
-        }
-        return x;
-    }
-
-    public float getScreenY(){
-        float y = this.getY();
-        FDWidget parent = this.getParent();
-        while (parent != null){
-            y += parent.getY();
-            parent = parent.getParent();
-        }
-        return y;
-    }
-
 
     public float getX() {
         return x;
