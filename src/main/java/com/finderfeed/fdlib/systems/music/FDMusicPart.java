@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.music;
 
 import com.finderfeed.fdlib.FDClientHelpers;
+import com.finderfeed.fdlib.init.FDSounds;
 import com.finderfeed.fdlib.systems.music.data.FDMusicPartData;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;
+import org.lwjgl.openal.AL11;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,12 +20,13 @@ public class FDMusicPart {
 
     private FDMusicPartData data;
 
-    private List<SoundInstance> soundInstances = new ArrayList<>();
+    private List<SoundInstance> oldSoundInstances = new ArrayList<>();
+    private SoundInstance main;
 
-    private int ticker = -1;
     private int currentFadeTime = -1;
     private int fadeInTicker = -1;
     private int fadeOutTicker = -1;
+    private float oldVolume = 1;
     private float currentVolume = 1;
     private float volumeStamp = 1;
 
@@ -36,64 +39,89 @@ public class FDMusicPart {
         if (data.getDefaultFadeInTime() == 0){
             currentVolume = 1;
             volumeStamp = 1;
+        }else{
+            this.triggerFadeIn(data.getDefaultFadeInTime());
+            oldVolume = 0;
+            currentVolume = 0;
+            volumeStamp = 0;
         }
     }
 
     public void tick(){
         this.deleteEndedSoundInstances();
         if (!finishedPlaying) {
-            this.manageFades();
-            this.manageLoopOrFinishPlaying();
-            this.setSoundInstancesVolume(this.currentVolume);
+            this.tickFades();
         }
     }
 
-    private void manageFades(){
+    public void renderTick(float pticks){
+        this.setSoundInstancesVolume(FDMathUtil.lerp(oldVolume,currentVolume,pticks));
+        this.manageLoopOrEndSound();
+    }
+
+    private void manageLoopOrEndSound(){
+        if (!finishedPlaying){
+            if (main == null){
+                this.startNewSound();
+            }
+
+            var map = FDClientHelpers.getSoundEngine().instanceToChannel;
+            if (map.containsKey(main)) {
+                ChannelAccess.ChannelHandle channelHandle = map.get(main);
+
+                channelHandle.execute((channel -> {
+                    if (!finishedPlaying) {
+                        int source = channel.source;
+                        float currentPlaytime = AL11.alGetSourcef(source, AL11.AL_SEC_OFFSET);
+                        float playDuration = this.data.getPlayDuration();
+                        if (currentPlaytime >= playDuration) {
+                            if (this.data.shouldLoop()) {
+                                this.startNewSound();
+                            } else {
+                                this.finishedPlaying = true;
+                            }
+                        }
+                    }
+                }));
+            }
+        }
+    }
+
+    private void tickFades(){
+        this.oldVolume = currentVolume;
         if (fadeInTicker != -1){
             float p = (float) fadeInTicker / currentFadeTime;
             this.currentVolume = FDMathUtil.lerp(this.volumeStamp, 1, 1 - p);
             this.fadeInTicker--;
-        }else{
+        }else if (fadeOutTicker != -1){
             float p = (float) fadeOutTicker / currentFadeTime;
             this.currentVolume = FDMathUtil.lerp(this.volumeStamp, 0, p);
             this.fadeOutTicker--;
             if (this.fadeOutTicker == -1 && this.finishOnFadeOut){
                 this.finishedPlaying = true;
                 SoundManager soundManager = FDClientHelpers.getSoundManager();
-                for (var inst : this.soundInstances){
+                for (var inst : this.oldSoundInstances){
                     soundManager.stop(inst);
                 }
-                this.soundInstances.clear();
+                this.oldSoundInstances.clear();
             }
         }
     }
 
-    private void manageLoopOrFinishPlaying(){
-        if (this.ticker >= this.data.getPlayDuration()) {
-            if (this.data.shouldLoop()) {
-                this.ticker = 0;
-                this.startNewSound();
-            } else {
-                this.finishedPlaying = true;
-            }
-        }else{
-            if (ticker == -1){
-                ticker = 0;
-                this.startNewSound();
-            }
-            ticker++;
-        }
-    }
+
 
     private void startNewSound(){
         SoundInstance soundInstance = SimpleSoundInstance.forMusic(this.data.getSoundEvent());
-        this.soundInstances.add(soundInstance);
+        if (main != null) {
+            this.oldSoundInstances.add(main);
+        }
+        this.main = soundInstance;
         SoundManager soundManager = Minecraft.getInstance().getSoundManager();
         soundManager.play(soundInstance);
     }
 
     private void deleteEndedSoundInstances(){
-        Iterator<SoundInstance> iterator = this.soundInstances.iterator();
+        Iterator<SoundInstance> iterator = this.oldSoundInstances.iterator();
         while (iterator.hasNext()){
             SoundInstance soundInstance = iterator.next();
             SoundManager soundManager = FDClientHelpers.getSoundManager();
@@ -107,7 +135,7 @@ public class FDMusicPart {
         SoundEngine soundEngine = FDClientHelpers.getSoundEngine();
         for (var instances : soundEngine.instanceToChannel.entrySet()){
             SoundInstance key = instances.getKey();
-            if (this.soundInstances.contains(key)){
+            if (this.oldSoundInstances.contains(key) || key == main){
                 ChannelAccess.ChannelHandle channelHandle = instances.getValue();
                 channelHandle.execute(channel -> {
                     channel.setVolume(volume);
@@ -116,7 +144,7 @@ public class FDMusicPart {
         }
     }
 
-    private boolean hasFinished(){
+    public boolean hasFinished(){
         return finishedPlaying;
     }
 
@@ -145,6 +173,12 @@ public class FDMusicPart {
     }
 
     public List<SoundInstance> getSoundInstances() {
-        return soundInstances;
+        List<SoundInstance> c = new ArrayList<>(oldSoundInstances);
+        if (main != null) {
+            c.add(main);
+        }
+        return c;
     }
+
+
 }

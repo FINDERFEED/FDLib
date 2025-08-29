@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.music;
 
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
+import net.minecraft.client.resources.sounds.SoundInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,16 @@ public class FDMusic {
         for (int i = currentlyTickingFrom; i < currentlyTickingTo; i++){
             FDMusicPart fdMusicPart = musicParts.get(i);
             fdMusicPart.tick();
+            if (i == currentlyTickingTo - 1 && fdMusicPart.hasFinished()){
+                currentlyTickingTo += 1;
+            }
+        }
+    }
+
+    public void renderTick(float pticks){
+        for (int i = currentlyTickingFrom; i < currentlyTickingTo; i++){
+            FDMusicPart fdMusicPart = musicParts.get(i);
+            fdMusicPart.renderTick(pticks);
         }
     }
 
@@ -50,6 +61,14 @@ public class FDMusic {
             musicPart.triggerFadeOut(fadeOutTime, true);
             this.currentlyTickingTo += 1;
         }
+    }
+
+    public List<SoundInstance> allSoundInstances(){
+        List<SoundInstance> soundInstances = new ArrayList<>();
+        for (var musicPart : this.musicParts){
+            soundInstances.addAll(musicPart.getSoundInstances());
+        }
+        return soundInstances;
     }
 
 

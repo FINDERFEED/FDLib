@@ -5,12 +5,12 @@ import net.minecraft.sounds.SoundEvent;
 public class FDMusicPartData {
 
     private SoundEvent soundEvent;
-    private int playDuration;
+    private float playDuration;
     private int defaultFadeIn = 0;
     private int defaultFadeOut = 0;
     private boolean isLooped;
 
-    public FDMusicPartData(SoundEvent soundEvent, int playDuration){
+    public FDMusicPartData(SoundEvent soundEvent, float playDuration){
         this.soundEvent = soundEvent;
         this.playDuration = playDuration;
     }
@@ -34,7 +34,7 @@ public class FDMusicPartData {
         return isLooped;
     }
 
-    public int getPlayDuration() {
+    public float getPlayDuration() {
         return playDuration;
     }
 

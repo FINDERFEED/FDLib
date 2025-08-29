@@ -1,0 +1,8 @@
+{
+  "malkuth_theme_intro_test": {
+    "sounds": [ "fdlib:malkuth_theme_intro_test" ]
+  },
+  "malkuth_theme_main_test": {
+    "sounds": [ "fdlib:malkuth_theme_main_test" ]
+  }
+}

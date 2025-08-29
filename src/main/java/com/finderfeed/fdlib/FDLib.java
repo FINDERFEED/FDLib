@@ -29,6 +29,7 @@ public class FDLib {
         FDItems.ITEMS.register(bus);
         FDBlocks.BLOCKS.register(bus);
         FDModels.MODELS.register(bus);
+        FDSounds.SOUNDS.register(bus);
         FDConfigs.CONFIGS.register(bus);
         FDAnims.ANIMATIONS.register(bus);
         FDParticles.PARTICLES.register(bus);
