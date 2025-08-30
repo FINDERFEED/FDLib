@@ -88,7 +88,6 @@ public class FDMusicPart {
                             currentPlaytime += m.get(source);
                         }
 
-                        System.out.println(currentPlaytime);
 
                         float playDuration = this.data.getPlayDuration();
                         if (currentPlaytime >= playDuration) {
@@ -199,5 +198,13 @@ public class FDMusicPart {
         return c;
     }
 
+
+    public float getCurrentVolume() {
+        return currentVolume;
+    }
+
+    public float getOldVolume() {
+        return oldVolume;
+    }
 
 }

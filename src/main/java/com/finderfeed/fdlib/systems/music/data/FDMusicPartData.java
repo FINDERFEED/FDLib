@@ -1,8 +1,24 @@
 package com.finderfeed.fdlib.systems.music.data;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 
 public class FDMusicPartData {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, FDMusicPartData> STREAM_CODEC = StreamCodec.composite(
+            SoundEvent.DIRECT_STREAM_CODEC, v->v.soundEvent,
+            ByteBufCodecs.FLOAT, v->v.playDuration,
+            ByteBufCodecs.INT, v->v.defaultFadeIn,
+            ByteBufCodecs.BOOL, v->v.isLooped,
+            (event,duration,fadein,loop)->{
+                return new FDMusicPartData(event, duration)
+                        .setLooping(loop)
+                        .setDefaultFadeIn(fadein);
+            }
+    );
 
     private SoundEvent soundEvent;
     private float playDuration;

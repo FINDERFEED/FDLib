@@ -19,6 +19,8 @@ public class FDMusic {
     private boolean finishedPlaying = false;
     private boolean triggeredEnd = false;
 
+    private int inactiveTime = 0;
+
     public FDMusic(FDMusicData fdMusicData){
         this.fdMusicData = fdMusicData;
         for (var musicPartData : fdMusicData.getMusicPartDatas()){
@@ -30,6 +32,7 @@ public class FDMusic {
 
     public void tick(){
         int finishedAmount = 0;
+        int mutedAmount = 0;
         for (int i = currentlyTickingFrom; i < currentlyTickingTo; i++){
             FDMusicPart fdMusicPart = musicParts.get(i);
             fdMusicPart.tick();
@@ -41,12 +44,22 @@ public class FDMusic {
                 if (i == currentlyTickingTo - 1 && fdMusicPart.hasFinished()) {
                     currentlyTickingTo += 1;
                 }
+                if (fdMusicPart.hasFinished() || fdMusicPart.getCurrentVolume() == 0 && fdMusicPart.getOldVolume() == 0){
+                    mutedAmount++;
+                }
             }
         }
 
         int endAmount = currentlyTickingTo - currentlyTickingFrom;
 
-        if (finishedAmount == endAmount){
+        if (mutedAmount == endAmount){
+            inactiveTime++;
+            System.out.println(inactiveTime);
+        }else{
+            inactiveTime = 0;
+        }
+
+        if (finishedAmount == endAmount || inactiveTime >= this.fdMusicData.getInactiveDeleteTime()){
             this.finishedPlaying = true;
         }
 

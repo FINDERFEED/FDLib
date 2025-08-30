@@ -7,15 +7,29 @@ import com.mojang.datafixers.util.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class FDByteBufCodecs {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, UUID> UUID = new StreamCodec<RegistryFriendlyByteBuf, java.util.UUID>() {
+        @Override
+        public java.util.UUID decode(RegistryFriendlyByteBuf buf) {
+            return buf.readUUID();
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buf, java.util.UUID uuid) {
+            buf.writeUUID(uuid);
+        }
+    };
 
     public static final StreamCodec<ByteBuf, Vec3> VEC3 = new StreamCodec<ByteBuf, Vec3>() {
         @Override

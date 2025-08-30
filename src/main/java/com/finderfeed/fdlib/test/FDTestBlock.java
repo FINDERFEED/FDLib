@@ -7,7 +7,12 @@ import com.finderfeed.fdlib.systems.music.FDMusic;
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
 import com.finderfeed.fdlib.systems.music.data.FDMusicPartData;
+import com.finderfeed.fdlib.systems.music.music_areas.FDMusicArea;
+import com.finderfeed.fdlib.systems.music.music_areas.FDMusicAreasHandler;
+import com.finderfeed.fdlib.systems.music.music_areas.shapes.FDMusicAreaCylinder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -31,21 +36,44 @@ public class FDTestBlock extends FDEntityBlock {
         return FDBlockEntities.TEST.get().create(p_153215_,p_153216_);
     }
 
+    private static boolean testBoolean = true;
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
-       if (level.isClientSide){
-           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f4");
-           if (!player.isCrouching()) {
+       if (!level.isClientSide){
+           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f3");
+
+           if (!player.isCrouching()){
                FDMusicData fdMusicData = new FDMusicData(uuid,
                        new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f)
                                .setDefaultFadeIn(80))
                        .addMusicPart(new FDMusicPartData(FDSounds.MALKUTH_THEME_MAIN_TEST.get(), 103.375f)
-                               .setLooping(true));
-
-               FDMusicSystem.addMusic(fdMusicData);
+                               .setLooping(true))
+                       .inactiveDeleteTime(600);
+               FDMusicAreasHandler.addArea(uuid, new FDMusicArea(level.dimension(), pos.getCenter(), new FDMusicAreaCylinder(10,10),fdMusicData));
            }else{
-               FDMusicSystem.endMusic(uuid, 100);
+               FDMusicAreasHandler.removeArea(((ServerLevel)level).getServer(),uuid);
            }
+
+//           if (!player.isCrouching()) {
+//               FDMusicData fdMusicData = new FDMusicData(uuid,
+//                       new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f)
+//                               .setDefaultFadeIn(80))
+//                       .addMusicPart(new FDMusicPartData(FDSounds.MALKUTH_THEME_MAIN_TEST.get(), 103.375f)
+//                               .setLooping(true));
+//
+//               FDMusicSystem.addMusic(fdMusicData);
+//           }else{
+//               FDMusic fdMusic = FDMusicSystem.getMusic(uuid);
+//               if (fdMusic != null){
+//                   if (testBoolean){
+//                       fdMusic.fadeOut(50,false);
+//                   }else{
+//                       fdMusic.fadeIn(50);
+//                   }
+//                   testBoolean = !testBoolean;
+//               }
+//           }
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
     }

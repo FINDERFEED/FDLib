@@ -2,7 +2,6 @@ package com.finderfeed.fdlib.mixin;
 
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.audio.Channel;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +18,7 @@ public class ChannelMixin {
 
     @Inject(method = "removeProcessedBuffers", at = @At(value = "INVOKE", target = "Lorg/lwjgl/openal/AL10;alSourceUnqueueBuffers(I[I)V", shift = At.Shift.AFTER))
     public void removeProcessedBuffers(CallbackInfoReturnable<Integer> cir, @Local int[] buffers){
-        FDMusicSystem.StreamingSourcesBufferLengthCache.channelMixin(this.source, buffers);
+        FDMusicSystem.StreamingSourcesBufferLengthCache.onProcessedBuffersRemoval(this.source, buffers);
     }
 
 

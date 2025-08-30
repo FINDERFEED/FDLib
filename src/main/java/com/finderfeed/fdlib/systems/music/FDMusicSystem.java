@@ -73,6 +73,10 @@ public class FDMusicSystem {
 
     }
 
+    public static FDMusic getMusic(UUID uuid){
+        return ACTIVE_MUSIC.get(uuid);
+    }
+
     private static List<SoundInstance> getAllFDSoundInstances(){
         List<SoundInstance> instances = new ArrayList<>();
         for (var inst : ACTIVE_MUSIC.values()){
@@ -153,7 +157,7 @@ public class FDMusicSystem {
             }
         }
 
-        public static void channelMixin(int source, int[] processedBuffers){
+        public static void onProcessedBuffersRemoval(int source, int[] processedBuffers){
             float fullSeconds = 0;
             for (int buffer : processedBuffers){
                 int bytes = AL11.alGetBufferi(buffer, AL10.AL_SIZE);
