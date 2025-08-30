@@ -11,18 +11,15 @@ public class FDMusicPartData {
     public static final StreamCodec<RegistryFriendlyByteBuf, FDMusicPartData> STREAM_CODEC = StreamCodec.composite(
             SoundEvent.DIRECT_STREAM_CODEC, v->v.soundEvent,
             ByteBufCodecs.FLOAT, v->v.playDuration,
-            ByteBufCodecs.INT, v->v.defaultFadeIn,
             ByteBufCodecs.BOOL, v->v.isLooped,
-            (event,duration,fadein,loop)->{
+            (event,duration,loop)->{
                 return new FDMusicPartData(event, duration)
-                        .setLooping(loop)
-                        .setDefaultFadeIn(fadein);
+                        .setLooping(loop);
             }
     );
 
     private SoundEvent soundEvent;
     private float playDuration;
-    private int defaultFadeIn = 0;
     private boolean isLooped;
 
     public FDMusicPartData(SoundEvent soundEvent, float playDuration){
@@ -30,10 +27,6 @@ public class FDMusicPartData {
         this.playDuration = playDuration;
     }
 
-    public FDMusicPartData setDefaultFadeIn(int defaultFadeIn){
-        this.defaultFadeIn = defaultFadeIn;
-        return this;
-    }
 
     public FDMusicPartData setLooping(boolean looping){
         this.isLooped = looping;
@@ -50,10 +43,6 @@ public class FDMusicPartData {
 
     public SoundEvent getSoundEvent() {
         return soundEvent;
-    }
-
-    public int getDefaultFadeInTime() {
-        return defaultFadeIn;
     }
 
 }

@@ -15,8 +15,9 @@ public class FDMusicData {
             FDMusicPartData.STREAM_CODEC.apply(ByteBufCodecs.list()),v->v.musicPartDatas,
             ByteBufCodecs.INT, v->v.startFrom,
             ByteBufCodecs.INT, v->v.inactiveDeleteTime,
+            ByteBufCodecs.INT, v->v.defaultFadeInTime,
             FDByteBufCodecs.UUID,v->v.musicSourceUUID,
-            (datas, startFrom, inactiveDeleteTime, sourceUUID)->{
+            (datas, startFrom, inactiveDeleteTime, defaultFadeInTime, sourceUUID)->{
                 return new FDMusicData(sourceUUID, datas)
                         .startFromPart(startFrom)
                         .inactiveDeleteTime(inactiveDeleteTime);
@@ -28,6 +29,8 @@ public class FDMusicData {
     private int startFrom = 0;
 
     private int inactiveDeleteTime = 60 * 20 * 5;
+
+    private int defaultFadeInTime = 0;
 
     private UUID musicSourceUUID;
 
@@ -41,6 +44,14 @@ public class FDMusicData {
         this.musicSourceUUID = uuid;
     }
 
+    public FDMusicData fadeInTime(int fadeInTime){
+        this.defaultFadeInTime = fadeInTime;
+        return this;
+    }
+
+    /**
+     * If volume is 0 due to fade out, stops the FDMusic after this time (ticks). Required, because while FDMusic is active, other music is muted.
+     */
     public FDMusicData inactiveDeleteTime(int inactiveDeleteTime){
         this.inactiveDeleteTime = inactiveDeleteTime;
         return this;
@@ -71,4 +82,9 @@ public class FDMusicData {
     public int getInactiveDeleteTime() {
         return inactiveDeleteTime;
     }
+
+    public int getStartFadeInTime() {
+        return defaultFadeInTime;
+    }
+
 }

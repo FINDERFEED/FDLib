@@ -25,54 +25,34 @@ public class FDMusicPart {
     private List<SoundInstance> oldSoundInstances = new ArrayList<>();
     private SoundInstance main;
 
-    private int currentFadeTime = -1;
-    private int fadeInTicker = -1;
-    private int fadeOutTicker = -1;
-    private float oldVolume = 1;
-    private float currentVolume = 1;
-    private float volumeStamp = 1;
-
-    private boolean finishOnFadeOut;
+    private FDMusic owner;
 
     private boolean finishedPlaying = false;
 
-    public FDMusicPart(FDMusicPartData data){
+    public FDMusicPart(FDMusicPartData data, FDMusic owner){
         this.data = data;
-        if (data.getDefaultFadeInTime() == 0){
-            currentVolume = 1;
-            volumeStamp = 1;
-        }else{
-            this.triggerFadeIn(data.getDefaultFadeInTime());
-            oldVolume = 0;
-            currentVolume = 0;
-            volumeStamp = 0;
-        }
+        this.owner = owner;
     }
 
     public void tick(){
         this.deleteEndedSoundInstances();
-        if (!finishedPlaying) {
-            this.tickFades();
-        }
     }
 
     public void renderTick(float pticks){
-        float volume = Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC);
-        this.setSoundInstancesVolume(FDMathUtil.lerp(oldVolume,currentVolume,pticks) * volume);
-        this.manageLoopOrEndSound();
+        this.manageLoopOrEndSound(pticks);
     }
 
 
-    private void manageLoopOrEndSound(){
+    private void manageLoopOrEndSound(float pticks){
         if (!finishedPlaying){
             if (main == null){
-                this.startNewSound();
+                this.startNewSound(pticks);
             }
 
             var map = FDClientHelpers.getSoundEngine().instanceToChannel;
 
             if (!map.containsKey(main) && FDClientHelpers.getCurrentMusicVolume() > 0 && !Minecraft.getInstance().isPaused()) {
-                this.startNewSound();
+                this.startNewSound(pticks);
             }
 
             ChannelAccess.ChannelHandle channelHandle = map.get(main);
@@ -80,6 +60,8 @@ public class FDMusicPart {
             if (channelHandle != null) {
                 channelHandle.execute((channel -> {
                     if (!finishedPlaying) {
+
+
                         int source = channel.source;
                         float currentPlaytime = AL11.alGetSourcef(source, AL11.AL_SEC_OFFSET);
 
@@ -92,7 +74,7 @@ public class FDMusicPart {
                         float playDuration = this.data.getPlayDuration();
                         if (currentPlaytime >= playDuration) {
                             if (this.data.shouldLoop()) {
-                                this.startNewSound();
+                                this.startNewSound(pticks);
                             } else {
                                 this.finishedPlaying = true;
                             }
@@ -105,31 +87,28 @@ public class FDMusicPart {
         }
     }
 
-    private void tickFades(){
-        this.oldVolume = currentVolume;
-        if (fadeInTicker != -1){
-            float p = (float) fadeInTicker / currentFadeTime;
-            this.currentVolume = FDMathUtil.lerp(this.volumeStamp, 1, 1 - p);
-            this.fadeInTicker--;
-        }else if (fadeOutTicker != -1){
-            float p = (float) fadeOutTicker / currentFadeTime;
-            this.currentVolume = FDMathUtil.lerp(this.volumeStamp, 0, 1 - p);
-            this.fadeOutTicker--;
-            if (this.fadeOutTicker == -1 && this.finishOnFadeOut){
-                this.finishedPlaying = true;
-                SoundManager soundManager = FDClientHelpers.getSoundManager();
-                for (var inst : this.oldSoundInstances){
-                    soundManager.stop(inst);
-                }
-                this.oldSoundInstances.clear();
+    protected void setAllSoundInstancesVolume(float volume){
+        for (var instance : this.getSoundInstances()){
+            var map = FDClientHelpers.getSoundEngine().instanceToChannel;
+            ChannelAccess.ChannelHandle channelHandle = map.get(instance);
+            if (channelHandle != null){
+                channelHandle.execute(channel -> {
+                    channel.setVolume(volume);
+                });
             }
+        }
+        var map = FDClientHelpers.getSoundEngine().instanceToChannel;
+        ChannelAccess.ChannelHandle channelHandle = map.get(main);
+        if (channelHandle != null){
+            channelHandle.execute(channel -> {
+                channel.setVolume(volume);
+            });
         }
     }
 
 
-
-    private void startNewSound(){
-        SoundInstance soundInstance = SimpleSoundInstance.forMusic(this.data.getSoundEvent());
+    private void startNewSound(float pticks){
+        SoundInstance soundInstance = new FDMusicSoundInstance(this.data.getSoundEvent(), this.owner.getVolume(pticks) * FDClientHelpers.getCurrentMusicVolume());
         if (main != null) {
             this.oldSoundInstances.add(main);
         }
@@ -149,41 +128,8 @@ public class FDMusicPart {
         }
     }
 
-    private void setSoundInstancesVolume(float volume){
-        SoundEngine soundEngine = FDClientHelpers.getSoundEngine();
-        for (var instances : soundEngine.instanceToChannel.entrySet()){
-            SoundInstance key = instances.getKey();
-            if (this.oldSoundInstances.contains(key) || key == main){
-                ChannelAccess.ChannelHandle channelHandle = instances.getValue();
-                channelHandle.execute(channel -> {
-                    channel.setVolume(volume);
-                });
-            }
-        }
-    }
-
     public boolean hasFinished(){
         return finishedPlaying;
-    }
-
-    public void triggerFadeOut(int fadeOutTime, boolean finishOnFadeOut){
-        volumeStamp = currentVolume;
-        fadeOutTicker = fadeOutTime;
-        fadeInTicker = -1;
-        currentFadeTime = fadeOutTime;
-        this.finishOnFadeOut = finishOnFadeOut;
-    }
-
-    public void triggerFadeIn(int fadeInTime) {
-        if (!finishOnFadeOut) {
-            volumeStamp = currentVolume;
-            fadeOutTicker = -1;
-            fadeInTicker = fadeInTime;
-            currentFadeTime = fadeInTime;
-        }
-    }
-
-    public void end(){
     }
 
     public FDMusicPartData getData() {
@@ -198,13 +144,5 @@ public class FDMusicPart {
         return c;
     }
 
-
-    public float getCurrentVolume() {
-        return currentVolume;
-    }
-
-    public float getOldVolume() {
-        return oldVolume;
-    }
 
 }

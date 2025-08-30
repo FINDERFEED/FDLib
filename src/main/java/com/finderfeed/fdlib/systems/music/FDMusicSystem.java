@@ -107,6 +107,7 @@ public class FDMusicSystem {
             var pair = iterator.next();
             FDMusic music = pair.getValue();
             if (music.hasFinishedPlaying()){
+                music.onFinishPlaying();
                 iterator.remove();
             }else{
                 music.tick();
