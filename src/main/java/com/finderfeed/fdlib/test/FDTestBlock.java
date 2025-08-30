@@ -34,14 +34,18 @@ public class FDTestBlock extends FDEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
        if (level.isClientSide){
-           FDMusicData fdMusicData = new FDMusicData(UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f4"),
-                   new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f)
-                           .setDefaultFadeIn(80))
-                   .addMusicPart(new FDMusicPartData(FDSounds.MALKUTH_THEME_MAIN_TEST.get(), 103.375f)
-                           .setLooping(true));
+           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f4");
+           if (!player.isCrouching()) {
+               FDMusicData fdMusicData = new FDMusicData(uuid,
+                       new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f)
+                               .setDefaultFadeIn(80))
+                       .addMusicPart(new FDMusicPartData(FDSounds.MALKUTH_THEME_MAIN_TEST.get(), 103.375f)
+                               .setLooping(true));
 
-           FDMusicSystem.addMusic(fdMusicData);
-
+               FDMusicSystem.addMusic(fdMusicData);
+           }else{
+               FDMusicSystem.endMusic(uuid, 100);
+           }
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
     }

@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.music;
 
+import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
 import net.minecraft.client.resources.sounds.SoundInstance;
 
@@ -15,6 +16,9 @@ public class FDMusic {
     private int currentlyTickingFrom;
     private int currentlyTickingTo;
 
+    private boolean finishedPlaying = false;
+    private boolean triggeredEnd = false;
+
     public FDMusic(FDMusicData fdMusicData){
         this.fdMusicData = fdMusicData;
         for (var musicPartData : fdMusicData.getMusicPartDatas()){
@@ -25,13 +29,27 @@ public class FDMusic {
     }
 
     public void tick(){
+        int finishedAmount = 0;
         for (int i = currentlyTickingFrom; i < currentlyTickingTo; i++){
             FDMusicPart fdMusicPart = musicParts.get(i);
             fdMusicPart.tick();
-            if (i == currentlyTickingTo - 1 && fdMusicPart.hasFinished()){
-                currentlyTickingTo += 1;
+            if (triggeredEnd){
+                if (fdMusicPart.hasFinished()){
+                    finishedAmount++;
+                }
+            }else {
+                if (i == currentlyTickingTo - 1 && fdMusicPart.hasFinished()) {
+                    currentlyTickingTo += 1;
+                }
             }
         }
+
+        int endAmount = currentlyTickingTo - currentlyTickingFrom;
+
+        if (finishedAmount == endAmount){
+            this.finishedPlaying = true;
+        }
+
     }
 
     public void renderTick(float pticks){
@@ -41,10 +59,23 @@ public class FDMusic {
         }
     }
 
-    public void fadeOut(int fadeOutTime){
+    public void triggerMusicEnd(int fadeOutTime){
+        if (fadeOutTime > 0) {
+            this.fadeOut(fadeOutTime, true);
+        }else{
+            this.immediateShutdown();
+        }
+        triggeredEnd = true;
+    }
+
+    public boolean hasFinishedPlaying(){
+        return finishedPlaying;
+    }
+
+    public void fadeOut(int fadeOutTime, boolean finishOnFadeOut){
         for (int i = currentlyTickingFrom; i < currentlyTickingTo; i++){
             FDMusicPart fdMusicPart = musicParts.get(i);
-            fdMusicPart.triggerFadeOut(fadeOutTime,false);
+            fdMusicPart.triggerFadeOut(fadeOutTime,finishOnFadeOut);
         }
     }
 
@@ -71,8 +102,12 @@ public class FDMusic {
         return soundInstances;
     }
 
-
-
+    public void immediateShutdown(){
+        for (var soundInstance : this.allSoundInstances()){
+            FDClientHelpers.getSoundManager().stop(soundInstance);
+        }
+        this.finishedPlaying = true;
+    }
 
     public FDMusicData getFdMusicData() {
         return fdMusicData;

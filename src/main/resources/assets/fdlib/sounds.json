@@ -1,8 +1,18 @@
 {
   "malkuth_theme_intro_test": {
-    "sounds": [ "fdlib:malkuth_theme_intro_test" ]
+    "sounds": [
+      {
+        "name": "fdlib:malkuth_theme_intro_test",
+        "stream": true
+      }
+    ]
   },
   "malkuth_theme_main_test": {
-    "sounds": [ "fdlib:malkuth_theme_main_test" ]
+    "sounds": [
+      {
+        "name": "fdlib:malkuth_theme_main_test",
+        "stream": true
+      }
+    ]
   }
 }

@@ -5,11 +5,13 @@ import com.finderfeed.fdlib.init.FDSounds;
 import com.finderfeed.fdlib.systems.music.data.FDMusicPartData;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.sounds.SoundSource;
 import org.lwjgl.openal.AL11;
 
 import java.util.ArrayList;
@@ -55,9 +57,11 @@ public class FDMusicPart {
     }
 
     public void renderTick(float pticks){
-        this.setSoundInstancesVolume(FDMathUtil.lerp(oldVolume,currentVolume,pticks));
+        float volume = Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC);
+        this.setSoundInstancesVolume(FDMathUtil.lerp(oldVolume,currentVolume,pticks) * volume);
         this.manageLoopOrEndSound();
     }
+
 
     private void manageLoopOrEndSound(){
         if (!finishedPlaying){
@@ -66,13 +70,26 @@ public class FDMusicPart {
             }
 
             var map = FDClientHelpers.getSoundEngine().instanceToChannel;
-            if (map.containsKey(main)) {
-                ChannelAccess.ChannelHandle channelHandle = map.get(main);
 
+            if (!map.containsKey(main) && FDClientHelpers.getCurrentMusicVolume() > 0 && !Minecraft.getInstance().isPaused()) {
+                this.startNewSound();
+            }
+
+            ChannelAccess.ChannelHandle channelHandle = map.get(main);
+
+            if (channelHandle != null) {
                 channelHandle.execute((channel -> {
                     if (!finishedPlaying) {
                         int source = channel.source;
                         float currentPlaytime = AL11.alGetSourcef(source, AL11.AL_SEC_OFFSET);
+
+                        var m = FDMusicSystem.StreamingSourcesBufferLengthCache.sourceToProcessedBufferSecondLength;
+                        if (m.containsKey(source)){
+                            currentPlaytime += m.get(source);
+                        }
+
+                        System.out.println(currentPlaytime);
+
                         float playDuration = this.data.getPlayDuration();
                         if (currentPlaytime >= playDuration) {
                             if (this.data.shouldLoop()) {
@@ -84,6 +101,8 @@ public class FDMusicPart {
                     }
                 }));
             }
+
+
         }
     }
 
@@ -95,7 +114,7 @@ public class FDMusicPart {
             this.fadeInTicker--;
         }else if (fadeOutTicker != -1){
             float p = (float) fadeOutTicker / currentFadeTime;
-            this.currentVolume = FDMathUtil.lerp(this.volumeStamp, 0, p);
+            this.currentVolume = FDMathUtil.lerp(this.volumeStamp, 0, 1 - p);
             this.fadeOutTicker--;
             if (this.fadeOutTicker == -1 && this.finishOnFadeOut){
                 this.finishedPlaying = true;

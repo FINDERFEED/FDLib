@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.lwjgl.openal.AL11;
@@ -27,5 +28,8 @@ public class FDClientHelpers {
         return Minecraft.getInstance().getSoundManager();
     }
 
+    public static float getCurrentMusicVolume(){
+        return Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC);
+    }
 
 }

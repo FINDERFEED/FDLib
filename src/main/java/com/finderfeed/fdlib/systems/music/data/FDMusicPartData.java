@@ -7,7 +7,6 @@ public class FDMusicPartData {
     private SoundEvent soundEvent;
     private float playDuration;
     private int defaultFadeIn = 0;
-    private int defaultFadeOut = 0;
     private boolean isLooped;
 
     public FDMusicPartData(SoundEvent soundEvent, float playDuration){
@@ -17,11 +16,6 @@ public class FDMusicPartData {
 
     public FDMusicPartData setDefaultFadeIn(int defaultFadeIn){
         this.defaultFadeIn = defaultFadeIn;
-        return this;
-    }
-
-    public FDMusicPartData setDefaultFadeOut(int defaultFadeOut){
-        this.defaultFadeOut = defaultFadeOut;
         return this;
     }
 
@@ -44,10 +38,6 @@ public class FDMusicPartData {
 
     public int getDefaultFadeInTime() {
         return defaultFadeIn;
-    }
-
-    public int getDefaultFadeOutTime() {
-        return defaultFadeOut;
     }
 
 }
