@@ -11,6 +11,7 @@ public class FDEntityRendererBuilder<T extends Entity & AnimatedObject> {
 
     private List<FDEntityRenderLayerOptions<T>> layers = new ArrayList<>();
     private IShouldEntityRender<T> shouldRender = null;
+    private FDEntityIgnoreYaw<T> ignoreYaw = null;
     private FDFreeEntityRenderer<T> freeEntityRenderer;
 
     public static <E extends Entity & AnimatedObject> FDEntityRendererBuilder<E> builder(){
@@ -32,9 +33,14 @@ public class FDEntityRendererBuilder<T extends Entity & AnimatedObject> {
         return this;
     }
 
+    public FDEntityRendererBuilder<T> ignoreYaw(FDEntityIgnoreYaw<T> ignoreYaw){
+        this.ignoreYaw = ignoreYaw;
+        return this;
+    }
+
     public EntityRendererProvider<T> build(){
         return (context -> {
-            return new FDEntityRenderer<>(context,shouldRender,layers,freeEntityRenderer);
+            return new FDEntityRenderer<>(context,ignoreYaw,shouldRender,layers,freeEntityRenderer);
         });
     }
 

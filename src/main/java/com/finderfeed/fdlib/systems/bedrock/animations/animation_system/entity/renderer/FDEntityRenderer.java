@@ -35,12 +35,14 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
     public List<FDEntityRenderLayer<T>> layers;
     public IShouldEntityRender<T> shouldRender;
     public FDFreeEntityRenderer<T> freeRender;
+    public FDEntityIgnoreYaw<T> ignoreYaw;
 
 
-    public FDEntityRenderer(EntityRendererProvider.Context ctx, IShouldEntityRender<T> shouldRender, List<FDEntityRenderLayerOptions<T>> layerDefinitions,FDFreeEntityRenderer<T> freeEntityRenderer) {
+    public FDEntityRenderer(EntityRendererProvider.Context ctx,FDEntityIgnoreYaw<T> ignoreYaw, IShouldEntityRender<T> shouldRender, List<FDEntityRenderLayerOptions<T>> layerDefinitions,FDFreeEntityRenderer<T> freeEntityRenderer) {
         super(ctx);
         this.freeRender = freeEntityRenderer;
         this.shouldRender = shouldRender;
+        this.ignoreYaw = ignoreYaw;
         this.layers = new ArrayList<>();
         for (FDEntityRenderLayerOptions<T> layer : layerDefinitions){
             FDModel model = new FDModel(layer.layerModel.get());
@@ -64,10 +66,19 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
     public void applyAnimations(T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
         AnimationSystem system = entity.getAnimationSystem();
+        boolean ignoreYaw = false;
+
+        if (this.ignoreYaw != null){
+            ignoreYaw = this.ignoreYaw.ignoreYaw(entity,partialTicks);
+        }
+
         for (var layer : this.layers){
             FDModel model = layer.model();
             system.applyAnimations(model,partialTicks);
-            model.main.addYRot(-yaw);
+
+            if (!ignoreYaw) {
+                model.main.addYRot(-yaw);
+            }
 
             for (var entry : layer.boneControllers().entrySet()){
 
@@ -90,7 +101,7 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
         }
     }
 
-    public void renderLayers(T entity, float idk, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
+    public void renderLayers(T entity, float yaw, float partialTicks, PoseStack matrices, MultiBufferSource src, int light){
         for (var layer : this.layers){
 
 
