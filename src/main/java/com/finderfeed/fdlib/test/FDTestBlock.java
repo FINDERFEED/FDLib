@@ -42,18 +42,18 @@ public class FDTestBlock extends FDEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
        if (!level.isClientSide){
            UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f3");
-
-           if (!player.isCrouching()){
-               FDMusicData fdMusicData = new FDMusicData(uuid,
-                       new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f))
-                       .addMusicPart(new FDMusicPartData(FDSounds.MALKUTH_THEME_MAIN_TEST.get(), 103.375f)
-                               .setLooping(true))
-                       .fadeInTime(80)
-                       .inactiveDeleteTime(600);
-               FDMusicAreasHandler.addArea(uuid, new FDMusicArea(level.dimension(), pos.getCenter(), new FDMusicAreaCylinder(10,10),fdMusicData));
-           }else{
-               FDMusicAreasHandler.removeArea(((ServerLevel)level).getServer(),uuid);
-           }
+//
+//           if (!player.isCrouching()){
+//               FDMusicData fdMusicData = new FDMusicData(uuid,
+//                       new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f))
+//                       .addMusicPart(new FDMusicPartData(FDSounds.MALKUTH_THEME_MAIN_TEST.get(), 103.375f)
+//                               .setLooping(true))
+//                       .fadeInTime(80)
+//                       .inactiveDeleteTime(600);
+//               FDMusicAreasHandler.addArea(uuid, new FDMusicArea(level.dimension(), pos.getCenter(), new FDMusicAreaCylinder(10,10),fdMusicData));
+//           }else{
+//               FDMusicAreasHandler.removeArea(((ServerLevel)level).getServer(),uuid);
+//           }
 
 
 //           if (!player.isCrouching()) {

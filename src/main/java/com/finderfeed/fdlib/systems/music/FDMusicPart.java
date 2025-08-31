@@ -69,7 +69,6 @@ public class FDMusicPart {
                         if (m.containsKey(source)){
                             currentPlaytime += m.get(source);
                         }
-                        System.out.println(currentPlaytime);
 
                         float playDuration = this.data.getPlayDuration();
                         if (currentPlaytime >= playDuration) {

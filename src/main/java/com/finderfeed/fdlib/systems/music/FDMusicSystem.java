@@ -173,7 +173,6 @@ public class FDMusicSystem {
 
         public static void onProcessedBuffersRemoval(int source, int[] processedBuffers){
             float fullSeconds = 0;
-            System.out.println(processedBuffers.length);
             for (int buffer : processedBuffers){
                 int bytes = AL11.alGetBufferi(buffer, AL10.AL_SIZE);
                 int channels = AL11.alGetBufferi(buffer, AL10.AL_CHANNELS);
