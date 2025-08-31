@@ -69,7 +69,6 @@ public class FDMusicArea {
 
 
         }
-        autoDeletionTicker--;
     }
 
     public void onRemoval(MinecraftServer server, int fadeOutTime){
