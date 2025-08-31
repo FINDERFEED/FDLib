@@ -72,11 +72,11 @@ public class FDMusicArea {
         autoDeletionTicker--;
     }
 
-    public void onRemoval(MinecraftServer server){
+    public void onRemoval(MinecraftServer server, int fadeOutTime){
         for (var player : playersInside){
             var actualPlayer = server.getPlayerList().getPlayer(player);
             if (actualPlayer != null){
-                PacketDistributor.sendToPlayer(actualPlayer, new FDMusicEndPacket(this.musicData.getMusicSourceUUID(), 20));
+                PacketDistributor.sendToPlayer(actualPlayer, new FDMusicEndPacket(this.musicData.getMusicSourceUUID(), fadeOutTime));
             }
         }
     }

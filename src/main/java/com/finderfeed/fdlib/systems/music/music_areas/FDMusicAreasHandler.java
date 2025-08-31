@@ -38,7 +38,7 @@ public class FDMusicAreasHandler {
 
 
             if (area.shouldBeDeleted()){
-                area.onRemoval(event.getServer());
+                area.onRemoval(event.getServer(), 20);
                 iterator.remove();
             }else {
                 ServerLevel level = event.getServer().getLevel(area.getDimension());
@@ -51,10 +51,10 @@ public class FDMusicAreasHandler {
         }
     }
 
-    public static void removeArea(MinecraftServer server, UUID uuid){
+    public static void removeArea(MinecraftServer server, UUID uuid, int fadeOutTime){
         FDMusicArea area = getMusicArea(uuid);
         if (area != null) {
-            area.onRemoval(server);
+            area.onRemoval(server, fadeOutTime);
             MUSIC_AREAS.remove(uuid);
         }
     }
