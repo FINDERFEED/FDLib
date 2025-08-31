@@ -27,7 +27,8 @@ public class FDMusicArea {
     private ResourceKey<Level> dimension;
     private FDMusicAreaShape shape;
     private FDMusicData musicData;
-    private int autoDeletionTicker = 10 * 60 * 20; //10 minutes, then deletes itself
+    private int autoDeletionTicker = 2 * 60 * 20; //2 minutes, then deletes itself, can be set manually
+    private int maxDeletionTicker = autoDeletionTicker;
     private int playerDetectionFrequency = 5;
 
     public FDMusicArea(ResourceKey<Level> dimension, Vec3 position, FDMusicAreaShape shape, FDMusicData musicData){
@@ -80,12 +81,17 @@ public class FDMusicArea {
         }
     }
 
-    protected void tickDeletionTicker(){
-        autoDeletionTicker--;
+    protected void tickDeletionTicker(boolean ignorePlayersInside){
+        if (playersInside.isEmpty() || ignorePlayersInside){
+            autoDeletionTicker--;
+        }else{
+            autoDeletionTicker = maxDeletionTicker;
+        }
     }
 
     public void setAutoDeletionTicker(int autoDeletionTicker) {
         this.autoDeletionTicker = autoDeletionTicker;
+        this.maxDeletionTicker = autoDeletionTicker;
     }
 
     public boolean shouldBeDeleted(){

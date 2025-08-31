@@ -20,6 +20,7 @@ public class FDMusicData {
             (datas, startFrom, inactiveDeleteTime, defaultFadeInTime, sourceUUID)->{
                 return new FDMusicData(sourceUUID, datas)
                         .startFromPart(startFrom)
+                        .fadeInTime(defaultFadeInTime)
                         .inactiveDeleteTime(inactiveDeleteTime);
             }
     );

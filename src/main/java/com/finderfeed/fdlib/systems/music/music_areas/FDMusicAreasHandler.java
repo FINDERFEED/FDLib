@@ -6,6 +6,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.HashMap;
@@ -18,7 +20,13 @@ public class FDMusicAreasHandler {
     private static final HashMap<UUID, FDMusicArea> MUSIC_AREAS = new HashMap<>();
 
     @SubscribeEvent
+    public static void removeAreas(ServerStoppedEvent event){
+        MUSIC_AREAS.clear();
+    }
+
+    @SubscribeEvent
     public static void tickAreas(ServerTickEvent.Pre event){
+
 
         var iterator = MUSIC_AREAS.entrySet().iterator();
 
@@ -30,13 +38,14 @@ public class FDMusicAreasHandler {
 
 
             if (area.shouldBeDeleted()){
+                area.onRemoval(event.getServer());
                 iterator.remove();
             }else {
                 ServerLevel level = event.getServer().getLevel(area.getDimension());
                 if (level != null) {
                     area.tick(level);
                 }
-                area.tickDeletionTicker();
+                area.tickDeletionTicker(level == null);
             }
 
         }

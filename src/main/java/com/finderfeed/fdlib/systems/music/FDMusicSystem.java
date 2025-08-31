@@ -52,6 +52,7 @@ public class FDMusicSystem {
         }
 
         if (volume != -1){
+            float finalVolume = volume;
             musicWasPlaying = true;
             SoundEngine soundEngine = FDClientHelpers.getSoundEngine();
             var instanceToChannel = soundEngine.instanceToChannel;
@@ -64,7 +65,7 @@ public class FDMusicSystem {
                 if (!instances.contains(soundInstance)){
                     ChannelAccess.ChannelHandle channelHandle = i.getValue();
                     channelHandle.execute(channel -> {
-                        channel.setVolume(0);
+                        channel.setVolume(finalVolume);
                     });
                 }
 
@@ -158,8 +159,21 @@ public class FDMusicSystem {
             }
         }
 
+        public static void onSoundEngineStop(){
+            sourceToProcessedBufferSecondLength.clear();
+        }
+
+        public static void onChannelStop(int source){
+            sourceToProcessedBufferSecondLength.remove(source);
+        }
+
+        public static void onChannelHandleRelease(int source){
+            sourceToProcessedBufferSecondLength.remove(source);
+        }
+
         public static void onProcessedBuffersRemoval(int source, int[] processedBuffers){
             float fullSeconds = 0;
+            System.out.println(processedBuffers.length);
             for (int buffer : processedBuffers){
                 int bytes = AL11.alGetBufferi(buffer, AL10.AL_SIZE);
                 int channels = AL11.alGetBufferi(buffer, AL10.AL_CHANNELS);

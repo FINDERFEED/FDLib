@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.mixin;
 
 import com.finderfeed.fdlib.systems.music.FDMusicSoundInstance;
+import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
@@ -21,5 +22,11 @@ public class SoundEngineMixin {
             });
         }
     }
+
+    @Inject(method = "stopAll", at = @At(value = "INVOKE", target = "Ljava/util/Map;clear()V", ordinal = 1))
+    public void onSoundEngineStop(CallbackInfo ci){
+        FDMusicSystem.StreamingSourcesBufferLengthCache.onSoundEngineStop();
+    }
+
 
 }
