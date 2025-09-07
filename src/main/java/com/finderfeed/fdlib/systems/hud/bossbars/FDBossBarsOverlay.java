@@ -14,6 +14,8 @@ public class FDBossBarsOverlay implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltraTracker) {
 
+        if (Minecraft.getInstance().options.hideGui) return;
+
         float pticks = deltraTracker.getGameTimeDeltaPartialTick(false);
 
         PoseStack matrices = graphics.pose();
