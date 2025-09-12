@@ -6,8 +6,8 @@ import com.finderfeed.fdlib.systems.hud.bossbars.packets.RemovePlayerFromBossBar
 import com.finderfeed.fdlib.systems.hud.bossbars.packets.SetBossBarProgressPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraftforge.neoforge.network.PacketDistributor;
+import net.minecraftforge.neoforge.registries.DeferredHolder;
 
 import java.util.HashSet;
 import java.util.Set;

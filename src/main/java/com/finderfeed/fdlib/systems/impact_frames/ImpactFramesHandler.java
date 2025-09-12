@@ -17,14 +17,14 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.bus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.neoforge.client.event.InputEvent;
+import net.minecraftforge.neoforge.client.event.RenderFrameEvent;
+import net.minecraftforge.neoforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.neoforge.event.entity.player.AttackEntityEvent;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.*;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT,modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ImpactFramesHandler {
 
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();

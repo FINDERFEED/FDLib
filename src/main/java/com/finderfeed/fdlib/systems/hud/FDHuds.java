@@ -5,12 +5,12 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarsOverlay;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectOverlay;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.bus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.neoforge.client.event.RegisterGuiLayersEvent;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.MOD)
 public class FDHuds {
 
     public static final ScreenEffectOverlay SCREEN_EFFECT_OVERLAY = new ScreenEffectOverlay();

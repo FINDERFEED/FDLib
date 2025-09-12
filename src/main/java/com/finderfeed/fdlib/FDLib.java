@@ -5,13 +5,12 @@ import com.finderfeed.fdlib.init.*;
 
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
-
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.common.Mod;
 
 @Mod(FDLib.MOD_ID)
 public class FDLib {
@@ -29,7 +28,6 @@ public class FDLib {
         FDItems.ITEMS.register(bus);
         FDBlocks.BLOCKS.register(bus);
         FDModels.MODELS.register(bus);
-//        FDSounds.SOUNDS.register(bus);
         FDConfigs.CONFIGS.register(bus);
         FDAnims.ANIMATIONS.register(bus);
         FDParticles.PARTICLES.register(bus);

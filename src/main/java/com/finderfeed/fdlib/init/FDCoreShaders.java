@@ -4,14 +4,14 @@ import com.finderfeed.fdlib.FDLib;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.bus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.neoforge.client.event.RegisterShadersEvent;
 
 import java.io.IOException;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
 public class FDCoreShaders {
 
     public static ShaderInstance NOISE = null;

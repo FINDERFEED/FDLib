@@ -13,14 +13,14 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
+import net.minecraftforge.bus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.neoforge.client.event.InputEvent;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
-//@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
+//@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
 public class TTestScreers extends SimpleFDScreen {
 
     private static int test = 0;

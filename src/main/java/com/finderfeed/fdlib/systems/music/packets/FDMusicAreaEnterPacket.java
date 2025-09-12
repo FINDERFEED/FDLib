@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.systems.music.FDMusic;
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:enter_music_area_packet")
 public class FDMusicAreaEnterPacket extends FDPacket {

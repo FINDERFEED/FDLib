@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:playsound_in_ears")
 public class PlaySoundInEarsPacket extends FDPacket {

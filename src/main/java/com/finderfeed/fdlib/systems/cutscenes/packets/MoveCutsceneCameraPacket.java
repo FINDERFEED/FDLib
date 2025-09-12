@@ -7,7 +7,7 @@ import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 /**
  * Won't do anything if cutscene is not active

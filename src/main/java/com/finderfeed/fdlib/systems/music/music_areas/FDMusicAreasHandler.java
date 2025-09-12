@@ -4,17 +4,17 @@ import com.finderfeed.fdlib.FDLib;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.util.thread.EffectiveSide;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.bus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.neoforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.neoforge.event.tick.ServerTickEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID)
 public class FDMusicAreasHandler {
 
     private static final HashMap<UUID, FDMusicArea> MUSIC_AREAS = new HashMap<>();

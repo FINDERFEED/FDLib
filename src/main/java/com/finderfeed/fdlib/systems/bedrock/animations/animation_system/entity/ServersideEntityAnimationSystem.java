@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.p
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.EntityStartAnimationPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.packets.EntityStopAnimationPacket;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.neoforge.network.PacketDistributor;
 
 public class ServersideEntityAnimationSystem<T extends Entity & AnimatedObject> extends EntityAnimationSystem<T> {
     protected ServersideEntityAnimationSystem(T entity) {

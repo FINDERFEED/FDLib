@@ -2,7 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile;
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.fml.util.thread.EffectiveSide;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
 
 public abstract class TileAnimationSystem extends AnimationSystem {
 

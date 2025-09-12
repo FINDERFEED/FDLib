@@ -5,7 +5,7 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:entity_stop_animation_packet")
 public class EntityStopAnimationPacket extends FDPacket {

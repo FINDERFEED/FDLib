@@ -8,18 +8,18 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.sounds.SoundSource;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.bus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.neoforge.client.event.RenderFrameEvent;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
 import java.util.*;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
 public class FDMusicSystem {
 
     private static final HashMap<UUID, FDMusic> ACTIVE_MUSIC = new HashMap<>();
@@ -136,7 +136,7 @@ public class FDMusicSystem {
 
 
     //WTF
-    @EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
     public static class StreamingSourcesBufferLengthCache {
 
         public static final HashMap<Integer, Float> sourceToProcessedBufferSecondLength = new HashMap<>();

@@ -11,13 +11,16 @@ import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.registries.NewRegistryEvent;
-import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.NewRegistryEvent;
+import net.minecraftforge.registries.RegistryBuilder;
+
+import java.util.function.Supplier;
 
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD,modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD,modid = FDLib.MOD_ID)
 public class FDRegistries {
 
     public static final ResourceKey<Registry<FDModelInfo>> BEDROCK_MODEL_INFOS_KEY = key("bedrock/models");
@@ -32,23 +35,23 @@ public class FDRegistries {
         return ResourceKey.createRegistryKey(ResourceLocation.tryBuild(FDLib.MOD_ID, name));
     }
 
-    public static Registry<FDModelInfo> MODELS = new RegistryBuilder<>(BEDROCK_MODEL_INFOS_KEY).sync(true).create();
-    public static Registry<Animation> ANIMATIONS = new RegistryBuilder<>(ANIMATIONS_KEY).sync(true).create();
-    public static Registry<JsonConfig> CONFIGS = new RegistryBuilder<>(CONFIGS_KEY).sync(true).create();
-    public static Registry<FDBossBarFactory<?>> BOSS_BARS = new RegistryBuilder<>(FD_BOSS_BARS).sync(true).create();
-    public static Registry<ScreenEffectType<?,?>> SCREEN_EFFECTS = new RegistryBuilder<>(SCREEN_EFFECTS_KEY).sync(true).create();
-    public static Registry<ModelAttachmentType<?,?>> MODEL_ATTACHMENT_TYPES = new RegistryBuilder<>(MODEL_ATTACHMENT_TYPE_KEY).sync(true).create();
-    public static Registry<FDRenderType> RENDER_TYPE = new RegistryBuilder<>(RENDER_TYPE_KEY).sync(true).create();
+    public static Supplier<IForgeRegistry<FDModelInfo>> MODELS;
+    public static Supplier<IForgeRegistry<Animation>> ANIMATIONS;
+    public static Supplier<IForgeRegistry<JsonConfig>> CONFIGS;
+    public static Supplier<IForgeRegistry<FDBossBarFactory<?>>> BOSS_BARS;
+    public static Supplier<IForgeRegistry<ScreenEffectType<?,?>>> SCREEN_EFFECTS;
+    public static Supplier<IForgeRegistry<ModelAttachmentType<?,?>>> MODEL_ATTACHMENT_TYPES;
+    public static Supplier<IForgeRegistry<FDRenderType>> RENDER_TYPE;
 
     @SubscribeEvent
     public static void createRegistries(NewRegistryEvent event){
-        event.register(MODELS);
-        event.register(CONFIGS);
-        event.register(BOSS_BARS);
-        event.register(ANIMATIONS);
-        event.register(RENDER_TYPE);
-        event.register(SCREEN_EFFECTS);
-        event.register(MODEL_ATTACHMENT_TYPES);
+        MODELS = event.create(new RegistryBuilder<FDModelInfo>().setName(BEDROCK_MODEL_INFOS_KEY.location()));
+        CONFIGS = event.create(new RegistryBuilder<JsonConfig>().setName(CONFIGS_KEY.location()));
+        BOSS_BARS = event.create(new RegistryBuilder<FDBossBarFactory<?>>().setName(FD_BOSS_BARS.location()));
+        ANIMATIONS = event.create(new RegistryBuilder<Animation>().setName(ANIMATIONS_KEY.location()));
+        RENDER_TYPE = event.create(new RegistryBuilder<FDRenderType>().setName(RENDER_TYPE_KEY.location()));
+        SCREEN_EFFECTS = event.create(new RegistryBuilder<ScreenEffectType<?,?>>().setName(SCREEN_EFFECTS_KEY.location()));
+        MODEL_ATTACHMENT_TYPES = event.create(new RegistryBuilder<ModelAttachmentType<?,?>>().setName(MODEL_ATTACHMENT_TYPE_KEY.location()));
     }
 
 }

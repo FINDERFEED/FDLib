@@ -7,7 +7,7 @@ import com.finderfeed.fdlib.util.FDByteBufCodecs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:player_move_packet")
 public class PlayerMovePacket extends FDPacket {

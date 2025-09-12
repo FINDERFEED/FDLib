@@ -1,8 +1,8 @@
 package com.finderfeed.fdlib.systems.screen.screen_particles;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
+import net.minecraftforge.bus.api.Event;
+import net.minecraftforge.bus.api.ICancellableEvent;
 
 public abstract class ScreenParticlesRenderEvent extends Event implements ICancellableEvent {
 

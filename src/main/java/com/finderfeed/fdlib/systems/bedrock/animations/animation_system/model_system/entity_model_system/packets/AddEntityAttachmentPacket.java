@@ -10,7 +10,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_sy
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 

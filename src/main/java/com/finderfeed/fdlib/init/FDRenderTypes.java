@@ -4,13 +4,13 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.render_types.FDRenderType;
 import com.finderfeed.fdlib.systems.render_types.instances.*;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
 public class FDRenderTypes {
 
-    public static final DeferredRegister<FDRenderType> RENDER_TYPES = DeferredRegister.create(FDRegistries.RENDER_TYPE, FDLib.MOD_ID);
+    public static final DeferredRegister<FDRenderType> RENDER_TYPES = DeferredRegister.create(FDRegistries.RENDER_TYPE_KEY, FDLib.MOD_ID);
 
     public static final Supplier<FDRTEntityCutout> ENTITY_CUTOUT = RENDER_TYPES.register("entity_cutout", FDRTEntityCutout::new);
 

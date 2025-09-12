@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.Mob;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:head_controller_change_mode")
 public class ChangeHeadControllerModePacket<T extends Mob & AnimatedObject  & IHasHead<T>> extends FDPacket {

@@ -14,11 +14,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforgespi.language.IModFileInfo;
-import net.neoforged.neoforgespi.language.ModFileScanData;
-import net.neoforged.neoforgespi.locating.IModFile;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.neoforge.network.PacketDistributor;
+import net.minecraftforge.neoforgespi.language.IModFileInfo;
+import net.minecraftforge.neoforgespi.language.ModFileScanData;
+import net.minecraftforge.neoforgespi.locating.IModFile;
 import org.objectweb.asm.Type;
 
 import java.io.IOException;

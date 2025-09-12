@@ -7,7 +7,7 @@ import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.IPayloadContext;
 
 @RegisterFDPacket("fdlib:cutscene_packet")
 public class StartCutscenePacket extends FDPacket {

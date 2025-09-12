@@ -3,7 +3,7 @@ package com.finderfeed.fdlib.init;
 import com.finderfeed.fdlib.FDLib;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 

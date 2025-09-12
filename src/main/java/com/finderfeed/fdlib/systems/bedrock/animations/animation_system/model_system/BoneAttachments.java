@@ -9,7 +9,7 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraftforge.neoforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
 import java.util.List;

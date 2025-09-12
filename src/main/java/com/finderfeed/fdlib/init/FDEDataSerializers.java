@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,29 +11,29 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraftforge.neoforge.registries.DeferredRegister;
+import net.minecraftforge.neoforge.registries.NeoForgeRegistries;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
 public class FDEDataSerializers {
 
 
-    public static final DeferredRegister<EntityDataSerializer<?>> SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS, FDLib.MOD_ID);
+    public static final DeferredRegister<EntityDataSerializer<?>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, FDLib.MOD_ID);
 
     public static final Supplier<EntityDataSerializer<Vec3>> VEC3 = SERIALIZERS.register("vec3",()->{
         return new EntityDataSerializer<Vec3>() {
 
-            public static final StreamCodec<FriendlyByteBuf,Vec3> CODEC = StreamCodec.composite(
-                    ByteBufCodecs.DOUBLE,v->v.x,
-                    ByteBufCodecs.DOUBLE,v->v.y,
-                    ByteBufCodecs.DOUBLE,v->v.z,
-                    Vec3::new
-            );
+            @Override
+            public void write(FriendlyByteBuf buf, Vec3 vec3) {
+                NetworkCodec.VEC3.toNetwork(buf,vec3);
+            }
 
             @Override
-            public StreamCodec<? super RegistryFriendlyByteBuf, Vec3> codec() {
-                return CODEC;
+            public Vec3 read(FriendlyByteBuf p_135024_) {
+                return NetworkCodec.VEC3.fromNetwork(p_135024_);
             }
 
             @Override
