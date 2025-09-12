@@ -70,9 +70,9 @@ public class FDCube {
                 vertex.vertex(m,(float)vertexPos.x * POS_MULTIPLIER,(float)vertexPos.y * POS_MULTIPLIER,(float)vertexPos.z * POS_MULTIPLIER);
                 vertex.color(r,g,b,a);
                 vertex.uv(v.getU(),v.getV());
-                vertex.setOverlay(overlay);
-                vertex.setLight(light);
-                vertex.setNormal(normal.x, normal.y, normal.z);
+                vertex.overlayCoords(overlay);
+                vertex.uv2(light);
+                vertex.normal(normal.x, normal.y, normal.z);
             }
         }
 

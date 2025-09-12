@@ -47,7 +47,7 @@ public class ColoredVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer setNormal(float px, float py, float pz) {
-        return original.setNormal(px,py,pz);
+        return original.normal(px,py,pz);
     }
 
     public static MultiBufferSource wrapBufferSource(MultiBufferSource source, int r, int g, int b, int a){

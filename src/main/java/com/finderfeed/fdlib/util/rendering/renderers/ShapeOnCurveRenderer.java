@@ -159,7 +159,7 @@ public class ShapeOnCurveRenderer {
 
         Vector3f between = catmullRomDerivativePrecomputedLengths(splinePoints, 0, precomputedLengths);
 
-        Vector3f oldPoint = splinePoints.getFirst();
+        Vector3f oldPoint = splinePoints.get(0);
 
         Vector3f directionPrev = between;
 
@@ -171,7 +171,7 @@ public class ShapeOnCurveRenderer {
 
         List<Vector3f> rotatedShape = scaleRotateAndTranslatePoints(new Quaternionf(new AxisAngle4d(angle, 0, 1, 0)), new Vector3f(), shape.getPoints(),1f);
 
-        List<Vector3f> previousPoints = scaleRotateAndTranslatePoints(oldRot, splinePoints.getFirst(), rotatedShape,initScale);
+        List<Vector3f> previousPoints = scaleRotateAndTranslatePoints(oldRot, splinePoints.get(0), rotatedShape,initScale);
 
         int totalShapePoints = shape.getPoints().size();
 
@@ -273,10 +273,10 @@ public class ShapeOnCurveRenderer {
                     float ac2 = FDMathUtil.lerp(startColor.a,endColor.a,p2);
 
                     for (int c = 0; c < renderCount;c++) {
-                        vertexConsumer.vertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).color(rc1, gc1, bc1, ac1).uv(startPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                        vertexConsumer.vertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).color(rc2, gc2, bc2, ac2).uv(endPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                        vertexConsumer.vertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).color(rc2, gc2, bc2, ac2).uv(endPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                        vertexConsumer.vertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).color(rc1, gc1, bc1, ac1).uv(startPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                        vertexConsumer.vertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).color(rc1, gc1, bc1, ac1).uv(startPercentU * uModifier, v2 * vModifier).overlayCoords(overlay).uv2(light).normal(normal.x, normal.y, normal.z).endVertex();
+                        vertexConsumer.vertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).color(rc2, gc2, bc2, ac2).uv(endPercentU * uModifier, v2 * vModifier).overlayCoords(overlay).uv2(light).normal(normal.x, normal.y, normal.z).endVertex();
+                        vertexConsumer.vertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).color(rc2, gc2, bc2, ac2).uv(endPercentU * uModifier, v1 * vModifier).overlayCoords(overlay).uv2(light).normal(normal.x, normal.y, normal.z).endVertex();
+                        vertexConsumer.vertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).color(rc1, gc1, bc1, ac1).uv(startPercentU * uModifier, v1 * vModifier).overlayCoords(overlay).uv2(light).normal(normal.x, normal.y, normal.z).endVertex();
                     }
                 }
             }

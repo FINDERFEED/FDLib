@@ -73,12 +73,8 @@ public class FDRenderUtil {
     }
 
     public static float tryGetPartialTickIgnorePause(){
-        DeltaTracker tracker = Minecraft.getInstance().getTimer();
-        if (tracker instanceof DeltaTracker.Timer timer){
-            return timer.deltaTickResidual;
-        }else{
-            return tracker.getGameTimeDeltaPartialTick(true);
-        }
+        var timer = Minecraft.getInstance().timer;
+        return timer.partialTick;
     }
 
     public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale,int light, int overlay, float r,float g, float b,float a, RenderType renderType){
@@ -475,12 +471,13 @@ public class FDRenderUtil {
     }
 
     public static class ParticleRenderTypes{
-        public static final ParticleRenderType ADDITIVE_TRANSLUCENT = new FDParticleRenderType() {
+        public static final ParticleRenderType ADDITIVE_TRANSLUCENT = new ParticleRenderType() {
+
 
 
             @Nullable
             @Override
-            public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+            public void begin(BufferBuilder tesselator, TextureManager textureManager) {
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
                 }
@@ -488,11 +485,11 @@ public class FDRenderUtil {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE);
                 FDRenderUtil.bindTexture(TextureAtlas.LOCATION_PARTICLES);
-                return tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
+                tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
             }
 
             @Override
-            public void end() {
+            public void end(Tesselator tesselator) {
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
