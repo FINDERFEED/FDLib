@@ -1,6 +1,5 @@
 package com.finderfeed.fdlib.systems.screen.screen_effect;
 
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 
@@ -18,7 +17,7 @@ public abstract class ScreenEffect<T extends ScreenEffectData> {
         this.data = data;
     }
 
-    public abstract void render(GuiGraphics graphics, DeltaTracker deltaTracker, int currentTick, float screenWidth, float screenHeight);
+    public abstract void render(GuiGraphics graphics, float pticks, int currentTick, float screenWidth, float screenHeight);
 
     public void setData(T data) {
         this.data = data;

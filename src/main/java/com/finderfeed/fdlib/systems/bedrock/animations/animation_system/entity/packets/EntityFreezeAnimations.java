@@ -5,7 +5,7 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:freeze_entity_animations_packet")
 public class EntityFreezeAnimations extends FDPacket {

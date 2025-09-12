@@ -35,7 +35,7 @@ public class FDModEvents {
     public static void commonSetupEvent(FMLCommonSetupEvent event){
 
         //memorize all default values in reflective configs
-        for (JsonConfig config : FDRegistries.CONFIGS){
+        for (JsonConfig config : FDRegistries.CONFIGS.get()){
             if (config instanceof ReflectiveJsonConfig c){
                 c.memorizeDefaultValues(c.getClass(),c);
             }
@@ -52,7 +52,7 @@ public class FDModEvents {
 
     public static void loadAnimations(){
         FDLib.LOGGER.info("Loading FD animations...");
-        for (var entry : FDRegistries.ANIMATIONS.entrySet()){
+        for (var entry : FDRegistries.ANIMATIONS.get().getEntries()){
             ResourceKey<Animation> key = entry.getKey();
             Animation value = entry.getValue();
             ResourceLocation animationName = key.location();
@@ -74,7 +74,7 @@ public class FDModEvents {
 
     public static void loadModels(){
         FDLib.LOGGER.info("Loading FD models...");
-        for (var entry : FDRegistries.MODELS.entrySet()){
+        for (var entry : FDRegistries.MODELS.get().getEntries()){
             FDModelInfo value = entry.getValue();
             ResourceLocation location = value.getModelName();
             ResourceLocation actualLocation = ResourceLocation.tryBuild(location.getNamespace(),

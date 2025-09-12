@@ -121,8 +121,10 @@ public class FDShaderRenderer {
         RenderSystem.setShader(()->shaderInstance);
 
         Tesselator tesselator = Tesselator.getInstance();
+        
 
-        BufferBuilder vertex = tesselator.begin(VertexFormat.Mode.QUADS,format);
+        BufferBuilder vertex = tesselator.getBuilder();
+        vertex.begin(VertexFormat.Mode.QUADS,format);
 
         float xs = centered ? x - xw / 2 : x;
         float ys = centered ? y - yw / 2 : y;
@@ -139,31 +141,31 @@ public class FDShaderRenderer {
         if (format == DefaultVertexFormat.POSITION_TEX_COLOR){
 
 
-            vertex.addVertex(matrix4f,xs,ye,z).setUv(0,yUvSpan).setColor(color[12],color[13],color[14],color[15]);
-            vertex.addVertex(matrix4f,xe,ye,z).setUv(xUvSpan,yUvSpan).setColor(color[8],color[9],color[10],color[11]);
-            vertex.addVertex(matrix4f,xe,ys,z).setUv(xUvSpan,0).setColor(color[4],color[5],color[6],color[7]);
-            vertex.addVertex(matrix4f,xs,ys,z).setUv(0,0).setColor(color[0],color[1],color[2],color[3]);
+            vertex.vertex(matrix4f,xs,ye,z).uv(0,yUvSpan).color(color[12],color[13],color[14],color[15]).endVertex();
+            vertex.vertex(matrix4f,xe,ye,z).uv(xUvSpan,yUvSpan).color(color[8],color[9],color[10],color[11]).endVertex();
+            vertex.vertex(matrix4f,xe,ys,z).uv(xUvSpan,0).color(color[4],color[5],color[6],color[7]).endVertex();
+            vertex.vertex(matrix4f,xs,ys,z).uv(0,0).color(color[0],color[1],color[2],color[3]).endVertex();
 
 
         }else if (format == DefaultVertexFormat.POSITION_COLOR){
 
-            vertex.addVertex(matrix4f,xs,ye,z).setColor(color[12],color[13],color[14],color[15]);
-            vertex.addVertex(matrix4f,xe,ye,z).setColor(color[8],color[9],color[10],color[11]);
-            vertex.addVertex(matrix4f,xe,ys,z).setColor(color[4],color[5],color[6],color[7]);
-            vertex.addVertex(matrix4f,xs,ys,z).setColor(color[0],color[1],color[2],color[3]);
+            vertex.vertex(matrix4f,xs,ye,z).color(color[12],color[13],color[14],color[15]).endVertex();
+            vertex.vertex(matrix4f,xe,ye,z).color(color[8],color[9],color[10],color[11]).endVertex();
+            vertex.vertex(matrix4f,xe,ys,z).color(color[4],color[5],color[6],color[7]).endVertex();
+            vertex.vertex(matrix4f,xs,ys,z).color(color[0],color[1],color[2],color[3]).endVertex();
 
         }else if (format == DefaultVertexFormat.POSITION){
 
-            vertex.addVertex(matrix4f,xs,ye,z);
-            vertex.addVertex(matrix4f,xe,ye,z);
-            vertex.addVertex(matrix4f,xe,ys,z);
-            vertex.addVertex(matrix4f,xs,ys,z);
+            vertex.vertex(matrix4f,xs,ye,z).endVertex();
+            vertex.vertex(matrix4f,xe,ye,z).endVertex();
+            vertex.vertex(matrix4f,xe,ys,z).endVertex();
+            vertex.vertex(matrix4f,xs,ys,z).endVertex();
 
         }else{
             throw new RuntimeException("Shader vertex format is not supported by FDShaderRenderer");
         }
 
-        BufferUploader.drawWithShader(vertex.build());
+        BufferUploader.drawWithShader(vertex.end());
 
     }
 

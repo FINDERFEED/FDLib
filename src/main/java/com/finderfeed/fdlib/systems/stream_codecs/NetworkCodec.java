@@ -7,8 +7,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -18,6 +22,42 @@ public abstract class NetworkCodec<K> {
     public abstract void toNetwork(FriendlyByteBuf buf, K object);
 
     public abstract K fromNetwork(FriendlyByteBuf buf);
+
+    public static <C> NetworkCodec<List<C>> listOf(NetworkCodec<C> singleCodec){
+        return new NetworkCodec<List<C>>() {
+            @Override
+            public void toNetwork(FriendlyByteBuf buf, List<C> list) {
+                buf.writeInt(list.size());
+                for (C object : list){
+                    singleCodec.toNetwork(buf,object);
+                }
+            }
+
+            @Override
+            public List<C> fromNetwork(FriendlyByteBuf buf) {
+                List<C> list = new ArrayList<>();
+                int size = buf.readInt();
+                for (int i = 0; i < size; i++){
+                    list.add(singleCodec.fromNetwork(buf));
+                }
+                return list;
+            }
+
+        };
+    }
+
+    public static NetworkCodec<SoundEvent> SOUND_EVENT = new NetworkCodec<SoundEvent>() {
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, SoundEvent object) {
+            var key = ForgeRegistries.SOUND_EVENTS.getKey(object);
+            buf.writeResourceLocation(key);
+        }
+
+        @Override
+        public SoundEvent fromNetwork(FriendlyByteBuf buf) {
+            return ForgeRegistries.SOUND_EVENTS.getValue(buf.readResourceLocation());
+        }
+    };
 
     public static <C> NetworkCodec<C> idMapper(IdMapper<C> idMapper){
         return new NetworkCodec<C>() {

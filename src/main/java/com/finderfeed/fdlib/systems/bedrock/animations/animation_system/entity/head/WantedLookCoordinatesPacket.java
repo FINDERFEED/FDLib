@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:wanted_look_coords_packet")
 public class WantedLookCoordinatesPacket extends FDPacket {

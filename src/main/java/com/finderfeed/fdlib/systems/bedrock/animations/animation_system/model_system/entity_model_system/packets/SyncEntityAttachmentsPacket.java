@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:sync_model_system")
 public class SyncEntityAttachmentsPacket extends FDPacket {

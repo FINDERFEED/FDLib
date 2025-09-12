@@ -2,17 +2,9 @@ package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.neoforge.registries.DeferredRegister;
-import net.minecraftforge.neoforge.registries.NeoForgeRegistries;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

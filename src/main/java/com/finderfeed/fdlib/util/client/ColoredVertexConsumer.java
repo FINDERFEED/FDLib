@@ -22,27 +22,27 @@ public class ColoredVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer addVertex(float px, float py, float pz) {
-        return original.addVertex(px,py,pz);
+        return original.vertex(px,py,pz);
     }
 
     @Override
     public VertexConsumer setColor(int r, int g, int b, int a) {
-        return original.setColor(this.r,this.g,this.b,this.a);
+        return original.color(this.r,this.g,this.b,this.a);
     }
 
     @Override
     public VertexConsumer setUv(float u, float v) {
-        return original.setUv(u,v);
+        return original.uv(u,v);
     }
 
     @Override
     public VertexConsumer setUv1(int u, int v) {
-        return original.setUv1(u,v);
+        return original.uv1(u,v);
     }
 
     @Override
     public VertexConsumer setUv2(int u, int v) {
-        return original.setUv2(u,v);
+        return original.uv2(u,v);
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:stop_animation_packet")
 public class StopTileAnimationPacket extends FDPacket {

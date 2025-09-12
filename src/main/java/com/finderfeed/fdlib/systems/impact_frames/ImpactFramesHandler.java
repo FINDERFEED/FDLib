@@ -18,6 +18,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.ClientTickEvent;
@@ -36,7 +37,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.*;
 
-@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ImpactFramesHandler {
 
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();
@@ -48,7 +49,8 @@ public class ImpactFramesHandler {
     public static PostChain impactFrameShader;
 
     @SubscribeEvent
-    public static void tick(ClientTickEvent.Pre event){
+    public static void tick(TickEvent.ClientTickEvent event){
+        if (event.phase != TickEvent.Phase.START) return;
         manageImpactFrames();
     }
 
@@ -101,7 +103,7 @@ public class ImpactFramesHandler {
         renderer.effectActive = true;
     }
 
-    public static void beforePostEffect(DeltaTracker deltaTracker, boolean idk){
+    public static void beforePostEffect(float pticks, boolean idk){
 
         if (isImpactFrameShaderActive()) {
             RenderTarget main = Minecraft.getInstance().getMainRenderTarget();

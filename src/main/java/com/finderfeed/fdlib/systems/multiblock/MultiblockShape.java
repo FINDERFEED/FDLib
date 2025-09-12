@@ -26,7 +26,7 @@ public class MultiblockShape implements Iterable<Pair<BlockState,BlockPos>> {
     }
 
     public BlockState getMainState(){
-        return states.getFirst();
+        return states.get(0);
     }
 
     public boolean isAPartOfShape(BlockState stateBeingChecked, BlockPos mainBlockPos, BlockPos checkPos){

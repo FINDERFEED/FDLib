@@ -2,26 +2,26 @@ package com.finderfeed.fdlib.systems.screen.screen_effect;
 
 import com.finderfeed.fdlib.FDLib;
 import com.mojang.blaze3d.platform.Window;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.ClientTickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Mod.EventBusSubscriber(bus =  EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT, modid = FDLib.MOD_ID)
-public class ScreenEffectOverlay implements LayeredDraw.Layer {
+@Mod.EventBusSubscriber(bus =  Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT, modid = FDLib.MOD_ID)
+public class ScreenEffectOverlay implements IGuiOverlay {
 
     private static final List<ScreenEffectInstance> screenEffects = new ArrayList<>();
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Window window = Minecraft.getInstance().getWindow();
         float width = window.getGuiScaledWidth();
         float height = window.getGuiScaledHeight();
@@ -31,7 +31,9 @@ public class ScreenEffectOverlay implements LayeredDraw.Layer {
     }
 
     @SubscribeEvent
-    public static void tickEvent(ClientTickEvent.Post event){
+    public static void tickEvent(TickEvent.ClientTickEvent event){
+
+        if (event.phase != TickEvent.Phase.END) return;
 
         if (Minecraft.getInstance().isPaused()) return;
 

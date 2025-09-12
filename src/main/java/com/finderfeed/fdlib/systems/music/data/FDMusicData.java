@@ -1,9 +1,6 @@
 package com.finderfeed.fdlib.systems.music.data;
 
-import com.finderfeed.fdlib.util.NetworkCodec;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +8,8 @@ import java.util.UUID;
 
 public class FDMusicData {
 
-    public static final NetworkCodec<FriendlyByteBuf, FDMusicData> STREAM_CODEC = NetworkCodec.composite(
-            FDMusicPartData.STREAM_CODEC.apply(NetworkCodec.list()),v->v.musicPartDatas,
+    public static final NetworkCodec<FDMusicData> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.listOf(FDMusicPartData.STREAM_CODEC),v->v.musicPartDatas,
             NetworkCodec.INT, v->v.startFrom,
             NetworkCodec.INT, v->v.inactiveDeleteTime,
             NetworkCodec.INT, v->v.defaultFadeInTime,

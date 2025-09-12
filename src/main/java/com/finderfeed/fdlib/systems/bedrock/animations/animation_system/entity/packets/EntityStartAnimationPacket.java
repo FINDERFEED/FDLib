@@ -7,7 +7,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:entity_start_animation_packet")
 public class EntityStartAnimationPacket extends FDPacket {

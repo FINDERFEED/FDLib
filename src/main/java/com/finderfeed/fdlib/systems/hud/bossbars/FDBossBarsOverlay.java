@@ -2,21 +2,21 @@ package com.finderfeed.fdlib.systems.hud.bossbars;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
-public class FDBossBarsOverlay implements LayeredDraw.Layer {
+public class FDBossBarsOverlay implements IGuiOverlay {
 
     public static final float BASE_BOSS_BAR_TOP_OFFSET = 3;
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltraTracker) {
+    public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
 
         if (Minecraft.getInstance().options.hideGui) return;
 
-        float pticks = deltraTracker.getGameTimeDeltaPartialTick(false);
+        float pticks = partialTick;
 
         PoseStack matrices = graphics.pose();
 

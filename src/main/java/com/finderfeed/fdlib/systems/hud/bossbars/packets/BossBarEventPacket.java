@@ -8,9 +8,11 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+import net.minecraftforge.network.NetworkEvent;
+
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:boss_bar_event")
 public class BossBarEventPacket extends FDPacket {

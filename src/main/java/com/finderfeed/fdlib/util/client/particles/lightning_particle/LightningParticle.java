@@ -129,10 +129,10 @@ public class LightningParticle extends Particle {
         float widthStart = lightningWidth / sin1;
         float widthEnd = lightningWidth / sin2;
 
-        vertex.addVertex(transform, node.start.x - prev.x * widthStart * whiteWidthMult, node.start.y - prev.y * widthStart * whiteWidthMult,zOffset).setColor(r,g,b,a);
-        vertex.addVertex(transform, node.end.x - currentBetween.x * widthEnd * whiteWidthMult, node.end.y - currentBetween.y * widthEnd * whiteWidthMult,zOffset).setColor(r,g,b,a);
-        vertex.addVertex(transform, node.end.x + currentBetween.x * widthEnd * whiteWidthMult, node.end.y + currentBetween.y * widthEnd * whiteWidthMult,zOffset).setColor(r,g,b,a);
-        vertex.addVertex(transform, node.start.x + prev.x * widthStart * whiteWidthMult, node.start.y + prev.y * widthStart * whiteWidthMult,zOffset).setColor(r,g,b,a);
+        vertex.vertex(transform, node.start.x - prev.x * widthStart * whiteWidthMult, node.start.y - prev.y * widthStart * whiteWidthMult,zOffset).color(r,g,b,a);
+        vertex.vertex(transform, node.end.x - currentBetween.x * widthEnd * whiteWidthMult, node.end.y - currentBetween.y * widthEnd * whiteWidthMult,zOffset).color(r,g,b,a);
+        vertex.vertex(transform, node.end.x + currentBetween.x * widthEnd * whiteWidthMult, node.end.y + currentBetween.y * widthEnd * whiteWidthMult,zOffset).color(r,g,b,a);
+        vertex.vertex(transform, node.start.x + prev.x * widthStart * whiteWidthMult, node.start.y + prev.y * widthStart * whiteWidthMult,zOffset).color(r,g,b,a);
 
         for (int  i = 0; i < node.branches.size();i++){
             this.renderLightningNode(transform, node.branches.get(i), vertex, lightningWidth,r,g,b,a,zOffset);

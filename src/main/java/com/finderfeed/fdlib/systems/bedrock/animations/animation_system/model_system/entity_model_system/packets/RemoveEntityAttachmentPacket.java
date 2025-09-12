@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 import java.util.UUID;
 

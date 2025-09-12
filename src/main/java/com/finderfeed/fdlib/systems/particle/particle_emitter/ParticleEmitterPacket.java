@@ -4,7 +4,7 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:emitter_packet")
 public class ParticleEmitterPacket extends FDPacket {

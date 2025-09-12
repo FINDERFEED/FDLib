@@ -7,7 +7,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:screen_effect")
 public class SendScreenEffectPacket<D extends ScreenEffectData, T extends ScreenEffect<D>> extends FDPacket {

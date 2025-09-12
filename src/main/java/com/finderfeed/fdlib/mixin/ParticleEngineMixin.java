@@ -19,12 +19,12 @@ import java.util.function.Predicate;
 public class ParticleEngineMixin {
 
 
-    @Inject(method = "render(Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;Ljava/util/function/Predicate;)V",
-            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferUploader;drawWithShader(Lcom/mojang/blaze3d/vertex/MeshData;)V",shift = At.Shift.BY,by = 2))
-    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, Frustum frustum, Predicate<ParticleRenderType> renderTypePredicate, CallbackInfo ci,@Local ParticleRenderType particlerendertype){
-        if (particlerendertype instanceof FDParticleRenderType fdParticleRenderType){
-            fdParticleRenderType.end();
-        }
-    }
+//    @Inject(method = "render(Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;Ljava/util/function/Predicate;)V",
+//            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferUploader;drawWithShader(Lcom/mojang/blaze3d/vertex/MeshData;)V",shift = At.Shift.BY,by = 2))
+//    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, Frustum frustum, Predicate<ParticleRenderType> renderTypePredicate, CallbackInfo ci,@Local ParticleRenderType particlerendertype){
+//        if (particlerendertype instanceof FDParticleRenderType fdParticleRenderType){
+//            fdParticleRenderType.end();
+//        }
+//    }
 
 }

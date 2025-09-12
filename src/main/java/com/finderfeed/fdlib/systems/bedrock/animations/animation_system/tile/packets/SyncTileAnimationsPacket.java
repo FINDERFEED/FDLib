@@ -10,7 +10,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSy
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 import java.util.ArrayList;
 import java.util.List;

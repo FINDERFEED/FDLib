@@ -180,10 +180,10 @@ public class FDRenderUtil {
         BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
         Matrix4f m = matrices.last().pose();
 
-        builder.addVertex(m,x,y + yw,0).setColor(r,g,b,a);
-        builder.addVertex(m,x + xw,y + yw,0).setColor(r,g,b,a);
-        builder.addVertex(m,x + xw,y,0).setColor(r,g,b,a);
-        builder.addVertex(m,x,y,0).setColor(r,g,b,a);
+        builder.vertex(m,x,y + yw,0).color(r,g,b,a);
+        builder.vertex(m,x + xw,y + yw,0).color(r,g,b,a);
+        builder.vertex(m,x + xw,y,0).color(r,g,b,a);
+        builder.vertex(m,x,y,0).color(r,g,b,a);
 
 
         BufferUploader.drawWithShader(builder.build());
@@ -201,10 +201,10 @@ public class FDRenderUtil {
         BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
         Matrix4f m = matrices.last().pose();
 
-        builder.addVertex(m,x,y + yw,0).setColor(r4,g4,b4,a4);
-        builder.addVertex(m,x + xw,y + yw,0).setColor(r3,g3,b3,a3);
-        builder.addVertex(m,x + xw,y,0).setColor(r2,g2,b2,a2);
-        builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
+        builder.vertex(m,x,y + yw,0).color(r4,g4,b4,a4);
+        builder.vertex(m,x + xw,y + yw,0).color(r3,g3,b3,a3);
+        builder.vertex(m,x + xw,y,0).color(r2,g2,b2,a2);
+        builder.vertex(m,x,y,0).color(r1,g1,b1,a1);
 
 
         BufferUploader.drawWithShader(builder.build());
@@ -222,10 +222,10 @@ public class FDRenderUtil {
         float yuvs = 0;
         float yuvend = yuvStretch;
 
-        builder.addVertex(m,x,y + yw,0).setUv(xuvs,yuvend).setColor(r,g,b,a);
-        builder.addVertex(m,x + xw,y + yw,0).setUv(xuvend,yuvend).setColor(r,g,b,a);
-        builder.addVertex(m,x + xw,y,0).setUv(xuvend,yuvs).setColor(r,g,b,a);
-        builder.addVertex(m,x,y,0).setUv(xuvs,yuvs).setColor(r,g,b,a);
+        builder.vertex(m,x,y + yw,0).uv(xuvs,yuvend).color(r,g,b,a);
+        builder.vertex(m,x + xw,y + yw,0).uv(xuvend,yuvend).color(r,g,b,a);
+        builder.vertex(m,x + xw,y,0).uv(xuvend,yuvs).color(r,g,b,a);
+        builder.vertex(m,x,y,0).uv(xuvs,yuvs).color(r,g,b,a);
 
 
         BufferUploader.drawWithShader(builder.build());
@@ -240,10 +240,10 @@ public class FDRenderUtil {
         VertexConsumer builder = source.getBuffer(type);
         Matrix4f m = matrices.last().pose();
 
-        builder.addVertex(m,x,y + yw,0).setColor(r,g,b,a);
-        builder.addVertex(m,x + xw,y + yw,0).setColor(r,g,b,a);
-        builder.addVertex(m,x + xw,y,0).setColor(r,g,b,a);
-        builder.addVertex(m,x,y,0).setColor(r,g,b,a);
+        builder.vertex(m,x,y + yw,0).color(r,g,b,a);
+        builder.vertex(m,x + xw,y + yw,0).color(r,g,b,a);
+        builder.vertex(m,x + xw,y,0).color(r,g,b,a);
+        builder.vertex(m,x,y,0).color(r,g,b,a);
 
         source.endBatch(type);
     }
@@ -261,10 +261,10 @@ public class FDRenderUtil {
         VertexConsumer builder = source.getBuffer(type);
         Matrix4f m = matrices.last().pose();
 
-        builder.addVertex(m,x,y + yw,0).setColor(r4,g4,b4,a4);
-        builder.addVertex(m,x + xw,y + yw,0).setColor(r3,g3,b3,a3);
-        builder.addVertex(m,x + xw,y,0).setColor(r2,g2,b2,a2);
-        builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
+        builder.vertex(m,x,y + yw,0).color(r4,g4,b4,a4);
+        builder.vertex(m,x + xw,y + yw,0).color(r3,g3,b3,a3);
+        builder.vertex(m,x + xw,y,0).color(r2,g2,b2,a2);
+        builder.vertex(m,x,y,0).color(r1,g1,b1,a1);
 
         source.endBatch(type);
     }
@@ -337,10 +337,10 @@ public class FDRenderUtil {
         float v2 = (texPosY + renderAmountY) / (float) texHeight;
         Matrix4f m = matrices.last().pose();
         BufferBuilder vertex = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        vertex.addVertex(m, x, y, zOffset).setUv(u1, v1).setColor(1, 1, 1, alpha);
-        vertex.addVertex(m, x, y + height, zOffset).setUv(u1, v2).setColor(1, 1, 1, alpha);
-        vertex.addVertex(m, x + width, y + height, zOffset).setUv(u2, v2).setColor(1, 1, 1, alpha);
-        vertex.addVertex(m, x + width, y, zOffset).setUv(u2, v1).setColor(1, 1, 1, alpha);
+        vertex.vertex(m, x, y, zOffset).uv(u1, v1).color(1, 1, 1, alpha);
+        vertex.vertex(m, x, y + height, zOffset).uv(u1, v2).color(1, 1, 1, alpha);
+        vertex.vertex(m, x + width, y + height, zOffset).uv(u2, v2).color(1, 1, 1, alpha);
+        vertex.vertex(m, x + width, y, zOffset).uv(u2, v1).color(1, 1, 1, alpha);
 
 
         BufferUploader.drawWithShader(vertex.build());
@@ -356,10 +356,10 @@ public class FDRenderUtil {
         float v2 = (texPosY + renderAmountY) / (float) texHeight;
         Matrix4f m = matrices.last().pose();
         BufferBuilder vertex = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        vertex.addVertex(m, x - width / 2, y - height / 2, zOffset).setUv(u1, v1).setColor(1, 1, 1, alpha);
-        vertex.addVertex(m, x - width / 2, y + height / 2, zOffset).setUv(u1, v2).setColor(1, 1, 1, alpha);
-        vertex.addVertex(m, x + width / 2, y + height / 2, zOffset).setUv(u2, v2).setColor(1, 1, 1, alpha);
-        vertex.addVertex(m, x + width / 2, y - height / 2, zOffset).setUv(u2, v1).setColor(1, 1, 1, alpha);
+        vertex.vertex(m, x - width / 2, y - height / 2, zOffset).uv(u1, v1).color(1, 1, 1, alpha);
+        vertex.vertex(m, x - width / 2, y + height / 2, zOffset).uv(u1, v2).color(1, 1, 1, alpha);
+        vertex.vertex(m, x + width / 2, y + height / 2, zOffset).uv(u2, v2).color(1, 1, 1, alpha);
+        vertex.vertex(m, x + width / 2, y - height / 2, zOffset).uv(u2, v1).color(1, 1, 1, alpha);
 
 
         BufferUploader.drawWithShader(vertex.build());
@@ -375,10 +375,10 @@ public class FDRenderUtil {
         float v2 = (texPosY + renderAmountY) / (float) texHeight;
         Matrix4f m = matrices.last().pose();
         BufferBuilder vertex = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        vertex.addVertex(m, x, y, zOffset).setUv(u1, v1).setColor(r, g, b, alpha);
-        vertex.addVertex(m, x, y + height, zOffset).setUv(u1, v2).setColor(r, g, b, alpha);
-        vertex.addVertex(m, x + width, y + height, zOffset).setUv(u2, v2).setColor(r,g ,b , alpha);
-        vertex.addVertex(m, x + width, y, zOffset).setUv(u2, v1).setColor(r, g, b, alpha);
+        vertex.vertex(m, x, y, zOffset).uv(u1, v1).color(r, g, b, alpha);
+        vertex.vertex(m, x, y + height, zOffset).uv(u1, v2).color(r, g, b, alpha);
+        vertex.vertex(m, x + width, y + height, zOffset).uv(u2, v2).color(r,g ,b , alpha);
+        vertex.vertex(m, x + width, y, zOffset).uv(u2, v1).color(r, g, b, alpha);
 
 
         BufferUploader.drawWithShader(vertex.build());

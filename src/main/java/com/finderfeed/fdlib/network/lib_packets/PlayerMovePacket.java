@@ -7,7 +7,7 @@ import com.finderfeed.fdlib.util.NetworkCodec;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:player_move_packet")
 public class PlayerMovePacket extends FDPacket {

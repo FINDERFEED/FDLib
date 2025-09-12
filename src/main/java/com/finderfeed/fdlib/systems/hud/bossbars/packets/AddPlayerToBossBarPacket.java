@@ -11,9 +11,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:add_player_to_boss_bar")
 public class AddPlayerToBossBarPacket extends FDPacket {

@@ -1,10 +1,8 @@
 package com.finderfeed.fdlib.systems.screen.screen_effect.instances;
 
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffect;
-import com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas.EmptyScreenEffectData;
 import com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas.ScreenColorData;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 
 public class ScreenColorEffect extends ScreenEffect<ScreenColorData> {
@@ -14,8 +12,7 @@ public class ScreenColorEffect extends ScreenEffect<ScreenColorData> {
     }
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker, int currentTick, float screenWidth, float screenHeight) {
-        float pticks = deltaTracker.getGameTimeDeltaPartialTick(false);
+    public void render(GuiGraphics graphics, float pticks, int currentTick, float screenWidth, float screenHeight) {
         ScreenColorData colorData = this.getData();
         float p = 0;
         if (this.isInTime(currentTick)){

@@ -7,7 +7,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:start_tile_animation")
 public class StartTileAnimationPacket extends FDPacket {

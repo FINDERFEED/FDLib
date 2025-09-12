@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.hud.bossbars;
 
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import com.finderfeed.fdlib.systems.hud.bossbars.packets.AddPlayerToBossBarPacket;
 import com.finderfeed.fdlib.systems.hud.bossbars.packets.BossBarEventPacket;
 import com.finderfeed.fdlib.systems.hud.bossbars.packets.RemovePlayerFromBossBarPacket;
@@ -8,6 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.neoforge.network.PacketDistributor;
 import net.minecraftforge.neoforge.registries.DeferredHolder;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +18,7 @@ import java.util.UUID;
 
 public class FDServerBossBar {
 
-    private DeferredHolder<FDBossBarFactory<?>,?> bossBarHolder;
+    private RegistryObject<FDBossBarFactory<?>> bossBarHolder;
     private UUID uuid;
     private Entity entity;
     private Set<ServerPlayer> players = new HashSet<>();
@@ -24,13 +27,13 @@ public class FDServerBossBar {
     /**
      * If entity context is needed on client
      */
-    public FDServerBossBar(DeferredHolder<FDBossBarFactory<?>,?> holder,Entity entity){
+    public FDServerBossBar(RegistryObject<FDBossBarFactory<?>> holder,Entity entity){
         this.uuid = entity.getUUID();
         this.entity = entity;
         this.bossBarHolder = holder;
     }
 
-    public FDServerBossBar(DeferredHolder<FDBossBarFactory<?>,?> holder){
+    public FDServerBossBar(RegistryObject<FDBossBarFactory<?>> holder){
         this.uuid = UUID.randomUUID();
         this.entity = null;
         this.bossBarHolder = holder;
@@ -39,23 +42,23 @@ public class FDServerBossBar {
     public void setPercentage(float percentage){
         this.percentage = percentage;
         for (ServerPlayer player : players){
-            PacketDistributor.sendToPlayer(player,new SetBossBarProgressPacket(this,percentage));
+            FDPacketHandler.INSTANCE.sendTo(new SetBossBarProgressPacket(this, percentage), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 
     public void addPlayer(ServerPlayer player){
         this.players.add(player);
-        PacketDistributor.sendToPlayer(player,new AddPlayerToBossBarPacket(this));
+        FDPacketHandler.INSTANCE.sendTo(new AddPlayerToBossBarPacket(this), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public void removePlayer(ServerPlayer player){
         this.players.remove(player);
-        PacketDistributor.sendToPlayer(player,new RemovePlayerFromBossBarPacket(this));
+        FDPacketHandler.INSTANCE.sendTo(new RemovePlayerFromBossBarPacket(this), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public void broadcastEvent(int eventId,int data){
         for (ServerPlayer player : players){
-            PacketDistributor.sendToPlayer(player,new BossBarEventPacket(this,eventId,data));
+            FDPacketHandler.INSTANCE.sendTo(new BossBarEventPacket(this,eventId,data), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 
@@ -71,7 +74,7 @@ public class FDServerBossBar {
         return percentage;
     }
 
-    public DeferredHolder<FDBossBarFactory<?>, ?> getBossBarHolder() {
+    public RegistryObject<FDBossBarFactory<?>> getBossBarHolder() {
         return bossBarHolder;
     }
 }

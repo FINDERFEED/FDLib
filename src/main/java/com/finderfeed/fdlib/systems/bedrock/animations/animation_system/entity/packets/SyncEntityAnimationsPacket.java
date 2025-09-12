@@ -10,7 +10,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 import java.util.ArrayList;
 import java.util.List;

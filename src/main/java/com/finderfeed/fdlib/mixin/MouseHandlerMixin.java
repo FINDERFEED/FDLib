@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MouseHandlerMixin {
 
     @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
-    public void turnPlayer(double p_316356_, CallbackInfo ci){
+    public void turnPlayer(CallbackInfo ci){
         if (CutsceneCameraHandler.isCutsceneActive()){
             ci.cancel();
         }

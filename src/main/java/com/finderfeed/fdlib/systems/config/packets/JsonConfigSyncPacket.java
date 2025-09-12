@@ -9,10 +9,11 @@ import com.google.gson.JsonParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:update_all_configs")
 public class JsonConfigSyncPacket extends FDPacket {
@@ -22,9 +23,9 @@ public class JsonConfigSyncPacket extends FDPacket {
     public JsonConfigSyncPacket(){
         names = new ArrayList<>();
         configs = new ArrayList<>();
-        for (var entry : FDRegistries.CONFIGS){
+        for (var entry : FDRegistries.CONFIGS.get()){
             if (!entry.isClientside()) {
-                names.add(FDRegistries.CONFIGS.getKey(entry).toString());
+                names.add(FDRegistries.CONFIGS.get().getKey(entry).toString());
                 configs.add(entry.getLoadedJson());
             }
         }
@@ -55,7 +56,7 @@ public class JsonConfigSyncPacket extends FDPacket {
     @Override
     public void clientAction(Supplier<NetworkEvent.Context> context) {
         for (int i = 0; i < names.size();i++){
-            JsonConfig config = FDRegistries.CONFIGS.get(ResourceLocation.parse(names.get(i)));
+            JsonConfig config = FDRegistries.CONFIGS.get().getValue(ResourceLocation.parse(names.get(i)));
             if (!config.isClientside()) {
                 JsonObject object = JsonParser.parseString(configs.get(i)).getAsJsonObject();
                 config.setLoadedJson(object);

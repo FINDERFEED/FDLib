@@ -273,10 +273,10 @@ public class ShapeOnCurveRenderer {
                     float ac2 = FDMathUtil.lerp(startColor.a,endColor.a,p2);
 
                     for (int c = 0; c < renderCount;c++) {
-                        vertexConsumer.addVertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).setColor(rc1, gc1, bc1, ac1).setUv(startPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                        vertexConsumer.addVertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).setColor(rc2, gc2, bc2, ac2).setUv(endPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                        vertexConsumer.addVertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).setColor(rc2, gc2, bc2, ac2).setUv(endPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
-                        vertexConsumer.addVertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).setColor(rc1, gc1, bc1, ac1).setUv(startPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                        vertexConsumer.vertex(mt, (float) sp4.x, (float) sp4.y, (float) sp4.z).color(rc1, gc1, bc1, ac1).uv(startPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                        vertexConsumer.vertex(mt, (float) sp3.x, (float) sp3.y, (float) sp3.z).color(rc2, gc2, bc2, ac2).uv(endPercentU * uModifier, v2 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                        vertexConsumer.vertex(mt, (float) sp2.x, (float) sp2.y, (float) sp2.z).color(rc2, gc2, bc2, ac2).uv(endPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
+                        vertexConsumer.vertex(mt, (float) sp1.x, (float) sp1.y, (float) sp1.z).color(rc1, gc1, bc1, ac1).uv(startPercentU * uModifier, v1 * vModifier).setOverlay(overlay).setLight(light).setNormal(normal.x, normal.y, normal.z);
                     }
                 }
             }

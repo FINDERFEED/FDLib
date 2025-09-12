@@ -33,7 +33,7 @@ public abstract class MultiblockBlock extends Block {
     }
 
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
 
         BlockPos mainblock = this.findMainBlock(level, pos);
 
@@ -51,7 +51,7 @@ public abstract class MultiblockBlock extends Block {
 
         }
 
-        return super.playerWillDestroy(level, pos, state, player);
+        super.playerWillDestroy(level, pos, state, player);
     }
 
     @Nullable
@@ -79,7 +79,7 @@ public abstract class MultiblockBlock extends Block {
     }
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState state2, boolean idk) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState state2, boolean idk) {
         super.onPlace(state, level, pos, state2, idk);
         if (this.isMainBlock(state)) {
             Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);

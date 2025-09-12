@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:reload_models_packet")
 public class TriggerModelReloadPacket extends FDPacket {

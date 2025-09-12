@@ -5,7 +5,10 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
+
 
 @RegisterFDPacket("fdlib:start_music_packet")
 public class FDMusicStartPacket extends FDPacket {

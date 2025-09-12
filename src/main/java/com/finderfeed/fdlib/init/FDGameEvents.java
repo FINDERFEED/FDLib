@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.FDLibCalls;
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
@@ -19,6 +20,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.InputEvent;
@@ -26,16 +29,17 @@ import net.minecraftforge.neoforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.neoforge.event.server.ServerStartedEvent;
 import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
 import net.minecraftforge.neoforge.network.PacketDistributor;
+import net.minecraftforge.network.NetworkDirection;
 import org.lwjgl.glfw.GLFW;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FDGameEvents {
 
     @SubscribeEvent
     public static void serverStartedEvent(ServerStartedEvent event){
         FDLib.LOGGER.info("Loading FD configs...");
 
-        for (JsonConfig config : FDRegistries.CONFIGS){
+        for (JsonConfig config : FDRegistries.CONFIGS.get()){
             config.loadFromDisk();
         }
 
@@ -45,8 +49,8 @@ public class FDGameEvents {
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event){
         if (event.getEntity() instanceof ServerPlayer player){
-            PacketDistributor.sendToPlayer(player,new JsonConfigSyncPacket());
-            PacketDistributor.sendToPlayer(player,new TriggerClientsideConfigReloadPacket(false));
+            FDPacketHandler.INSTANCE.sendTo(new JsonConfigSyncPacket(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+            FDPacketHandler.INSTANCE.sendTo(new TriggerClientsideConfigReloadPacket(false), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 

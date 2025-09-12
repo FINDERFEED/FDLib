@@ -9,6 +9,8 @@ import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -28,7 +30,9 @@ public class FDMusicSystem {
     private static boolean musicWasPlaying = false;
 
     @SubscribeEvent
-    public static void tickEvent(ClientTickEvent.Pre event){
+    public static void tickEvent(TickEvent.ClientTickEvent event){
+
+        if (event.phase != TickEvent.Phase.START) return;
 
         if (Minecraft.getInstance().isPaused()) return;
 
@@ -123,8 +127,9 @@ public class FDMusicSystem {
     }
 
     @SubscribeEvent
-    public static void renderTickEvent(RenderFrameEvent.Pre event){
-        musicRenderTick(event.getPartialTick().getGameTimeDeltaPartialTick(false));
+    public static void renderTickEvent(TickEvent.RenderTickEvent event){
+        if (event.phase != TickEvent.Phase.START) return;
+        musicRenderTick(event.renderTickTime);
     }
 
     public static void musicRenderTick(float pticks){
@@ -142,7 +147,11 @@ public class FDMusicSystem {
         public static final HashMap<Integer, Float> sourceToProcessedBufferSecondLength = new HashMap<>();
 
         @SubscribeEvent
-        public static void deleteFinishedSources(RenderFrameEvent.Post event){
+        public static void deleteFinishedSources(TickEvent.RenderTickEvent event){
+
+            if (event.phase != TickEvent.Phase.END) return;
+
+
             var iterator = sourceToProcessedBufferSecondLength.entrySet().iterator();
             while (iterator.hasNext()){
                 var pair = iterator.next();

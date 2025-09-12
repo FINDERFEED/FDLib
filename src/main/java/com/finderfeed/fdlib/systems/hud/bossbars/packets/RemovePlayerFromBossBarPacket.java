@@ -6,9 +6,11 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+import net.minecraftforge.network.NetworkEvent;
+
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:remove_player_from_boss_bar")
 public class RemovePlayerFromBossBarPacket extends FDPacket {

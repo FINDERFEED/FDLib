@@ -2,10 +2,8 @@ package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.test.FDTestBlockEntity;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.neoforge.registries.DeferredRegister;
 import net.minecraftforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;

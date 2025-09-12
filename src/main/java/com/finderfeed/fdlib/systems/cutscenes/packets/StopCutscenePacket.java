@@ -5,7 +5,7 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
+
 
 @RegisterFDPacket("fdlib:stop_cutscene")
 public class StopCutscenePacket extends FDPacket {
