@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public interface EmitterProcessorType<T extends EmitterProcessor<T>> {
 
-    NetworkCodec<FriendlyByteBuf,T> codec();
+    NetworkCodec<T> codec();
 
     ResourceLocation id();
 

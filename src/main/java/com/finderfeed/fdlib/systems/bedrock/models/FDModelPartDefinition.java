@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FDModelPartDefinition {
 
-    public static final NetworkCodec<FriendlyByteBuf,FDModelPartDefinition> CODEC = NetworkCodec.composite(
+    public static final NetworkCodec<FDModelPartDefinition> CODEC = NetworkCodec.composite(
             FDCube.CODEC.apply(NetworkCodec.list()),part->part.cubes,
             NetworkCodec.STRING_UTF8,part->part.name,
             NetworkCodec.STRING_UTF8,part->part.parent,

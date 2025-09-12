@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ParticleEmitterData {
 
-    public static final NetworkCodec<FriendlyByteBuf,List<ParticleOptions>> OPTIONS_CODEC = new NetworkCodec<FriendlyByteBuf, List<ParticleOptions>>() {
+    public static final NetworkCodec<List<ParticleOptions>> OPTIONS_CODEC = new NetworkCodec<List<ParticleOptions>>() {
         @Override
         public List<ParticleOptions> decode(FriendlyByteBuf buf) {
 
@@ -29,7 +29,7 @@ public class ParticleEmitterData {
                 var type = BuiltInRegistries.PARTICLE_TYPE.get(location);
                 if (type == null) throw new RuntimeException("Unknown particle type: " + location);
 
-                ParticleOptions options = ((NetworkCodec<FriendlyByteBuf,ParticleOptions>)type.NetworkCodec()).decode(buf);
+                ParticleOptions options = ((NetworkCodec<ParticleOptions>)type.NetworkCodec()).decode(buf);
                 list.add(options);
 
             }
@@ -45,13 +45,13 @@ public class ParticleEmitterData {
 
                 var key = BuiltInRegistries.PARTICLE_TYPE.getKey(type);
                 buf.writeResourceLocation(key);
-                ((NetworkCodec<FriendlyByteBuf,ParticleOptions>)type.NetworkCodec()).encode(buf,options);
+                ((NetworkCodec<ParticleOptions>)type.NetworkCodec()).encode(buf,options);
             }
 
         }
     };
 
-    public static final NetworkCodec<FriendlyByteBuf,ParticleEmitterData> STREAM_CODEC = NetworkCodec.composite(
+    public static final NetworkCodec<ParticleEmitterData> STREAM_CODEC = NetworkCodec.composite(
             NetworkCodec.VEC3,v->v.position,
             NetworkCodec.INT,v->v.lifetime,
             NetworkCodec.INT,v->v.particlesPerTick,

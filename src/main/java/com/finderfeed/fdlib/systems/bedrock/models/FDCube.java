@@ -20,7 +20,7 @@ import java.util.List;
 
 public class FDCube {
 
-    public static final NetworkCodec<FriendlyByteBuf,FDCube> CODEC = NetworkCodec.composite(
+    public static final NetworkCodec<FDCube> CODEC = NetworkCodec.composite(
             FDFace.CODEC,cube->cube.faces[0],
             FDFace.CODEC,cube->cube.faces[1],
             FDFace.CODEC,cube->cube.faces[2],

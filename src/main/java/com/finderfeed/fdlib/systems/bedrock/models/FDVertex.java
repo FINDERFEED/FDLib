@@ -8,7 +8,7 @@ import org.joml.Vector3f;
 
 public class FDVertex {
 
-    public static NetworkCodec<FriendlyByteBuf,FDVertex> CODEC = NetworkCodec.composite(
+    public static NetworkCodec<FDVertex> CODEC = NetworkCodec.composite(
             NetworkCodec.FLOAT,vertex->vertex.u,
             NetworkCodec.FLOAT,vertex->vertex.v,
             NetworkCodec.VECTOR3F,vertex->vertex.position,

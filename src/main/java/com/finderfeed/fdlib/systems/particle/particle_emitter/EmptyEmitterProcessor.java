@@ -39,7 +39,7 @@ public class EmptyEmitterProcessor implements EmitterProcessor<EmptyEmitterProce
 
 
 
-        public static NetworkCodec<FriendlyByteBuf,EmptyEmitterProcessor> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, EmptyEmitterProcessor>() {
+        public static NetworkCodec<EmptyEmitterProcessor> STREAM_CODEC = new NetworkCodec<EmptyEmitterProcessor>() {
             @Override
             public EmptyEmitterProcessor decode(FriendlyByteBuf p_320376_) {
                 return null;
@@ -52,7 +52,7 @@ public class EmptyEmitterProcessor implements EmitterProcessor<EmptyEmitterProce
         };
 
         @Override
-        public NetworkCodec<FriendlyByteBuf, EmptyEmitterProcessor> codec() {
+        public NetworkCodec<EmptyEmitterProcessor> codec() {
             return STREAM_CODEC;
         }
 

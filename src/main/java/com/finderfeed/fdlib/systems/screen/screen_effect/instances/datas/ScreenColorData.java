@@ -7,7 +7,7 @@ import net.minecraft.network.codec.NetworkCodec;
 
 public class ScreenColorData extends ScreenEffectData {
 
-    public static final NetworkCodec<FriendlyByteBuf, ScreenColorData> STREAM_CODEC = NetworkCodec.composite(
+    public static final NetworkCodec<ScreenColorData> STREAM_CODEC = NetworkCodec.composite(
             NetworkCodec.FLOAT,v->v.r,
             NetworkCodec.FLOAT,v->v.g,
             NetworkCodec.FLOAT,v->v.b,

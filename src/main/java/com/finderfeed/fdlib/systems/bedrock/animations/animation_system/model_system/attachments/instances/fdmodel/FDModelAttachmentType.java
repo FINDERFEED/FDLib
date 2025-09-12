@@ -2,8 +2,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_s
 
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderer;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 
 public class FDModelAttachmentType implements ModelAttachmentType<FDModelAttachment, FDModelAttachmentData> {
     @Override
@@ -17,7 +16,7 @@ public class FDModelAttachmentType implements ModelAttachmentType<FDModelAttachm
     }
 
     @Override
-    public NetworkCodec<? super FriendlyByteBuf, FDModelAttachmentData> dataNetworkCodec() {
+    public NetworkCodec<FDModelAttachmentData> dataNetworkCodec() {
         return FDModelAttachmentData.STREAM_CODEC;
     }
 

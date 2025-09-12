@@ -7,7 +7,7 @@ import net.minecraft.network.codec.NetworkCodec;
 
 public interface EmitterProcessor<T extends EmitterProcessor<T>> {
 
-    public static NetworkCodec<FriendlyByteBuf,EmitterProcessor<?>> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, EmitterProcessor<?>>() {
+    public static NetworkCodec<EmitterProcessor<?>> STREAM_CODEC = new NetworkCodec<EmitterProcessor<?>>() {
 
         @Override
         public void encode(FriendlyByteBuf buf, EmitterProcessor<?> emitter) {

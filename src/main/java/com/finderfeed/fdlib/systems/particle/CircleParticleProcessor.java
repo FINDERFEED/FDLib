@@ -1,18 +1,13 @@
 package com.finderfeed.fdlib.systems.particle;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.finderfeed.fdlib.util.FDCodecs;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -125,7 +120,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
 
     public static class Type implements ParticleProcessorType<CircleParticleProcessor>{
 
-        public static final NetworkCodec<FriendlyByteBuf,CircleParticleProcessor> STREAM_CODEC = NetworkCodec.composite(
+        public static final NetworkCodec<CircleParticleProcessor> STREAM_CODEC = NetworkCodec.composite(
                 NetworkCodec.VEC3,v->v.point,
                 NetworkCodec.BOOL,v->v.forward,
                 NetworkCodec.BOOL,v->v.in,
@@ -141,7 +136,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
         ).apply(p,CircleParticleProcessor::new));
 
         @Override
-        public NetworkCodec<FriendlyByteBuf, CircleParticleProcessor> NetworkCodec() {
+        public NetworkCodec<CircleParticleProcessor> networkCodec() {
             return STREAM_CODEC;
         }
 

@@ -7,7 +7,7 @@ import net.minecraft.network.codec.NetworkCodec;
 
 public class FDShakeData {
 
-    public static final NetworkCodec<FriendlyByteBuf,FDShakeData> STREAM_CODEC = NetworkCodec.composite(
+    public static final NetworkCodec<FDShakeData> STREAM_CODEC = NetworkCodec.composite(
             NetworkCodec.INT,v->v.inTime,
             NetworkCodec.INT,v->v.stayTime,
             NetworkCodec.INT,v->v.outTime,

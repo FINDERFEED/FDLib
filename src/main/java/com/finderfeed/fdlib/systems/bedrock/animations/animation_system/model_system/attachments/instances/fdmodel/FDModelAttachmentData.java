@@ -8,21 +8,17 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_sy
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import com.finderfeed.fdlib.systems.render_types.FDRenderType;
-import com.finderfeed.fdlib.util.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.finderfeed.fdlib.util.FDColor;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
 public class FDModelAttachmentData implements ModelAttachmentData<FDModelAttachment> {
 
-    public static final NetworkCodec<FriendlyByteBuf, FDModelAttachmentData> STREAM_CODEC = NetworkCodec.composite(
-            NetworkCodec.registry(FDRegistries.BEDROCK_MODEL_INFOS_KEY),v->v.fdModelInfo,
+    public static final NetworkCodec<FDModelAttachmentData> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.registry(FDRegistries.MODELS),v->v.fdModelInfo,
             BaseModelAttachmentData.CODEC,v->v.baseModelAttachmentData,
-            NetworkCodec.registry(FDRegistries.RENDER_TYPE_KEY),v->v.renderType,
-            ResourceLocation.STREAM_CODEC,v->v.texture,
+            NetworkCodec.registry(FDRegistries.RENDER_TYPE),v->v.renderType,
+            NetworkCodec.RESOURCE_LOCATION,v->v.texture,
             NetworkCodec.COLOR,v->v.color,
             (info,baseData, renderType, texture,color)->{
                 FDModelAttachmentData fdModelAttachmentData = new FDModelAttachmentData();

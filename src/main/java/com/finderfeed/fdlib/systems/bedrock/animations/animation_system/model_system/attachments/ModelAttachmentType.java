@@ -1,7 +1,6 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 
 public interface ModelAttachmentType<A extends ModelAttachment<A,T>,T extends ModelAttachmentData<A>> {
 
@@ -9,7 +8,7 @@ public interface ModelAttachmentType<A extends ModelAttachment<A,T>,T extends Mo
 
     A createInstance();
 
-    NetworkCodec<? super FriendlyByteBuf, T> dataNetworkCodec();
+    NetworkCodec<T> dataNetworkCodec();
 
     ModelAttachmentRenderer<A> renderer();
 

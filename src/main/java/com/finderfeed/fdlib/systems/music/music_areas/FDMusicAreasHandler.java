@@ -4,11 +4,10 @@ import com.finderfeed.fdlib.FDLib;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.util.thread.EffectiveSide;
-import net.minecraftforge.neoforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.neoforge.event.tick.ServerTickEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,8 +24,9 @@ public class FDMusicAreasHandler {
     }
 
     @SubscribeEvent
-    public static void tickAreas(ServerTickEvent.Pre event){
+    public static void tickAreas(TickEvent.ServerTickEvent event){
 
+        if (event.phase != TickEvent.Phase.START) return;
 
         var iterator = MUSIC_AREAS.entrySet().iterator();
 

@@ -7,14 +7,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 //I need it to port to 1.20.1 easier, i am sorry :D
 public abstract class NetworkCodec<K> {
@@ -22,6 +26,45 @@ public abstract class NetworkCodec<K> {
     public abstract void toNetwork(FriendlyByteBuf buf, K object);
 
     public abstract K fromNetwork(FriendlyByteBuf buf);
+
+    public static NetworkCodec<ItemStack> ITEM = new NetworkCodec<ItemStack>() {
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, ItemStack object) {
+            buf.writeItem(object);
+        }
+
+        @Override
+        public ItemStack fromNetwork(FriendlyByteBuf buf) {
+            return buf.readItem();
+        }
+    };
+
+    public static NetworkCodec<ResourceLocation> RESOURCE_LOCATION = new NetworkCodec<ResourceLocation>() {
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, ResourceLocation object) {
+            buf.writeResourceLocation(object);
+        }
+
+        @Override
+        public ResourceLocation fromNetwork(FriendlyByteBuf buf) {
+            return buf.readResourceLocation();
+        }
+    };
+
+    public static <C> NetworkCodec<C> registry(Supplier<IForgeRegistry<C>> registry){
+        return new NetworkCodec<C>() {
+            @Override
+            public void toNetwork(FriendlyByteBuf buf, C object) {
+                var key = registry.get().getKey(object);
+                buf.writeResourceLocation(key);
+            }
+
+            @Override
+            public C fromNetwork(FriendlyByteBuf buf) {
+                return registry.get().getValue(buf.readResourceLocation());
+            }
+        };
+    }
 
     public static <C> NetworkCodec<List<C>> listOf(NetworkCodec<C> singleCodec){
         return new NetworkCodec<List<C>>() {

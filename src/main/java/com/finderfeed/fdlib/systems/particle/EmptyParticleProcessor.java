@@ -1,14 +1,10 @@
 package com.finderfeed.fdlib.systems.particle;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticleProcessor> {
@@ -35,14 +31,14 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
 
     public static class Type implements ParticleProcessorType<EmptyParticleProcessor>{
 
-        public static final NetworkCodec<FriendlyByteBuf,EmptyParticleProcessor> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, EmptyParticleProcessor>() {
+        public static final NetworkCodec<EmptyParticleProcessor> STREAM_CODEC = new NetworkCodec<EmptyParticleProcessor>() {
             @Override
-            public EmptyParticleProcessor decode(FriendlyByteBuf buf) {
+            public EmptyParticleProcessor fromNetwork(FriendlyByteBuf buf) {
                 return new EmptyParticleProcessor();
             }
 
             @Override
-            public void encode(FriendlyByteBuf p_320158_, EmptyParticleProcessor p_320396_) {
+            public void toNetwork(FriendlyByteBuf p_320158_, EmptyParticleProcessor p_320396_) {
 
             }
         };
@@ -50,7 +46,7 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
         public static final Codec<EmptyParticleProcessor> CODEC = Codec.unit(INSTANCE);
 
         @Override
-        public NetworkCodec<FriendlyByteBuf, EmptyParticleProcessor> NetworkCodec() {
+        public NetworkCodec<EmptyParticleProcessor> networkCodec() {
             return STREAM_CODEC;
         }
 

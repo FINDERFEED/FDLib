@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.music.music_areas;
 
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
 import com.finderfeed.fdlib.systems.music.music_areas.shapes.FDMusicAreaShape;
 import com.finderfeed.fdlib.systems.music.packets.FDMusicAreaEnterPacket;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.neoforge.network.PacketDistributor;
+import net.minecraftforge.network.NetworkDirection;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,7 +50,7 @@ public class FDMusicArea {
             for (var serverPlayer : playersInside){
                 UUID uuid = serverPlayer.getUUID();
                 if (!this.playersInside.contains(uuid)){
-                    PacketDistributor.sendToPlayer(serverPlayer, new FDMusicAreaEnterPacket(this.musicData,20));
+                    FDPacketHandler.INSTANCE.sendTo(new FDMusicAreaEnterPacket(this.musicData,20), serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
                     this.playersInside.add(uuid);
                 }
             }
@@ -64,7 +66,8 @@ public class FDMusicArea {
             for (var uuid : playersThatExitedTheArea){
                 ServerPlayer serverPlayer = level.getServer().getPlayerList().getPlayer(uuid);
                 if (serverPlayer == null) continue;
-                PacketDistributor.sendToPlayer(serverPlayer, new FDMusicFadeOutPacket(this.musicData.getMusicSourceUUID(), 20));
+
+                FDPacketHandler.INSTANCE.sendTo(new FDMusicFadeOutPacket(this.musicData.getMusicSourceUUID(), 20), serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
 
 
@@ -75,7 +78,7 @@ public class FDMusicArea {
         for (var player : playersInside){
             var actualPlayer = server.getPlayerList().getPlayer(player);
             if (actualPlayer != null){
-                PacketDistributor.sendToPlayer(actualPlayer, new FDMusicEndPacket(this.musicData.getMusicSourceUUID(), fadeOutTime));
+                FDPacketHandler.INSTANCE.sendTo(new FDMusicEndPacket(this.musicData.getMusicSourceUUID(), fadeOutTime), actualPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
         }
     }

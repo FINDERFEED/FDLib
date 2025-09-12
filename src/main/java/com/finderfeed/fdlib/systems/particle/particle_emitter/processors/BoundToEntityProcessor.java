@@ -73,7 +73,7 @@ public class BoundToEntityProcessor implements EmitterProcessor<BoundToEntityPro
 
     public static class Type implements EmitterProcessorType<BoundToEntityProcessor>{
 
-        public static final NetworkCodec<FriendlyByteBuf,BoundToEntityProcessor> STREAM_CODEC = NetworkCodec.composite(
+        public static final NetworkCodec<BoundToEntityProcessor> STREAM_CODEC = NetworkCodec.composite(
                 NetworkCodec.INT,v->v.id,
                 NetworkCodec.VEC3,v->v.offset,
                 (id,offset)->{
@@ -83,7 +83,7 @@ public class BoundToEntityProcessor implements EmitterProcessor<BoundToEntityPro
         );
 
         @Override
-        public NetworkCodec<FriendlyByteBuf, BoundToEntityProcessor> codec() {
+        public NetworkCodec<BoundToEntityProcessor> codec() {
             return STREAM_CODEC;
         }
 

@@ -4,15 +4,15 @@ import com.finderfeed.fdlib.FDClientPacketExecutables;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.FDRegistries;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.network.NetworkEvent;
 
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:add_entity_attachment")
 public class AddEntityAttachmentPacket extends FDPacket {
@@ -37,9 +37,8 @@ public class AddEntityAttachmentPacket extends FDPacket {
         this.bone = buf.readUtf();
         this.uuid = buf.readUUID();
 
-        var registry = buf.registryAccess().registryOrThrow(FDRegistries.MODEL_ATTACHMENT_TYPE_KEY);
-        var type = registry.get(buf.readResourceLocation());
-        modelAttachmentData = type.dataNetworkCodec().decode(buf);
+        var type = FDRegistries.MODEL_ATTACHMENT_TYPES.get().getValue(buf.readResourceLocation());
+        modelAttachmentData = type.dataNetworkCodec().fromNetwork(buf);
 
     }
 
@@ -51,8 +50,7 @@ public class AddEntityAttachmentPacket extends FDPacket {
         buf.writeUUID(uuid);
 
         ModelAttachmentType<?,? extends ModelAttachmentData<?>> type = modelAttachmentData.type();
-        var registry = buf.registryAccess().registryOrThrow(FDRegistries.MODEL_ATTACHMENT_TYPE_KEY);
-        buf.writeResourceLocation(registry.getKey(type));
+        buf.writeResourceLocation(FDRegistries.MODEL_ATTACHMENT_TYPES.get().getKey(type));
 
         this.hackyEncode(buf, type);
     }
@@ -68,7 +66,7 @@ public class AddEntityAttachmentPacket extends FDPacket {
     }
 
     private <T extends ModelAttachmentData<?>> void hackyEncode(FriendlyByteBuf buf, ModelAttachmentType<?,T> type){
-        type.dataNetworkCodec().encode(buf,(T) modelAttachmentData);
+        type.dataNetworkCodec().toNetwork(buf,(T) modelAttachmentData);
     }
 
 }

@@ -1,15 +1,12 @@
 package com.finderfeed.fdlib.systems.particle;
 
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.Lifecycle;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public interface ParticleProcessor<T extends ParticleProcessor<T>> {
@@ -21,7 +18,7 @@ public interface ParticleProcessor<T extends ParticleProcessor<T>> {
         public <D> DataResult<Pair<ParticleProcessor<?>, D>> decode(DynamicOps<D> ops, D input) {
 
             var result = RL_CODEC.decode(ops,input);
-            var location = result.getOrThrow().getFirst();
+            var location = result.getOrThrow(false,(s)->{}).getFirst();
             var type = FDParticleProcessors.getType(location);
             Codec<ParticleProcessor<?>> particleProcessorCodec = (Codec<ParticleProcessor<?>>) type.codec();
             var processorResult = particleProcessorCodec.decode(ops,input);
@@ -43,19 +40,19 @@ public interface ParticleProcessor<T extends ParticleProcessor<T>> {
 
 
 
-    public static final NetworkCodec<FriendlyByteBuf,ParticleProcessor<?>> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, ParticleProcessor<?>>() {
+    public static final NetworkCodec<ParticleProcessor<?>> STREAM_CODEC = new NetworkCodec<ParticleProcessor<?>>() {
         @Override
-        public ParticleProcessor<?> decode(FriendlyByteBuf buf) {
+        public ParticleProcessor<?> fromNetwork(FriendlyByteBuf buf) {
             var location = buf.readResourceLocation();
             var type =  FDParticleProcessors.getType(location);
-            var codec = type.NetworkCodec();
-            return codec.decode(buf);
+            var codec = type.networkCodec();
+            return codec.fromNetwork(buf);
         }
 
         @Override
-        public void encode(FriendlyByteBuf buf, ParticleProcessor<?> processor) {
+        public void toNetwork(FriendlyByteBuf buf, ParticleProcessor<?> processor) {
             buf.writeResourceLocation(processor.type().id());
-            hackyEncode(buf,processor,processor.type().NetworkCodec());
+            hackyEncode(buf,processor,processor.type().networkCodec());
         }
     };
 
@@ -68,8 +65,8 @@ public interface ParticleProcessor<T extends ParticleProcessor<T>> {
 
     void init(Particle particle);
 
-    private static <T extends ParticleProcessor<T>> void hackyEncode(FriendlyByteBuf buf,ParticleProcessor<?> processor,NetworkCodec<FriendlyByteBuf,T> encoder){
-        encoder.encode(buf,(T)processor);
+    private static <T extends ParticleProcessor<T>> void hackyEncode(FriendlyByteBuf buf,ParticleProcessor<?> processor,NetworkCodec<T> encoder){
+        encoder.toNetwork(buf,(T)processor);
     }
 
 }

@@ -6,7 +6,7 @@ import net.minecraft.network.codec.NetworkCodec;
 
 public class EmptyScreenEffectData extends ScreenEffectData {
 
-    public static final NetworkCodec<FriendlyByteBuf, EmptyScreenEffectData> STREAM_CODEC = NetworkCodec.unit(new EmptyScreenEffectData());
+    public static final NetworkCodec<EmptyScreenEffectData> STREAM_CODEC = NetworkCodec.unit(new EmptyScreenEffectData());
 
     public EmptyScreenEffectData(){
 

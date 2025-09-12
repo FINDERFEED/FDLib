@@ -57,7 +57,7 @@ public class CompositeEmitterProcessor implements EmitterProcessor<CompositeEmit
 
     public static class Type implements EmitterProcessorType<CompositeEmitterProcessor>{
 
-        public static NetworkCodec<FriendlyByteBuf,CompositeEmitterProcessor> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, CompositeEmitterProcessor>() {
+        public static NetworkCodec<CompositeEmitterProcessor> STREAM_CODEC = new NetworkCodec<CompositeEmitterProcessor>() {
             @Override
             public CompositeEmitterProcessor decode(FriendlyByteBuf buf) {
 
@@ -82,7 +82,7 @@ public class CompositeEmitterProcessor implements EmitterProcessor<CompositeEmit
         };
 
         @Override
-        public NetworkCodec<FriendlyByteBuf, CompositeEmitterProcessor> codec() {
+        public NetworkCodec<CompositeEmitterProcessor> codec() {
             return STREAM_CODEC;
         }
 

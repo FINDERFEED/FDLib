@@ -86,7 +86,7 @@ public class CircleSpawnProcessor implements EmitterProcessor<CircleSpawnProcess
 
     public static class Type implements EmitterProcessorType<CircleSpawnProcessor>{
 
-        public static final NetworkCodec<FriendlyByteBuf,CircleSpawnProcessor> STREAM_CODEC = NetworkCodec.composite(
+        public static final NetworkCodec<CircleSpawnProcessor> STREAM_CODEC = NetworkCodec.composite(
                 NetworkCodec.VEC3,v->v.direction,
                 NetworkCodec.FLOAT,v->v.minSpeed,
                 NetworkCodec.FLOAT,v->v.maxSpeed,
@@ -97,7 +97,7 @@ public class CircleSpawnProcessor implements EmitterProcessor<CircleSpawnProcess
         );
 
         @Override
-        public NetworkCodec<FriendlyByteBuf, CircleSpawnProcessor> codec() {
+        public NetworkCodec<CircleSpawnProcessor> codec() {
             return STREAM_CODEC;
         }
 

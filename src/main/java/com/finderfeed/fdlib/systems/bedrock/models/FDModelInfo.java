@@ -89,7 +89,7 @@ public class FDModelInfo {
 
     public record ModelSyncInstance(ResourceLocation location,List<FDModelPartDefinition> definitions){
 
-        public static final NetworkCodec<FriendlyByteBuf,ModelSyncInstance> CODEC = NetworkCodec.composite(
+        public static final NetworkCodec<ModelSyncInstance> CODEC = NetworkCodec.composite(
                 NetworkCodec.STRING_UTF8,inst->inst.location.toString(),
                 FDModelPartDefinition.CODEC.apply(NetworkCodec.list()),inst->inst.definitions,
                 (str,defs)->{

@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class AnimationTicker {
 
 
-    public static final NetworkCodec<FriendlyByteBuf,AnimationTicker> NO_NEXT_NETWORK_CODEC = NetworkCodec.composite(
+    public static final NetworkCodec<AnimationTicker> NO_NEXT_NETWORK_CODEC = NetworkCodec.composite(
             NetworkCodec.FLOAT,ticker->ticker.elapsedTime,
             NetworkCodec.FLOAT,ticker->ticker.speedModifier,
             NetworkCodec.INT,ticker->ticker.toNullTransitionTime,
@@ -44,7 +44,7 @@ public class AnimationTicker {
                 return ticker;
             });
 
-    public static final NetworkCodec<FriendlyByteBuf, AnimationTicker> NETWORK_CODEC = new NetworkCodec<FriendlyByteBuf, AnimationTicker>() {
+    public static final NetworkCodec<AnimationTicker> NETWORK_CODEC = new NetworkCodec<AnimationTicker>() {
         @Override
         public AnimationTicker decode(FriendlyByteBuf buf) {
             boolean hasNext = buf.readBoolean();
