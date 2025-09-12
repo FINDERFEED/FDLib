@@ -1,19 +1,16 @@
 package com.finderfeed.fdlib.util.client.particles.options;
 
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class AlphaOptions {
 
-    public static StreamCodec<FriendlyByteBuf,AlphaOptions> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,v->v.inTime,
-            ByteBufCodecs.INT,v->v.outTime,
-            ByteBufCodecs.INT,v->v.stayTime,
-            ByteBufCodecs.FLOAT,v->v.maxAlpha,
+    public static NetworkCodec<AlphaOptions> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.INT,v->v.inTime,
+            NetworkCodec.INT,v->v.outTime,
+            NetworkCodec.INT,v->v.stayTime,
+            NetworkCodec.FLOAT,v->v.maxAlpha,
             (inTime,outTime,stayTime,maxAlpha)->{
                 AlphaOptions options = new AlphaOptions();
                 options.inTime = inTime;

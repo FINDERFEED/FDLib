@@ -1,17 +1,17 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import org.joml.Vector3f;
 
 public class FDVertex {
 
-    public static StreamCodec<FriendlyByteBuf,FDVertex> CODEC = StreamCodec.composite(
-            ByteBufCodecs.FLOAT,vertex->vertex.u,
-            ByteBufCodecs.FLOAT,vertex->vertex.v,
-            ByteBufCodecs.VECTOR3F,vertex->vertex.position,
+    public static NetworkCodec<FriendlyByteBuf,FDVertex> CODEC = NetworkCodec.composite(
+            NetworkCodec.FLOAT,vertex->vertex.u,
+            NetworkCodec.FLOAT,vertex->vertex.v,
+            NetworkCodec.VECTOR3F,vertex->vertex.position,
             FDVertex::new
     );
 

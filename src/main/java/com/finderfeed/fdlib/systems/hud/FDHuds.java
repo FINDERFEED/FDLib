@@ -6,8 +6,8 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarsOverlay;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectOverlay;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.RegisterGuiLayersEvent;
 
 @Mod.EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.MOD)

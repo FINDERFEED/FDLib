@@ -4,8 +4,8 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 import java.util.UUID;
 
@@ -20,24 +20,24 @@ public class FDMusicEndPacket extends FDPacket {
         this.fadeOutTime = fadeOutTime;
     }
 
-    public FDMusicEndPacket(RegistryFriendlyByteBuf buf){
+    public FDMusicEndPacket(FriendlyByteBuf buf){
         this.data = buf.readUUID();
         this.fadeOutTime = buf.readInt();
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeUUID(data);
         buf.writeInt(fadeOutTime);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         FDMusicSystem.endMusic(data, fadeOutTime);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
     

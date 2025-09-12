@@ -1,14 +1,14 @@
 package com.finderfeed.fdlib.systems.particle;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import com.finderfeed.fdlib.util.FDCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
@@ -39,8 +39,8 @@ public class SetParticleSpeedProcessor implements ParticleProcessor<SetParticleS
 
     public static class Type implements ParticleProcessorType<SetParticleSpeedProcessor>{
 
-        public static final StreamCodec<FriendlyByteBuf,SetParticleSpeedProcessor> STREAM_CODEC = StreamCodec.composite(
-                FDByteBufCodecs.VEC3,v->v.speed,
+        public static final NetworkCodec<FriendlyByteBuf,SetParticleSpeedProcessor> STREAM_CODEC = NetworkCodec.composite(
+                NetworkCodec.VEC3,v->v.speed,
                 SetParticleSpeedProcessor::new
         );
 
@@ -49,7 +49,7 @@ public class SetParticleSpeedProcessor implements ParticleProcessor<SetParticleS
         ).apply(p,SetParticleSpeedProcessor::new));
 
         @Override
-        public StreamCodec<FriendlyByteBuf, SetParticleSpeedProcessor> streamCodec() {
+        public NetworkCodec<FriendlyByteBuf, SetParticleSpeedProcessor> NetworkCodec() {
             return STREAM_CODEC;
         }
 

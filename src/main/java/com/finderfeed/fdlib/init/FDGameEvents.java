@@ -19,8 +19,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.InputEvent;
 import net.minecraftforge.neoforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.neoforge.event.server.ServerStartedEvent;
@@ -28,7 +28,7 @@ import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
 import net.minecraftforge.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.FORGE)
 public class FDGameEvents {
 
     @SubscribeEvent

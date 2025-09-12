@@ -18,8 +18,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.ClientTickEvent;
 import net.minecraftforge.neoforge.client.event.InputEvent;
 import net.minecraftforge.neoforge.client.event.RenderFrameEvent;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.*;
 
-@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT,modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ImpactFramesHandler {
 
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();

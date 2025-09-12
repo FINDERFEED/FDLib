@@ -5,8 +5,8 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:reload_models_packet")
 public class TriggerModelReloadPacket extends FDPacket {
@@ -21,19 +21,19 @@ public class TriggerModelReloadPacket extends FDPacket {
 
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
 
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         if (SharedConstants.IS_RUNNING_IN_IDE){ // no need to reload on production
             FDModEvents.loadModels();
         }
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

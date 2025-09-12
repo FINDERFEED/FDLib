@@ -4,10 +4,10 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:screen_effect")
 public class SendScreenEffectPacket<D extends ScreenEffectData, T extends ScreenEffect<D>> extends FDPacket {
@@ -26,7 +26,7 @@ public class SendScreenEffectPacket<D extends ScreenEffectData, T extends Screen
         this.inTime = inTime;
     }
 
-    public SendScreenEffectPacket(RegistryFriendlyByteBuf buf){
+    public SendScreenEffectPacket(FriendlyByteBuf buf){
         RegistryAccess access = buf.registryAccess();
         var registry = access.registryOrThrow(FDRegistries.SCREEN_EFFECTS_KEY);
 
@@ -43,7 +43,7 @@ public class SendScreenEffectPacket<D extends ScreenEffectData, T extends Screen
 
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         RegistryAccess access = buf.registryAccess();
         var registry = access.registryOrThrow(FDRegistries.SCREEN_EFFECTS_KEY);
         var location = registry.getKey(type);
@@ -55,13 +55,13 @@ public class SendScreenEffectPacket<D extends ScreenEffectData, T extends Screen
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         ScreenEffect<?> effect = type.factory.create(data,inTime,stayTime,outTime);
         ScreenEffectOverlay.addScreenEffect(effect);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 

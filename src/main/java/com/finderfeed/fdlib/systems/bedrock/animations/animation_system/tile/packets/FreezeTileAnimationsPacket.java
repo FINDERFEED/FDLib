@@ -5,8 +5,8 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:freeze_tile_animations_packet")
 public class FreezeTileAnimationsPacket extends FDPacket {
@@ -25,18 +25,18 @@ public class FreezeTileAnimationsPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
         buf.writeBoolean(state);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         FDClientPacketExecutables.tileEntityFreezeAnimations(this.pos,this.state);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

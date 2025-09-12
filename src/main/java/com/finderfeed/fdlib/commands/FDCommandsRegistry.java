@@ -27,12 +27,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.event.RegisterCommandsEvent;
 import net.minecraftforge.neoforge.network.PacketDistributor;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.GAME)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.FORGE)
 public class FDCommandsRegistry {
 
 

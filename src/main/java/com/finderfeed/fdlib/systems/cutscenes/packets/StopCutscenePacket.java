@@ -4,8 +4,8 @@ import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:stop_cutscene")
 public class StopCutscenePacket extends FDPacket {
@@ -19,17 +19,17 @@ public class StopCutscenePacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
 
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         CutsceneCameraHandler.stopCutscene();
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 

@@ -1,21 +1,21 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import org.joml.Vector3f;
 
 import java.util.List;
 
 public class FDModelPartDefinition {
 
-    public static final StreamCodec<FriendlyByteBuf,FDModelPartDefinition> CODEC = StreamCodec.composite(
-            FDCube.CODEC.apply(ByteBufCodecs.list()),part->part.cubes,
-            ByteBufCodecs.STRING_UTF8,part->part.name,
-            ByteBufCodecs.STRING_UTF8,part->part.parent,
-            ByteBufCodecs.VECTOR3F,part->part.initRotation,
-            ByteBufCodecs.VECTOR3F,part->part.pivot,
+    public static final NetworkCodec<FriendlyByteBuf,FDModelPartDefinition> CODEC = NetworkCodec.composite(
+            FDCube.CODEC.apply(NetworkCodec.list()),part->part.cubes,
+            NetworkCodec.STRING_UTF8,part->part.name,
+            NetworkCodec.STRING_UTF8,part->part.parent,
+            NetworkCodec.VECTOR3F,part->part.initRotation,
+            NetworkCodec.VECTOR3F,part->part.pivot,
             FDModelPartDefinition::new
     );
 

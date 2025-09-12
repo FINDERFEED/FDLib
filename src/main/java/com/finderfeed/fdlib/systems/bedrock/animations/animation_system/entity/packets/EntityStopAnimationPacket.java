@@ -4,8 +4,8 @@ import com.finderfeed.fdlib.FDClientPacketExecutables;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:entity_stop_animation_packet")
 public class EntityStopAnimationPacket extends FDPacket {
@@ -23,18 +23,18 @@ public class EntityStopAnimationPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(this.entityId);
         buf.writeUtf(this.tickerName);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         FDClientPacketExecutables.entityStopAnimationPacket(entityId,tickerName);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

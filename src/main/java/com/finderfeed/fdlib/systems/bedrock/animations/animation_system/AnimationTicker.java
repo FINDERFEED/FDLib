@@ -4,12 +4,12 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.AnimationContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.TransitionAnimation;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import com.finderfeed.fdlib.util.FDCodecs;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -19,14 +19,14 @@ import java.util.function.Supplier;
 public class AnimationTicker {
 
 
-    public static final StreamCodec<FriendlyByteBuf,AnimationTicker> NO_NEXT_NETWORK_CODEC = FDByteBufCodecs.composite(
-            ByteBufCodecs.FLOAT,ticker->ticker.elapsedTime,
-            ByteBufCodecs.FLOAT,ticker->ticker.speedModifier,
-            ByteBufCodecs.INT,ticker->ticker.toNullTransitionTime,
-            ByteBufCodecs.BOOL,ticker->ticker.reversed,
-            ByteBufCodecs.STRING_UTF8,ticker->ticker.loopMode.name(),
-            ByteBufCodecs.STRING_UTF8,ticker->ticker.animation.getName().toString(),
-            ByteBufCodecs.BOOL,v->v.important,
+    public static final NetworkCodec<FriendlyByteBuf,AnimationTicker> NO_NEXT_NETWORK_CODEC = NetworkCodec.composite(
+            NetworkCodec.FLOAT,ticker->ticker.elapsedTime,
+            NetworkCodec.FLOAT,ticker->ticker.speedModifier,
+            NetworkCodec.INT,ticker->ticker.toNullTransitionTime,
+            NetworkCodec.BOOL,ticker->ticker.reversed,
+            NetworkCodec.STRING_UTF8,ticker->ticker.loopMode.name(),
+            NetworkCodec.STRING_UTF8,ticker->ticker.animation.getName().toString(),
+            NetworkCodec.BOOL,v->v.important,
             (elapsedTime,speedModifier,toNull,reversed,loopModeName,animationName,important)->{
                 ResourceLocation location = ResourceLocation.tryParse(animationName);
                 Animation animation = FDRegistries.ANIMATIONS.get(location);
@@ -44,7 +44,7 @@ public class AnimationTicker {
                 return ticker;
             });
 
-    public static final StreamCodec<FriendlyByteBuf, AnimationTicker> NETWORK_CODEC = new StreamCodec<FriendlyByteBuf, AnimationTicker>() {
+    public static final NetworkCodec<FriendlyByteBuf, AnimationTicker> NETWORK_CODEC = new NetworkCodec<FriendlyByteBuf, AnimationTicker>() {
         @Override
         public AnimationTicker decode(FriendlyByteBuf buf) {
             boolean hasNext = buf.readBoolean();

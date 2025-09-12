@@ -4,9 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3f;
 
@@ -89,9 +89,9 @@ public class FDModelInfo {
 
     public record ModelSyncInstance(ResourceLocation location,List<FDModelPartDefinition> definitions){
 
-        public static final StreamCodec<FriendlyByteBuf,ModelSyncInstance> CODEC = StreamCodec.composite(
-                ByteBufCodecs.STRING_UTF8,inst->inst.location.toString(),
-                FDModelPartDefinition.CODEC.apply(ByteBufCodecs.list()),inst->inst.definitions,
+        public static final NetworkCodec<FriendlyByteBuf,ModelSyncInstance> CODEC = NetworkCodec.composite(
+                NetworkCodec.STRING_UTF8,inst->inst.location.toString(),
+                FDModelPartDefinition.CODEC.apply(NetworkCodec.list()),inst->inst.definitions,
                 (str,defs)->{
                     return new ModelSyncInstance(ResourceLocation.parse(str),defs);
                 }

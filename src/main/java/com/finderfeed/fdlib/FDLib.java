@@ -4,6 +4,7 @@ package com.finderfeed.fdlib;
 import com.finderfeed.fdlib.init.*;
 
 
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public class FDLib {
         FDScreenEffects.SCREEN_EFFECT_TYPES.register(bus);
         FDCommandArgumentTypes.ARGUMENT_TYPES.register(bus);
         FDModelAttachmentTypes.MODEL_ATTACHMENT_TYPES.register(bus);
+        FDPacketHandler.registerMessages();
     }
 
 

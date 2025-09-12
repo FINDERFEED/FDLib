@@ -7,8 +7,8 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBar;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 import java.util.UUID;
 
@@ -33,14 +33,14 @@ public class BossBarEventPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeUUID(this.uuid);
         buf.writeInt(this.event);
         buf.writeInt(this.data);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         FDBossBar bossBar = FDBossbars.getBossBar(uuid);
         if (bossBar != null){
             bossBar.hanldeBarEvent(event,data);
@@ -48,7 +48,7 @@ public class BossBarEventPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

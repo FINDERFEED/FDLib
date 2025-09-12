@@ -1,7 +1,7 @@
 package com.finderfeed.fdlib.systems.particle;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import com.finderfeed.fdlib.util.FDCodecs;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.serialization.Codec;
@@ -10,9 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -125,11 +125,11 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
 
     public static class Type implements ParticleProcessorType<CircleParticleProcessor>{
 
-        public static final StreamCodec<FriendlyByteBuf,CircleParticleProcessor> STREAM_CODEC = StreamCodec.composite(
-                FDByteBufCodecs.VEC3,v->v.point,
-                ByteBufCodecs.BOOL,v->v.forward,
-                ByteBufCodecs.BOOL,v->v.in,
-                ByteBufCodecs.FLOAT,v->v.circleCount,
+        public static final NetworkCodec<FriendlyByteBuf,CircleParticleProcessor> STREAM_CODEC = NetworkCodec.composite(
+                NetworkCodec.VEC3,v->v.point,
+                NetworkCodec.BOOL,v->v.forward,
+                NetworkCodec.BOOL,v->v.in,
+                NetworkCodec.FLOAT,v->v.circleCount,
                 CircleParticleProcessor::new
         );
 
@@ -141,7 +141,7 @@ public class CircleParticleProcessor implements ParticleProcessor<CircleParticle
         ).apply(p,CircleParticleProcessor::new));
 
         @Override
-        public StreamCodec<FriendlyByteBuf, CircleParticleProcessor> streamCodec() {
+        public NetworkCodec<FriendlyByteBuf, CircleParticleProcessor> NetworkCodec() {
             return STREAM_CODEC;
         }
 

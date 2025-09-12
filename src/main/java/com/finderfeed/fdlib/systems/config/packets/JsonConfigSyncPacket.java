@@ -7,9 +7,9 @@ import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class JsonConfigSyncPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(names.size());
         for (String name : names){
             buf.writeUtf(name);
@@ -53,7 +53,7 @@ public class JsonConfigSyncPacket extends FDPacket {
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         for (int i = 0; i < names.size();i++){
             JsonConfig config = FDRegistries.CONFIGS.get(ResourceLocation.parse(names.get(i)));
             if (!config.isClientside()) {
@@ -65,7 +65,7 @@ public class JsonConfigSyncPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 

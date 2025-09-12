@@ -3,8 +3,8 @@ package com.finderfeed.fdlib.systems.particle.particle_emitter;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:emitter_packet")
 public class ParticleEmitterPacket extends FDPacket {
@@ -16,21 +16,21 @@ public class ParticleEmitterPacket extends FDPacket {
     }
 
     public ParticleEmitterPacket(FriendlyByteBuf buf){
-        this.data = ParticleEmitterData.STREAM_CODEC.decode(buf);
+        this.data = ParticleEmitterData.STREAM_CODEC.fromNetwork(buf);
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
-        ParticleEmitterData.STREAM_CODEC.encode(buf,data);
+    public void write(FriendlyByteBuf buf) {
+        ParticleEmitterData.STREAM_CODEC.toNetwork(buf,data);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         ParticleEmitterHandler.addParticleEmitter(data);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

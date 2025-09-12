@@ -6,8 +6,8 @@ import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 /**
  * Won't do anything if cutscene is not active
@@ -21,22 +21,22 @@ public class MoveCutsceneCameraPacket extends FDPacket {
         this.cutsceneData = cutsceneData;
     }
 
-    public MoveCutsceneCameraPacket(RegistryFriendlyByteBuf buf){
+    public MoveCutsceneCameraPacket(FriendlyByteBuf buf){
         this.cutsceneData = CutsceneData.decode(buf);
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         this.cutsceneData.encode(buf);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         CutsceneCameraHandler.moveCamera(cutsceneData);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 

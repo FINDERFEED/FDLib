@@ -3,20 +3,31 @@ package com.finderfeed.fdlib.util.client.particles.lightning_particle;
 import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.systems.particle.EmptyParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
-import com.finderfeed.fdlib.util.client.particles.options.AlphaOptions;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class LightningParticleOptions implements ParticleOptions {
 
-    private static final Codec<LightningParticleOptions> CODEC = RecordCodecBuilder.create(builder->
+    public static final Deserializer<LightningParticleOptions> DESERIALIZER = new Deserializer<LightningParticleOptions>() {
+        @Override
+        public LightningParticleOptions fromCommand(ParticleType<LightningParticleOptions> p_123733_, StringReader p_123734_) throws CommandSyntaxException {
+            return LightningParticleOptions.builder().build();
+        }
+
+        @Override
+        public LightningParticleOptions fromNetwork(ParticleType<LightningParticleOptions> p_123735_, FriendlyByteBuf p_123736_) {
+            return STREAM_CODEC.fromNetwork(p_123736_);
+        }
+    };
+
+    public static final Codec<LightningParticleOptions> CODEC = RecordCodecBuilder.create(builder->
             builder.group(
                     ParticleProcessor.CODEC.fieldOf("processor").forGetter(p->p.processor),
                     Codec.FLOAT.fieldOf("quadSize").forGetter(p->p.quadSize),
@@ -31,19 +42,17 @@ public class LightningParticleOptions implements ParticleOptions {
             ).apply(builder,LightningParticleOptions::new)
     );
 
-    public static final MapCodec<LightningParticleOptions> MAP_CODEC = CODEC.fieldOf("options");
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, LightningParticleOptions> STREAM_CODEC = FDByteBufCodecs.composite(
+    public static final NetworkCodec<LightningParticleOptions> STREAM_CODEC = NetworkCodec.composite(
             ParticleProcessor.STREAM_CODEC,v->v.processor,
-            ByteBufCodecs.FLOAT,v->v.quadSize,
-            ByteBufCodecs.INT,v->v.r,
-            ByteBufCodecs.INT,v->v.g,
-            ByteBufCodecs.INT,v->v.b,
-            ByteBufCodecs.INT,v->v.seed,
-            ByteBufCodecs.INT,v->v.lifetime,
-            ByteBufCodecs.BOOL,v->v.hasPhysics,
-            ByteBufCodecs.BOOL,v->v.randomRoll,
-            ByteBufCodecs.INT,v->v.maxLightningSegments,
+            NetworkCodec.FLOAT,v->v.quadSize,
+            NetworkCodec.INT,v->v.r,
+            NetworkCodec.INT,v->v.g,
+            NetworkCodec.INT,v->v.b,
+            NetworkCodec.INT,v->v.seed,
+            NetworkCodec.INT,v->v.lifetime,
+            NetworkCodec.BOOL,v->v.hasPhysics,
+            NetworkCodec.BOOL,v->v.randomRoll,
+            NetworkCodec.INT,v->v.maxLightningSegments,
             LightningParticleOptions::new
     );
 
@@ -120,6 +129,16 @@ public class LightningParticleOptions implements ParticleOptions {
     @Override
     public ParticleType<?> getType() {
         return FDParticles.LIGHTNING_PARTICLE.get();
+    }
+
+    @Override
+    public void writeToNetwork(FriendlyByteBuf buf) {
+        STREAM_CODEC.toNetwork(buf,this);
+    }
+
+    @Override
+    public String writeToString() {
+        return "";
     }
 
     public static Builder builder(){

@@ -3,8 +3,8 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_s
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.BaseModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentRenderer;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemStackAttachmentType implements ModelAttachmentType<ItemStackAttachment, ItemStackAttachmentData> {
@@ -21,7 +21,7 @@ public class ItemStackAttachmentType implements ModelAttachmentType<ItemStackAtt
     }
 
     @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, ItemStackAttachmentData> dataStreamCodec() {
+    public NetworkCodec<? super FriendlyByteBuf, ItemStackAttachmentData> dataNetworkCodec() {
         return ItemStackAttachmentData.CODEC;
     }
 

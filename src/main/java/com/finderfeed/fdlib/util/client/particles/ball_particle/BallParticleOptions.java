@@ -3,21 +3,32 @@ package com.finderfeed.fdlib.util.client.particles.ball_particle;
 import com.finderfeed.fdlib.init.FDParticles;
 import com.finderfeed.fdlib.systems.particle.EmptyParticleProcessor;
 import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.finderfeed.fdlib.util.FDCodecs;
 import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.client.particles.options.AlphaOptions;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class BallParticleOptions implements ParticleOptions {
+    
+    public static final Deserializer<BallParticleOptions> DESERIALIZER = new Deserializer<BallParticleOptions>() {
+        @Override
+        public BallParticleOptions fromCommand(ParticleType<BallParticleOptions> p_123733_, StringReader p_123734_) throws CommandSyntaxException {
+            return BallParticleOptions.builder().build();
+        }
+
+        @Override
+        public BallParticleOptions fromNetwork(ParticleType<BallParticleOptions> p_123735_, FriendlyByteBuf p_123736_) {
+            return STREAM_CODEC.fromNetwork(p_123736_);
+        }
+    };
 
     public static final Codec<BallParticleOptions> CODEC = RecordCodecBuilder.create(p->p.group(
             ParticleProcessor.CODEC.fieldOf("processor").forGetter(v->v.particleProcessor),
@@ -41,14 +52,14 @@ public class BallParticleOptions implements ParticleOptions {
 
     public static final MapCodec<BallParticleOptions> MAP_CODEC = CODEC.fieldOf("options");
 
-    public static final StreamCodec<FriendlyByteBuf,BallParticleOptions> STREAM_CODEC = FDByteBufCodecs.composite(
+    public static final NetworkCodec<BallParticleOptions> STREAM_CODEC = NetworkCodec.composite(
             ParticleProcessor.STREAM_CODEC,v->v.particleProcessor,
             AlphaOptions.STREAM_CODEC,v->v.scalingOptions,
-            FDByteBufCodecs.COLOR,v->v.color,
-            ByteBufCodecs.FLOAT,v->v.friction,
-            ByteBufCodecs.BOOL,v->v.hasPhysics,
-            ByteBufCodecs.FLOAT,v->v.size,
-            ByteBufCodecs.INT,v->v.brightness,
+            NetworkCodec.COLOR, v->v.color,
+            NetworkCodec.FLOAT,v->v.friction,
+            NetworkCodec.BOOL,v->v.hasPhysics,
+            NetworkCodec.FLOAT,v->v.size,
+            NetworkCodec.INT,v->v.brightness,
             (processor,scaling,color,friction,physics,size,brightness)->{
                 BallParticleOptions ballParticleOptions = new BallParticleOptions();
                 ballParticleOptions.size = size;
@@ -78,6 +89,16 @@ public class BallParticleOptions implements ParticleOptions {
     @Override
     public ParticleType<?> getType() {
         return FDParticles.BALL_PARTICLE.get();
+    }
+
+    @Override
+    public void writeToNetwork(FriendlyByteBuf p_123732_) {
+        STREAM_CODEC.toNetwork(p_123732_,this);
+    }
+
+    @Override
+    public String writeToString() {
+        return "";
     }
 
     public static class Builder {

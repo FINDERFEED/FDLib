@@ -11,7 +11,9 @@ public class FDProjectile extends AbstractHurtingProjectile {
 
     public FDProjectile(EntityType<? extends AbstractHurtingProjectile> type, Level level) {
         super(type, level);
-        this.accelerationPower = 0;
+        this.xPower = 0;
+        this.yPower = 0;
+        this.zPower = 0;
     }
 
 

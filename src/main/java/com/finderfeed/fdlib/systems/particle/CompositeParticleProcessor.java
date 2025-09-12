@@ -8,8 +8,8 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.ListCodec;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
@@ -57,13 +57,13 @@ public class CompositeParticleProcessor implements ParticleProcessor<CompositePa
 
 
 
-        public static StreamCodec<FriendlyByteBuf,CompositeParticleProcessor> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, CompositeParticleProcessor>() {
+        public static NetworkCodec<FriendlyByteBuf,CompositeParticleProcessor> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, CompositeParticleProcessor>() {
             @Override
             public CompositeParticleProcessor decode(FriendlyByteBuf buf) {
                 int len = buf.readInt();
                 ParticleProcessor[] processors = new ParticleProcessor[len];
                 for (int i = 0; i < processors.length; i++){
-                    processors[i] = ParticleProcessor.STREAM_CODEC.decode(buf);
+                    processors[i] = ParticleProcessor.STREAM_CODEC.fromNetwork(buf);
                 }
                 CompositeParticleProcessor compositeParticleProcessor = new CompositeParticleProcessor(processors);
                 return compositeParticleProcessor;
@@ -74,13 +74,13 @@ public class CompositeParticleProcessor implements ParticleProcessor<CompositePa
                 int len = processor.processors.length;
                 buf.writeInt(len);
                 for (ParticleProcessor<?> particleProcessor : processor.processors){
-                    ParticleProcessor.STREAM_CODEC.encode(buf,particleProcessor);
+                    ParticleProcessor.STREAM_CODEC.toNetwork(buf,particleProcessor);
                 }
             }
         };
 
         @Override
-        public StreamCodec<FriendlyByteBuf, CompositeParticleProcessor> streamCodec() {
+        public NetworkCodec<FriendlyByteBuf, CompositeParticleProcessor> NetworkCodec() {
             return STREAM_CODEC;
         }
 

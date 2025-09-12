@@ -3,13 +3,13 @@ package com.finderfeed.fdlib.systems.shake;
 import com.finderfeed.fdlib.ClientMixinHandler;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.neoforge.network.PacketDistributor;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 
 @RegisterFDPacket("fdlib:position_screen_shake")
@@ -27,25 +27,25 @@ public class PositionedScreenShakePacket extends FDPacket {
     }
 
     public PositionedScreenShakePacket(FriendlyByteBuf buf){
-        this.data = FDShakeData.STREAM_CODEC.decode(buf);
-        this.pos = FDByteBufCodecs.VEC3.decode(buf);
+        this.data = FDShakeData.STREAM_CODEC.fromNetwork(buf);
+        this.pos = NetworkCodec.VEC3.decode(buf);
         this.maxDistance = buf.readDouble();
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
-        FDShakeData.STREAM_CODEC.encode(buf,data);
-        FDByteBufCodecs.VEC3.encode(buf,pos);
+    public void write(FriendlyByteBuf buf) {
+        FDShakeData.STREAM_CODEC.toNetwork(buf,data);
+        NetworkCodec.VEC3.encode(buf,pos);
         buf.writeDouble(maxDistance);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         ClientMixinHandler.addShake(new PositionedScreenShake(data,pos,maxDistance));
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 

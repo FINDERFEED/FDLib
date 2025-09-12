@@ -1,28 +1,23 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments;
 
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
-import net.minecraft.core.HolderLookup;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraftforge.neoforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.UnknownNullability;
+import net.minecraftforge.common.util.INBTSerializable;
 
 public class BaseModelAttachmentData implements INBTSerializable<CompoundTag> {
 
-    public static final StreamCodec<? super RegistryFriendlyByteBuf, BaseModelAttachmentData> CODEC = FDByteBufCodecs.composite(
-            ByteBufCodecs.FLOAT,v->v.translationX,
-            ByteBufCodecs.FLOAT,v->v.translationY,
-            ByteBufCodecs.FLOAT,v->v.translationZ,
+    public static final NetworkCodec<BaseModelAttachmentData> CODEC = NetworkCodec.composite(
+            NetworkCodec.FLOAT,v->v.translationX,
+            NetworkCodec.FLOAT,v->v.translationY,
+            NetworkCodec.FLOAT,v->v.translationZ,
 
-            ByteBufCodecs.FLOAT,v->v.rotationX,
-            ByteBufCodecs.FLOAT,v->v.rotationY,
-            ByteBufCodecs.FLOAT,v->v.rotationZ,
+            NetworkCodec.FLOAT,v->v.rotationX,
+            NetworkCodec.FLOAT,v->v.rotationY,
+            NetworkCodec.FLOAT,v->v.rotationZ,
 
-            ByteBufCodecs.FLOAT,v->v.scaleX,
-            ByteBufCodecs.FLOAT,v->v.scaleY,
-            ByteBufCodecs.FLOAT,v->v.scaleZ,
+            NetworkCodec.FLOAT,v->v.scaleX,
+            NetworkCodec.FLOAT,v->v.scaleY,
+            NetworkCodec.FLOAT,v->v.scaleZ,
             (tx,ty,tz,rx,ry,rz,sx,sy,sz)->{
                 BaseModelAttachmentData b = new BaseModelAttachmentData();
                 b.translationX = tx;
@@ -75,7 +70,7 @@ public class BaseModelAttachmentData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+    public CompoundTag serializeNBT() {
 
         CompoundTag tag = new CompoundTag();
 
@@ -95,7 +90,7 @@ public class BaseModelAttachmentData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
 
         this.translationX = nbt.getFloat("tx");
         this.translationY = nbt.getFloat("ty");

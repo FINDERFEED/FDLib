@@ -5,8 +5,8 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.music.FDMusic;
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:enter_music_area_packet")
 public class FDMusicAreaEnterPacket extends FDPacket {
@@ -19,19 +19,19 @@ public class FDMusicAreaEnterPacket extends FDPacket {
         this.fadeInTime = fadeInTime;
     }
 
-    public FDMusicAreaEnterPacket(RegistryFriendlyByteBuf buf){
-        this.data = FDMusicData.STREAM_CODEC.decode(buf);
+    public FDMusicAreaEnterPacket(FriendlyByteBuf buf){
+        this.data = FDMusicData.STREAM_CODEC.fromNetwork(buf);
         this.fadeInTime = buf.readInt();
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
-        FDMusicData.STREAM_CODEC.encode(buf, data);
+    public void write(FriendlyByteBuf buf) {
+        FDMusicData.STREAM_CODEC.toNetwork(buf, data);
         buf.writeInt(fadeInTime);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         FDMusic music;
         if ((music = FDMusicSystem.getMusic(data.getMusicSourceUUID())) == null) {
             FDMusicSystem.addMusic(data);
@@ -41,7 +41,7 @@ public class FDMusicAreaEnterPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 

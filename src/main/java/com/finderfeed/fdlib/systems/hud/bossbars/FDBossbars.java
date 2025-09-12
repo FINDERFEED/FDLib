@@ -3,8 +3,8 @@ package com.finderfeed.fdlib.systems.hud.bossbars;
 import com.finderfeed.fdlib.FDLib;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.neoforge.client.event.ClientTickEvent;
 import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,modid = FDLib.MOD_ID,value = Dist.CLIENT)
+@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE,modid = FDLib.MOD_ID,value = Dist.CLIENT)
 public class FDBossbars {
 
     protected static final HashMap<UUID,FDBossBar> BOSS_BARS = new LinkedHashMap<>();

@@ -25,13 +25,13 @@ public class ItemStackAttachment implements ModelAttachment<ItemStackAttachment,
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+    public CompoundTag serializeNBT() {
 
         CompoundTag itemStackAttachment = new CompoundTag();
 
-        Tag stack = this.getItemStack().save(provider);
+        CompoundTag stack = this.getItemStack().save(new CompoundTag());
 
-        CompoundTag base = this.getBaseModelAttachmentData().serializeNBT(provider);
+        CompoundTag base = this.getBaseModelAttachmentData().serializeNBT();
 
         itemStackAttachment.put("item",stack);
         itemStackAttachment.put("base",base);
@@ -40,14 +40,14 @@ public class ItemStackAttachment implements ModelAttachment<ItemStackAttachment,
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
 
-        Tag item = nbt.get("item");
+        CompoundTag item = nbt.getCompound("item");
 
-        ItemStack itemStack = ItemStack.parse(provider,item).get();
+        ItemStack itemStack = ItemStack.of(item);
 
         BaseModelAttachmentData baseModelAttachmentData = new BaseModelAttachmentData();
-        baseModelAttachmentData.deserializeNBT(provider,nbt.getCompound("base"));
+        baseModelAttachmentData.deserializeNBT(nbt.getCompound("base"));
 
         this.data = new ItemStackAttachmentData(baseModelAttachmentData,itemStack);
 

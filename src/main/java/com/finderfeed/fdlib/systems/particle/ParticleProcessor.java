@@ -8,8 +8,8 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public interface ParticleProcessor<T extends ParticleProcessor<T>> {
@@ -43,19 +43,19 @@ public interface ParticleProcessor<T extends ParticleProcessor<T>> {
 
 
 
-    public static final StreamCodec<FriendlyByteBuf,ParticleProcessor<?>> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, ParticleProcessor<?>>() {
+    public static final NetworkCodec<FriendlyByteBuf,ParticleProcessor<?>> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, ParticleProcessor<?>>() {
         @Override
         public ParticleProcessor<?> decode(FriendlyByteBuf buf) {
             var location = buf.readResourceLocation();
             var type =  FDParticleProcessors.getType(location);
-            var codec = type.streamCodec();
+            var codec = type.NetworkCodec();
             return codec.decode(buf);
         }
 
         @Override
         public void encode(FriendlyByteBuf buf, ParticleProcessor<?> processor) {
             buf.writeResourceLocation(processor.type().id());
-            hackyEncode(buf,processor,processor.type().streamCodec());
+            hackyEncode(buf,processor,processor.type().NetworkCodec());
         }
     };
 
@@ -68,7 +68,7 @@ public interface ParticleProcessor<T extends ParticleProcessor<T>> {
 
     void init(Particle particle);
 
-    private static <T extends ParticleProcessor<T>> void hackyEncode(FriendlyByteBuf buf,ParticleProcessor<?> processor,StreamCodec<FriendlyByteBuf,T> encoder){
+    private static <T extends ParticleProcessor<T>> void hackyEncode(FriendlyByteBuf buf,ParticleProcessor<?> processor,NetworkCodec<FriendlyByteBuf,T> encoder){
         encoder.encode(buf,(T)processor);
     }
 

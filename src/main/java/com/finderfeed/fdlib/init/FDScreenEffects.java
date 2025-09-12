@@ -4,9 +4,7 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import com.finderfeed.fdlib.systems.screen.screen_effect.instances.ScreenColorEffect;
-import com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas.EmptyScreenEffectData;
 import com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas.ScreenColorData;
-import net.minecraftforge.neoforge.registries.DeferredRegister;
 import net.minecraftforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;

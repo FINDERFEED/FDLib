@@ -7,15 +7,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.ClientTickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Mod.EventBusSubscriber(bus =  EventBusSubscriber.Bus.GAME, value = Dist.CLIENT, modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(bus =  EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT, modid = FDLib.MOD_ID)
 public class ScreenEffectOverlay implements LayeredDraw.Layer {
 
     private static final List<ScreenEffectInstance> screenEffects = new ArrayList<>();

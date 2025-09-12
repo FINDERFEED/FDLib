@@ -2,12 +2,12 @@ package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 
 public interface EmitterProcessor<T extends EmitterProcessor<T>> {
 
-    public static StreamCodec<FriendlyByteBuf,EmitterProcessor<?>> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, EmitterProcessor<?>>() {
+    public static NetworkCodec<FriendlyByteBuf,EmitterProcessor<?>> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, EmitterProcessor<?>>() {
 
         @Override
         public void encode(FriendlyByteBuf buf, EmitterProcessor<?> emitter) {

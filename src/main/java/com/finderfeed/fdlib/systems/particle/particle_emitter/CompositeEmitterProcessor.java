@@ -4,8 +4,8 @@ import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -57,14 +57,14 @@ public class CompositeEmitterProcessor implements EmitterProcessor<CompositeEmit
 
     public static class Type implements EmitterProcessorType<CompositeEmitterProcessor>{
 
-        public static StreamCodec<FriendlyByteBuf,CompositeEmitterProcessor> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, CompositeEmitterProcessor>() {
+        public static NetworkCodec<FriendlyByteBuf,CompositeEmitterProcessor> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, CompositeEmitterProcessor>() {
             @Override
             public CompositeEmitterProcessor decode(FriendlyByteBuf buf) {
 
                 CompositeEmitterProcessor processor = new CompositeEmitterProcessor();
                 int len = buf.readInt();
                 for (int i = 0; i < len;i++){
-                    processor.processors.add(EmitterProcessor.STREAM_CODEC.decode(buf));
+                    processor.processors.add(EmitterProcessor.STREAM_CODEC.fromNetwork(buf));
                 }
 
                 return processor;
@@ -75,14 +75,14 @@ public class CompositeEmitterProcessor implements EmitterProcessor<CompositeEmit
 
                 buf.writeInt(processor.processors.size());
                 for (EmitterProcessor<?> p : processor.processors){
-                    EmitterProcessor.STREAM_CODEC.encode(buf,p);
+                    EmitterProcessor.STREAM_CODEC.toNetwork(buf,p);
                 }
 
             }
         };
 
         @Override
-        public StreamCodec<FriendlyByteBuf, CompositeEmitterProcessor> codec() {
+        public NetworkCodec<FriendlyByteBuf, CompositeEmitterProcessor> codec() {
             return STREAM_CODEC;
         }
 

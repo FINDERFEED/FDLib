@@ -1,26 +1,11 @@
 package com.finderfeed.fdlib.systems.simple_screen;
 
-import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.FDButton;
-import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.TestButtonWidget;
-import com.finderfeed.fdlib.systems.simple_screen.fdwidgets.util.FDButtonTextures;
-import com.finderfeed.fdlib.util.rendering.FDEasings;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.bus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.EventBusSubscriber;
-import net.minecraftforge.neoforge.client.event.InputEvent;
-import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
-import org.lwjgl.glfw.GLFW;
 
-//@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = FDLib.MOD_ID)
+//@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE, modid = FDLib.MOD_ID)
 public class TTestScreers extends SimpleFDScreen {
 
     private static int test = 0;

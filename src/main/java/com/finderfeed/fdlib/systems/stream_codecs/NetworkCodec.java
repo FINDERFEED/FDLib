@@ -2,9 +2,10 @@ package com.finderfeed.fdlib.systems.stream_codecs;
 
 import com.finderfeed.fdlib.util.FDColor;
 import com.mojang.datafixers.util.*;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.IdMapper;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 
@@ -18,6 +19,21 @@ public abstract class NetworkCodec<K> {
 
     public abstract K fromNetwork(FriendlyByteBuf buf);
 
+    public static <C> NetworkCodec<C> idMapper(IdMapper<C> idMapper){
+        return new NetworkCodec<C>() {
+            @Override
+            public void toNetwork(FriendlyByteBuf buf, C object) {
+                int id = idMapper.getId(object);
+                buf.writeInt(id);
+            }
+
+            @Override
+            public C fromNetwork(FriendlyByteBuf buf) {
+                return idMapper.byId(buf.readInt());
+            }
+        };
+    }
+
     public static NetworkCodec<Integer> INT = new NetworkCodec<Integer>() {
         @Override
         public void toNetwork(FriendlyByteBuf buf, Integer object) {
@@ -27,6 +43,18 @@ public abstract class NetworkCodec<K> {
         @Override
         public Integer fromNetwork(FriendlyByteBuf buf) {
             return buf.readInt();
+        }
+    };
+
+    public static NetworkCodec<Boolean> BOOL = new NetworkCodec<Boolean>() {
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, Boolean object) {
+            buf.writeByte(object ? 0b1 : 0b0);
+        }
+
+        @Override
+        public Boolean fromNetwork(FriendlyByteBuf buf) {
+            return buf.readByte() == 0b1;
         }
     };
 

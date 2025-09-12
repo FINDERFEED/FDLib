@@ -6,15 +6,15 @@ import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 @RegisterFDPacket("fdlib:cutscene_packet")
 public class StartCutscenePacket extends FDPacket {
 
     private CutsceneData data;
 
-    public StartCutscenePacket(RegistryFriendlyByteBuf buf){
+    public StartCutscenePacket(FriendlyByteBuf buf){
         this.data = CutsceneData.decode(buf);
     }
 
@@ -23,17 +23,17 @@ public class StartCutscenePacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         this.data.encode(buf);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         CutsceneCameraHandler.startCutscene(data);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

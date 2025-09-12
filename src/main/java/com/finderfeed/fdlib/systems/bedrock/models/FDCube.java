@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class FDCube {
 
-    public static final StreamCodec<FriendlyByteBuf,FDCube> CODEC = StreamCodec.composite(
+    public static final NetworkCodec<FriendlyByteBuf,FDCube> CODEC = NetworkCodec.composite(
             FDFace.CODEC,cube->cube.faces[0],
             FDFace.CODEC,cube->cube.faces[1],
             FDFace.CODEC,cube->cube.faces[2],

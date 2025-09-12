@@ -5,14 +5,14 @@ import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessor;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessorType;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.FDEmitterProcessorTypes;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitter;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -86,18 +86,18 @@ public class CircleSpawnProcessor implements EmitterProcessor<CircleSpawnProcess
 
     public static class Type implements EmitterProcessorType<CircleSpawnProcessor>{
 
-        public static final StreamCodec<FriendlyByteBuf,CircleSpawnProcessor> STREAM_CODEC = StreamCodec.composite(
-                FDByteBufCodecs.VEC3,v->v.direction,
-                ByteBufCodecs.FLOAT,v->v.minSpeed,
-                ByteBufCodecs.FLOAT,v->v.maxSpeed,
-                ByteBufCodecs.FLOAT,v->v.radius,
+        public static final NetworkCodec<FriendlyByteBuf,CircleSpawnProcessor> STREAM_CODEC = NetworkCodec.composite(
+                NetworkCodec.VEC3,v->v.direction,
+                NetworkCodec.FLOAT,v->v.minSpeed,
+                NetworkCodec.FLOAT,v->v.maxSpeed,
+                NetworkCodec.FLOAT,v->v.radius,
                 (direction,minSpeed,maxSpeed,radius)->{
                     return new CircleSpawnProcessor(direction,minSpeed,maxSpeed,radius);
                 }
         );
 
         @Override
-        public StreamCodec<FriendlyByteBuf, CircleSpawnProcessor> codec() {
+        public NetworkCodec<FriendlyByteBuf, CircleSpawnProcessor> codec() {
             return STREAM_CODEC;
         }
 

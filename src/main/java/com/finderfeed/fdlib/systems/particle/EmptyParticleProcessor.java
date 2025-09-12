@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticleProcessor> {
@@ -35,7 +35,7 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
 
     public static class Type implements ParticleProcessorType<EmptyParticleProcessor>{
 
-        public static final StreamCodec<FriendlyByteBuf,EmptyParticleProcessor> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, EmptyParticleProcessor>() {
+        public static final NetworkCodec<FriendlyByteBuf,EmptyParticleProcessor> STREAM_CODEC = new NetworkCodec<FriendlyByteBuf, EmptyParticleProcessor>() {
             @Override
             public EmptyParticleProcessor decode(FriendlyByteBuf buf) {
                 return new EmptyParticleProcessor();
@@ -50,7 +50,7 @@ public class EmptyParticleProcessor implements ParticleProcessor<EmptyParticlePr
         public static final Codec<EmptyParticleProcessor> CODEC = Codec.unit(INSTANCE);
 
         @Override
-        public StreamCodec<FriendlyByteBuf, EmptyParticleProcessor> streamCodec() {
+        public NetworkCodec<FriendlyByteBuf, EmptyParticleProcessor> NetworkCodec() {
             return STREAM_CODEC;
         }
 

@@ -1,17 +1,14 @@
 package com.finderfeed.fdlib.systems.impact_frames;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 
 public class ImpactFrame {
 
-    public static final StreamCodec<FriendlyByteBuf, ImpactFrame> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.FLOAT,v->v.treshhold,
-            ByteBufCodecs.FLOAT,v->v.treshholdLerp,
-            ByteBufCodecs.INT,v->v.duration,
-            ByteBufCodecs.BOOL,v->v.invert,
+    public static final NetworkCodec<ImpactFrame> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.FLOAT,v->v.treshhold,
+            NetworkCodec.FLOAT,v->v.treshholdLerp,
+            NetworkCodec.INT,v->v.duration,
+            NetworkCodec.BOOL,v->v.invert,
             ImpactFrame::new
     );
 

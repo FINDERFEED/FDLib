@@ -6,13 +6,13 @@ import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessor;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.EmitterProcessorType;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.FDEmitterProcessorTypes;
 import com.finderfeed.fdlib.systems.particle.particle_emitter.ParticleEmitter;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -73,9 +73,9 @@ public class BoundToEntityProcessor implements EmitterProcessor<BoundToEntityPro
 
     public static class Type implements EmitterProcessorType<BoundToEntityProcessor>{
 
-        public static final StreamCodec<FriendlyByteBuf,BoundToEntityProcessor> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.INT,v->v.id,
-                FDByteBufCodecs.VEC3,v->v.offset,
+        public static final NetworkCodec<FriendlyByteBuf,BoundToEntityProcessor> STREAM_CODEC = NetworkCodec.composite(
+                NetworkCodec.INT,v->v.id,
+                NetworkCodec.VEC3,v->v.offset,
                 (id,offset)->{
                     BoundToEntityProcessor processor = new BoundToEntityProcessor(id,offset);
                     return processor;
@@ -83,7 +83,7 @@ public class BoundToEntityProcessor implements EmitterProcessor<BoundToEntityPro
         );
 
         @Override
-        public StreamCodec<FriendlyByteBuf, BoundToEntityProcessor> codec() {
+        public NetworkCodec<FriendlyByteBuf, BoundToEntityProcessor> codec() {
             return STREAM_CODEC;
         }
 

@@ -7,8 +7,8 @@ import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffect;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,7 +136,7 @@ public class CutsceneData implements AutoSerializable {
         return new CutsceneData();
     }
 
-    public void encode(RegistryFriendlyByteBuf buf){
+    public void encode(FriendlyByteBuf buf){
         CompoundTag c = new CompoundTag();
         this.autoSave(c);
         buf.writeNbt(c);
@@ -152,7 +152,7 @@ public class CutsceneData implements AutoSerializable {
     }
 
 
-    public static CutsceneData decode(RegistryFriendlyByteBuf buf){
+    public static CutsceneData decode(FriendlyByteBuf buf){
         CutsceneData cutsceneData1 = new CutsceneData();
         cutsceneData1.autoLoad(buf.readNbt());
 

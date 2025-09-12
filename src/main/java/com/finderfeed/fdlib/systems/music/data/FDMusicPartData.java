@@ -1,17 +1,17 @@
 package com.finderfeed.fdlib.systems.music.data;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.sounds.SoundEvent;
 
 public class FDMusicPartData {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, FDMusicPartData> STREAM_CODEC = StreamCodec.composite(
+    public static final NetworkCodec<FriendlyByteBuf, FDMusicPartData> STREAM_CODEC = NetworkCodec.composite(
             SoundEvent.DIRECT_STREAM_CODEC, v->v.soundEvent,
-            ByteBufCodecs.FLOAT, v->v.playDuration,
-            ByteBufCodecs.BOOL, v->v.isLooped,
+            NetworkCodec.FLOAT, v->v.playDuration,
+            NetworkCodec.BOOL, v->v.isLooped,
             (event,duration,loop)->{
                 return new FDMusicPartData(event, duration)
                         .setLooping(loop);

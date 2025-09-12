@@ -7,10 +7,10 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ public class AddEntityAttachmentPacket extends FDPacket {
         this.modelAttachmentData = modelAttachmentData;
     }
 
-    public AddEntityAttachmentPacket(RegistryFriendlyByteBuf buf){
+    public AddEntityAttachmentPacket(FriendlyByteBuf buf){
         this.entityId = buf.readInt();
         this.layer = buf.readInt();
         this.bone = buf.readUtf();
@@ -39,12 +39,12 @@ public class AddEntityAttachmentPacket extends FDPacket {
 
         var registry = buf.registryAccess().registryOrThrow(FDRegistries.MODEL_ATTACHMENT_TYPE_KEY);
         var type = registry.get(buf.readResourceLocation());
-        modelAttachmentData = type.dataStreamCodec().decode(buf);
+        modelAttachmentData = type.dataNetworkCodec().decode(buf);
 
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
         buf.writeInt(layer);
         buf.writeUtf(bone);
@@ -58,17 +58,17 @@ public class AddEntityAttachmentPacket extends FDPacket {
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         FDClientPacketExecutables.addEntityAttachmentPacket(entityId,layer,bone,uuid, modelAttachmentData);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 
-    private <T extends ModelAttachmentData<?>> void hackyEncode(RegistryFriendlyByteBuf buf, ModelAttachmentType<?,T> type){
-        type.dataStreamCodec().encode(buf,(T) modelAttachmentData);
+    private <T extends ModelAttachmentData<?>> void hackyEncode(FriendlyByteBuf buf, ModelAttachmentType<?,T> type){
+        type.dataNetworkCodec().encode(buf,(T) modelAttachmentData);
     }
 
 }

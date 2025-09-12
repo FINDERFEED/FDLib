@@ -4,12 +4,10 @@ import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +55,7 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
 
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+    public CompoundTag serializeNBT() {
 
         CompoundTag tag = new CompoundTag();
         int id = 0;
@@ -70,10 +68,10 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
 
             ModelAttachmentType<?,?> type = modelAttachment.attachmentData().type();
 
-            var key = FDRegistries.MODEL_ATTACHMENT_TYPES.getKey(type);
+            var key = FDRegistries.MODEL_ATTACHMENT_TYPES.get().getKey(type);
 
 
-            CompoundTag t = modelAttachment.serializeNBT(provider);
+            CompoundTag t = modelAttachment.serializeNBT();
             attachment.put("attachmentData",t);
             attachment.putString("attachmentType",key.toString());
 
@@ -84,7 +82,7 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
+    public void deserializeNBT( CompoundTag tag) {
 
         this.boneAttachments = new ArrayList<>();
 
@@ -98,10 +96,10 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
             CompoundTag modelAttachmentTag = attachment.getCompound("attachmentData");
             var location = ResourceLocation.parse(attachment.getString("attachmentType"));
 
-            ModelAttachmentType<?,?> type = FDRegistries.MODEL_ATTACHMENT_TYPES.get(location);
+            ModelAttachmentType<?,?> type = FDRegistries.MODEL_ATTACHMENT_TYPES.get().getValue(location);
 
             var modelAttachment = type.createInstance();
-            modelAttachment.deserializeNBT(provider, modelAttachmentTag);
+            modelAttachment.deserializeNBT(modelAttachmentTag);
 
             this.boneAttachments.add(new Pair<>(uuid,modelAttachment));
 

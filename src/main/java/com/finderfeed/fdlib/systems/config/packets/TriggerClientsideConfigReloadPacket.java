@@ -8,10 +8,10 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 
 @RegisterFDPacket("fdlib:trigger_clientside_config_reload")
@@ -28,12 +28,12 @@ public class TriggerClientsideConfigReloadPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(sendMessages);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
         Player player = FDClientHelpers.getClientPlayer();
         for (var v : FDRegistries.CONFIGS.entrySet()){
             JsonConfig config = v.getValue();
@@ -50,7 +50,7 @@ public class TriggerClientsideConfigReloadPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

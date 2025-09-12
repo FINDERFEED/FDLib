@@ -1,18 +1,18 @@
 package com.finderfeed.fdlib.systems.shake;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 
 public class FDShakeData {
 
-    public static final StreamCodec<FriendlyByteBuf,FDShakeData> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,v->v.inTime,
-            ByteBufCodecs.INT,v->v.stayTime,
-            ByteBufCodecs.INT,v->v.outTime,
-            ByteBufCodecs.FLOAT,v->v.amplitude,
-            ByteBufCodecs.FLOAT,v->v.frequency,
+    public static final NetworkCodec<FriendlyByteBuf,FDShakeData> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.INT,v->v.inTime,
+            NetworkCodec.INT,v->v.stayTime,
+            NetworkCodec.INT,v->v.outTime,
+            NetworkCodec.FLOAT,v->v.amplitude,
+            NetworkCodec.FLOAT,v->v.frequency,
             (inTime,stayTime,outTime,amplitude,frequency)->{
                 FDShakeData data = new FDShakeData();
                 data.inTime = inTime;

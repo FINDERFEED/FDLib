@@ -1,14 +1,14 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
+import com.finderfeed.fdlib.util.NetworkCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.neoforge.registries.NeoForgeRegistries;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ParticleEmitterData {
 
-    public static final StreamCodec<FriendlyByteBuf,List<ParticleOptions>> OPTIONS_CODEC = new StreamCodec<FriendlyByteBuf, List<ParticleOptions>>() {
+    public static final NetworkCodec<FriendlyByteBuf,List<ParticleOptions>> OPTIONS_CODEC = new NetworkCodec<FriendlyByteBuf, List<ParticleOptions>>() {
         @Override
         public List<ParticleOptions> decode(FriendlyByteBuf buf) {
 
@@ -29,7 +29,7 @@ public class ParticleEmitterData {
                 var type = BuiltInRegistries.PARTICLE_TYPE.get(location);
                 if (type == null) throw new RuntimeException("Unknown particle type: " + location);
 
-                ParticleOptions options = ((StreamCodec<FriendlyByteBuf,ParticleOptions>)type.streamCodec()).decode(buf);
+                ParticleOptions options = ((NetworkCodec<FriendlyByteBuf,ParticleOptions>)type.NetworkCodec()).decode(buf);
                 list.add(options);
 
             }
@@ -45,16 +45,16 @@ public class ParticleEmitterData {
 
                 var key = BuiltInRegistries.PARTICLE_TYPE.getKey(type);
                 buf.writeResourceLocation(key);
-                ((StreamCodec<FriendlyByteBuf,ParticleOptions>)type.streamCodec()).encode(buf,options);
+                ((NetworkCodec<FriendlyByteBuf,ParticleOptions>)type.NetworkCodec()).encode(buf,options);
             }
 
         }
     };
 
-    public static final StreamCodec<FriendlyByteBuf,ParticleEmitterData> STREAM_CODEC = StreamCodec.composite(
-            FDByteBufCodecs.VEC3,v->v.position,
-            ByteBufCodecs.INT,v->v.lifetime,
-            ByteBufCodecs.INT,v->v.particlesPerTick,
+    public static final NetworkCodec<FriendlyByteBuf,ParticleEmitterData> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.VEC3,v->v.position,
+            NetworkCodec.INT,v->v.lifetime,
+            NetworkCodec.INT,v->v.particlesPerTick,
             EmitterProcessor.STREAM_CODEC,v->v.processor,
             OPTIONS_CODEC,v->v.particleTypes,
             (position,lifetime,particlesPerTick,processor,types)->{

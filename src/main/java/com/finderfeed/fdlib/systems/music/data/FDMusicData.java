@@ -1,9 +1,9 @@
 package com.finderfeed.fdlib.systems.music.data;
 
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import com.finderfeed.fdlib.util.NetworkCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +11,12 @@ import java.util.UUID;
 
 public class FDMusicData {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, FDMusicData> STREAM_CODEC = StreamCodec.composite(
-            FDMusicPartData.STREAM_CODEC.apply(ByteBufCodecs.list()),v->v.musicPartDatas,
-            ByteBufCodecs.INT, v->v.startFrom,
-            ByteBufCodecs.INT, v->v.inactiveDeleteTime,
-            ByteBufCodecs.INT, v->v.defaultFadeInTime,
-            FDByteBufCodecs.UUID,v->v.musicSourceUUID,
+    public static final NetworkCodec<FriendlyByteBuf, FDMusicData> STREAM_CODEC = NetworkCodec.composite(
+            FDMusicPartData.STREAM_CODEC.apply(NetworkCodec.list()),v->v.musicPartDatas,
+            NetworkCodec.INT, v->v.startFrom,
+            NetworkCodec.INT, v->v.inactiveDeleteTime,
+            NetworkCodec.INT, v->v.defaultFadeInTime,
+            NetworkCodec.UUID,v->v.musicSourceUUID,
             (datas, startFrom, inactiveDeleteTime, defaultFadeInTime, sourceUUID)->{
                 return new FDMusicData(sourceUUID, datas)
                         .startFromPart(startFrom)

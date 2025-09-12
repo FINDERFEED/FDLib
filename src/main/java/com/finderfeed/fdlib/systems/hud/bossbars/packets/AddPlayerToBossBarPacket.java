@@ -8,10 +8,10 @@ import com.finderfeed.fdlib.systems.hud.bossbars.FDBossBarFactory;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDBossbars;
 import com.finderfeed.fdlib.systems.hud.bossbars.FDServerBossBar;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.neoforge.network.handling.Supplier<NetworkEvent.Context>;
 
 import java.util.UUID;
 
@@ -38,7 +38,7 @@ public class AddPlayerToBossBarPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeResourceLocation(location);
         buf.writeInt(this.entityId);
         buf.writeUUID(this.uuid);
@@ -46,7 +46,7 @@ public class AddPlayerToBossBarPacket extends FDPacket {
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> context) {
 
         FDBossBarFactory<?> factory = FDRegistries.BOSS_BARS.get(location);
         if (factory == null) return;
@@ -58,7 +58,7 @@ public class AddPlayerToBossBarPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> context) {
 
     }
 }

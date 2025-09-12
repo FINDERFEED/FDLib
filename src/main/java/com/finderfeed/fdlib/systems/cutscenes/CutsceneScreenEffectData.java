@@ -6,7 +6,7 @@ import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffect;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class CutsceneScreenEffectData {
         return screenEffects.get(tick);
     }
 
-    public void encode(RegistryFriendlyByteBuf buf){
+    public void encode(FriendlyByteBuf buf){
         buf.writeInt(this.screenEffects.size());
 
         RegistryAccess access = buf.registryAccess();
@@ -60,12 +60,12 @@ public class CutsceneScreenEffectData {
         }
     }
 
-    private <A extends ScreenEffectData,B extends ScreenEffect<A>> void encodeScreenEffectData(RegistryFriendlyByteBuf buf, ScreenEffectType<A,B> type, ScreenEffectData data){
+    private <A extends ScreenEffectData,B extends ScreenEffect<A>> void encodeScreenEffectData(FriendlyByteBuf buf, ScreenEffectType<A,B> type, ScreenEffectData data){
         var codec = type.dataCodec;
         codec.encode(buf, (A) data);
     }
 
-    public static CutsceneScreenEffectData decode(RegistryFriendlyByteBuf buf){
+    public static CutsceneScreenEffectData decode(FriendlyByteBuf buf){
 
         HashMap<Integer, List<ScreenEffectInstance<?,?>>> screenEffects = new HashMap<>();
 

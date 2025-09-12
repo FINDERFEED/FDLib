@@ -1,17 +1,17 @@
 package com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas;
 
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.NetworkCodec;
+import net.minecraft.network.codec.NetworkCodec;
 
 public class ScreenColorData extends ScreenEffectData {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ScreenColorData> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.FLOAT,v->v.r,
-            ByteBufCodecs.FLOAT,v->v.g,
-            ByteBufCodecs.FLOAT,v->v.b,
-            ByteBufCodecs.FLOAT,v->v.a,
+    public static final NetworkCodec<FriendlyByteBuf, ScreenColorData> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.FLOAT,v->v.r,
+            NetworkCodec.FLOAT,v->v.g,
+            NetworkCodec.FLOAT,v->v.b,
+            NetworkCodec.FLOAT,v->v.a,
             ScreenColorData::new
     );
 
