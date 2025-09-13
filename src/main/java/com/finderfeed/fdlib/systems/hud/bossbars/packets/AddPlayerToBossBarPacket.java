@@ -49,7 +49,7 @@ public class AddPlayerToBossBarPacket extends FDPacket {
     @Override
     public void clientAction(Supplier<NetworkEvent.Context> context) {
 
-        FDBossBarFactory<?> factory = FDRegistries.BOSS_BARS.get(location);
+        FDBossBarFactory<?> factory = FDRegistries.BOSS_BARS.get().getValue(location);
         if (factory == null) return;
 
         FDBossBar bossBar = factory.create(uuid,entityId);

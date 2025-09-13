@@ -16,12 +16,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.neoforge.client.event.*;
 import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CutsceneCameraHandler {
 
     private static ClientCameraEntity clientCameraEntity;
@@ -110,8 +111,8 @@ public class CutsceneCameraHandler {
     }
 
     @SubscribeEvent
-    public static void renderGuiLayers(RenderGuiLayerEvent.Pre event){
-        if (isCutsceneActive() && event.getLayer() != FDHuds.SCREEN_EFFECT_OVERLAY){
+    public static void renderGuiLayers(RenderGuiOverlayEvent.Pre event){
+        if (isCutsceneActive() && event.getOverlay().overlay() != FDHuds.SCREEN_EFFECT_OVERLAY){
             event.setCanceled(true);
         }
     }
@@ -172,7 +173,7 @@ public class CutsceneCameraHandler {
 
         CutsceneExecutor.useScreenEffectsOnTick(cutsceneScreenEffectData, 0);
 
-        CameraPos pos = data.getCameraPositions().getFirst();
+        CameraPos pos = data.getCameraPositions().get(0);
 
         if (!(currentCamera instanceof ClientCameraEntity) || clientCameraEntity == null) {
             ClientCameraEntity camera = new ClientCameraEntity(level);

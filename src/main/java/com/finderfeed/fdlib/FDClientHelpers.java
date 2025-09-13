@@ -2,6 +2,8 @@ package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EffectInstance;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;
@@ -30,6 +32,22 @@ public class FDClientHelpers {
 
     public static float getCurrentMusicVolume(){
         return Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC);
+    }
+
+    public static void setShaderUniform(PostChain postChain, String name, float uniform){
+        var passes = postChain.passes;
+        for (var postPass : passes){
+            EffectInstance effectInstance = postPass.getEffect();
+            effectInstance.safeGetUniform(name).set(uniform);
+        }
+    }
+
+    public static void setShaderUniform(PostChain postChain, String name, float... uniform){
+        var passes = postChain.passes;
+        for (var postPass : passes){
+            EffectInstance effectInstance = postPass.getEffect();
+            effectInstance.safeGetUniform(name).set(uniform);
+        }
     }
 
 }

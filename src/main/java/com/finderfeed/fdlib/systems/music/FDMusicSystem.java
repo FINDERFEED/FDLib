@@ -13,9 +13,6 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.neoforge.client.event.ClientTickEvent;
-import net.minecraftforge.neoforge.client.event.RenderFrameEvent;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 

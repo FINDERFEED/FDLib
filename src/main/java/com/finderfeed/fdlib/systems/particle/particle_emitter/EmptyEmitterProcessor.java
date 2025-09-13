@@ -1,10 +1,9 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public class EmptyEmitterProcessor implements EmitterProcessor<EmptyEmitterProcessor> {
@@ -41,12 +40,12 @@ public class EmptyEmitterProcessor implements EmitterProcessor<EmptyEmitterProce
 
         public static NetworkCodec<EmptyEmitterProcessor> STREAM_CODEC = new NetworkCodec<EmptyEmitterProcessor>() {
             @Override
-            public EmptyEmitterProcessor decode(FriendlyByteBuf p_320376_) {
+            public EmptyEmitterProcessor fromNetwork(FriendlyByteBuf p_320376_) {
                 return null;
             }
 
             @Override
-            public void encode(FriendlyByteBuf p_320158_, EmptyEmitterProcessor p_320396_) {
+            public void toNetwork(FriendlyByteBuf p_320158_, EmptyEmitterProcessor p_320396_) {
 
             }
         };

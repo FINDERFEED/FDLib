@@ -1,12 +1,9 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3f;
 
@@ -90,8 +87,8 @@ public class FDModelInfo {
     public record ModelSyncInstance(ResourceLocation location,List<FDModelPartDefinition> definitions){
 
         public static final NetworkCodec<ModelSyncInstance> CODEC = NetworkCodec.composite(
-                NetworkCodec.STRING_UTF8,inst->inst.location.toString(),
-                FDModelPartDefinition.CODEC.apply(NetworkCodec.list()),inst->inst.definitions,
+                NetworkCodec.STRING,inst->inst.location.toString(),
+                NetworkCodec.listOf(FDModelPartDefinition.CODEC),inst->inst.definitions,
                 (str,defs)->{
                     return new ModelSyncInstance(ResourceLocation.parse(str),defs);
                 }

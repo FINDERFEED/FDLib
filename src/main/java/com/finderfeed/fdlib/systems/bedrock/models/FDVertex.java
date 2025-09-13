@@ -1,9 +1,6 @@
 package com.finderfeed.fdlib.systems.bedrock.models;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import org.joml.Vector3f;
 
 public class FDVertex {

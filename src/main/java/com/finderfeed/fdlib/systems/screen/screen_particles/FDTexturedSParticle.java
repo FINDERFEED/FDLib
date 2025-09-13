@@ -48,7 +48,7 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
 
         ParticleEngine engine = Minecraft.getInstance().particleEngine;
         var atlas = engine.textureAtlas;
-        var atlasSprite = atlas.getTextures().get(location);
+        var atlasSprite = atlas.getSprite(location);
 
         if (atlasSprite != null){
 

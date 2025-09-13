@@ -1,7 +1,6 @@
 package com.finderfeed.fdlib.systems.screen.screen_effect;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 
 public class ScreenEffectType<T extends ScreenEffectData, S extends ScreenEffect<T>> {
 

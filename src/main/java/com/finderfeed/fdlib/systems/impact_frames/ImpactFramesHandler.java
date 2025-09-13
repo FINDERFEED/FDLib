@@ -1,40 +1,21 @@
 package com.finderfeed.fdlib.systems.impact_frames;
 
-import com.finderfeed.fdlib.ClientMixinHandler;
+import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.init.FDConfigs;
-import com.finderfeed.fdlib.systems.shake.DefaultShake;
-import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.core.Holder;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.ClientTickEvent;
-import net.minecraftforge.neoforge.client.event.InputEvent;
-import net.minecraftforge.neoforge.client.event.RenderFrameEvent;
-import net.minecraftforge.neoforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.neoforge.event.entity.player.AttackEntityEvent;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
-import java.nio.IntBuffer;
 import java.util.*;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
@@ -96,9 +77,9 @@ public class ImpactFramesHandler {
 
     private static void activateImpactShader(ImpactFrame frame){
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        impactFrameShader.setUniform("treshhold",frame.getTreshhold());
-        impactFrameShader.setUniform("treshholdLerp",frame.getTreshholdLerp());
-        impactFrameShader.setUniform("invert",frame.isInverted() ? 1 : 0);
+        FDClientHelpers.setShaderUniform(impactFrameShader,"treshhold",frame.getTreshhold());
+        FDClientHelpers.setShaderUniform(impactFrameShader,"treshholdLerp",frame.getTreshholdLerp());
+        FDClientHelpers.setShaderUniform(impactFrameShader,"invert",frame.isInverted() ? 1 : 0);
         renderer.postEffect = impactFrameShader;
         renderer.effectActive = true;
     }
@@ -143,7 +124,7 @@ public class ImpactFramesHandler {
                 maxGrayscale = Math.max(maxGrayscale, grayscale);
             }
 
-            impactFrameShader.setUniform("maxEstimatedGrayscale", maxGrayscale);
+            FDClientHelpers.setShaderUniform(impactFrameShader,"maxEstimatedGrayscale", maxGrayscale);
         }
 
     }

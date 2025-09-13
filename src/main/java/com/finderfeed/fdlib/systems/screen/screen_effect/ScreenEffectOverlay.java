@@ -26,7 +26,7 @@ public class ScreenEffectOverlay implements IGuiOverlay {
         float width = window.getGuiScaledWidth();
         float height = window.getGuiScaledHeight();
         for (ScreenEffectInstance instance : screenEffects){
-            instance.effect.render(graphics,deltaTracker,instance.currentTime,width,height);
+            instance.effect.render(guiGraphics,partialTick,instance.currentTime,width,height);
         }
     }
 

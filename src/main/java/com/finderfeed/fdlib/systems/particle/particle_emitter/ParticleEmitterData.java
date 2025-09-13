@@ -1,16 +1,12 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
-import com.finderfeed.fdlib.util.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.neoforge.registries.NeoForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +15,20 @@ public class ParticleEmitterData {
 
     public static final NetworkCodec<List<ParticleOptions>> OPTIONS_CODEC = new NetworkCodec<List<ParticleOptions>>() {
         @Override
-        public List<ParticleOptions> decode(FriendlyByteBuf buf) {
+        public List<ParticleOptions> fromNetwork(FriendlyByteBuf buf) {
 
             List<ParticleOptions> list = new ArrayList<>();
             int size = buf.readInt();
             for (int i = 0; i < size;i++){
 
                 var location = buf.readResourceLocation();
-                var type = BuiltInRegistries.PARTICLE_TYPE.get(location);
+                var type = ForgeRegistries.PARTICLE_TYPES.getValue(location);
                 if (type == null) throw new RuntimeException("Unknown particle type: " + location);
 
-                ParticleOptions options = ((NetworkCodec<ParticleOptions>)type.NetworkCodec()).decode(buf);
+                ParticleOptions.Deserializer<?> deserializer = type.getDeserializer();
+
+                ParticleOptions options = deserializeParticle(buf, type, deserializer);
+
                 list.add(options);
 
             }
@@ -38,18 +37,24 @@ public class ParticleEmitterData {
         }
 
         @Override
-        public void encode(FriendlyByteBuf buf, List<ParticleOptions> list) {
+        public void toNetwork(FriendlyByteBuf buf, List<ParticleOptions> list) {
             buf.writeInt(list.size());
             for (ParticleOptions options : list){
                 var type = options.getType();
 
-                var key = BuiltInRegistries.PARTICLE_TYPE.getKey(type);
+                var key = ForgeRegistries.PARTICLE_TYPES.getKey(type);
                 buf.writeResourceLocation(key);
-                ((NetworkCodec<ParticleOptions>)type.NetworkCodec()).encode(buf,options);
+
+                options.writeToNetwork(buf);
+
             }
 
         }
     };
+
+    private static <T extends ParticleOptions> ParticleOptions deserializeParticle(FriendlyByteBuf buf, ParticleType<?> particleType, ParticleOptions.Deserializer<T> deserializer){
+        return deserializer.fromNetwork((ParticleType<T>) particleType,buf);
+    }
 
     public static final NetworkCodec<ParticleEmitterData> STREAM_CODEC = NetworkCodec.composite(
             NetworkCodec.VEC3,v->v.position,

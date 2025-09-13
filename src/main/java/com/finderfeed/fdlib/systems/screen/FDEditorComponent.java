@@ -95,7 +95,8 @@ public class FDEditorComponent extends FDScreenComponent {
                 cmp.setWidth(width);
 
                 Component name = Component.literal(field.getName());
-                if (field.getAnnotation(FDName.class) instanceof FDName n) name = Component.translatable(n.value());
+                FDName n = field.getAnnotation(FDName.class);
+                if (n != null) name = Component.translatable(n.value());
                 for (Annotation annotation : field.getAnnotations()) {
                     cmp.applyOptions(this, annotation);
                 }

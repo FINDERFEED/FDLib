@@ -8,7 +8,6 @@ import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectData;
 import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 
 import java.util.ArrayList;
 import java.util.HashMap;

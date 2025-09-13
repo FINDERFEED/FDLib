@@ -1,11 +1,9 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.particle.ParticleProcessor;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -59,7 +57,7 @@ public class CompositeEmitterProcessor implements EmitterProcessor<CompositeEmit
 
         public static NetworkCodec<CompositeEmitterProcessor> STREAM_CODEC = new NetworkCodec<CompositeEmitterProcessor>() {
             @Override
-            public CompositeEmitterProcessor decode(FriendlyByteBuf buf) {
+            public CompositeEmitterProcessor fromNetwork(FriendlyByteBuf buf) {
 
                 CompositeEmitterProcessor processor = new CompositeEmitterProcessor();
                 int len = buf.readInt();
@@ -71,7 +69,7 @@ public class CompositeEmitterProcessor implements EmitterProcessor<CompositeEmit
             }
 
             @Override
-            public void encode(FriendlyByteBuf buf, CompositeEmitterProcessor processor) {
+            public void toNetwork(FriendlyByteBuf buf, CompositeEmitterProcessor processor) {
 
                 buf.writeInt(processor.processors.size());
                 for (EmitterProcessor<?> p : processor.processors){

@@ -29,8 +29,8 @@ public class CutsceneScreenEffectData {
     public void encode(FriendlyByteBuf buf){
         buf.writeInt(this.screenEffects.size());
 
-        RegistryAccess access = buf.registryAccess();
-        var registry = access.registryOrThrow(FDRegistries.SCREEN_EFFECTS_KEY);
+
+        var registry = FDRegistries.SCREEN_EFFECTS.get();
 
         for (var entry : this.screenEffects.entrySet()){
 
@@ -62,7 +62,7 @@ public class CutsceneScreenEffectData {
 
     private <A extends ScreenEffectData,B extends ScreenEffect<A>> void encodeScreenEffectData(FriendlyByteBuf buf, ScreenEffectType<A,B> type, ScreenEffectData data){
         var codec = type.dataCodec;
-        codec.encode(buf, (A) data);
+        codec.toNetwork(buf, (A) data);
     }
 
     public static CutsceneScreenEffectData decode(FriendlyByteBuf buf){
@@ -71,8 +71,7 @@ public class CutsceneScreenEffectData {
 
         int effects = buf.readInt();
 
-        RegistryAccess access = buf.registryAccess();
-        var registry = access.registryOrThrow(FDRegistries.SCREEN_EFFECTS_KEY);
+        var registry = FDRegistries.SCREEN_EFFECTS.get();
 
         for (int i = 0; i < effects; i++){
 
@@ -82,8 +81,8 @@ public class CutsceneScreenEffectData {
 
             for (int k = 0; k < pairs; k++){
                 String location = buf.readUtf();
-                ScreenEffectType<?,?> t = registry.get(ResourceLocation.parse(location));
-                ScreenEffectData effectData = t.dataCodec.decode(buf);
+                ScreenEffectType<?,?> t = registry.getValue(ResourceLocation.parse(location));
+                ScreenEffectData effectData = t.dataCodec.fromNetwork(buf);
                 var data = effectData;
                 var inTime = buf.readInt();
                 var stayTime = buf.readInt();

@@ -3,10 +3,11 @@ package com.finderfeed.fdlib.systems.screen.screen_effect;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.FDRegistries;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:screen_effect")
@@ -27,13 +28,12 @@ public class SendScreenEffectPacket<D extends ScreenEffectData, T extends Screen
     }
 
     public SendScreenEffectPacket(FriendlyByteBuf buf){
-        RegistryAccess access = buf.registryAccess();
-        var registry = access.registryOrThrow(FDRegistries.SCREEN_EFFECTS_KEY);
+        var registry = FDRegistries.SCREEN_EFFECTS.get();
 
         String location = buf.readUtf();
-        ScreenEffectType<?,?> t = registry.get(ResourceLocation.parse(location));
+        ScreenEffectType<?,?> t = registry.getValue(ResourceLocation.parse(location));
 
-        ScreenEffectData effectData = t.dataCodec.decode(buf);
+        ScreenEffectData effectData = t.dataCodec.fromNetwork(buf);
         this.data = (D) effectData;
         this.type = (ScreenEffectType<D, T>) t;
         this.inTime = buf.readInt();
@@ -44,11 +44,10 @@ public class SendScreenEffectPacket<D extends ScreenEffectData, T extends Screen
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        RegistryAccess access = buf.registryAccess();
-        var registry = access.registryOrThrow(FDRegistries.SCREEN_EFFECTS_KEY);
+        var registry = FDRegistries.SCREEN_EFFECTS.get();
         var location = registry.getKey(type);
         buf.writeUtf(location.toString());
-        type.dataCodec.encode(buf,data);
+        type.dataCodec.toNetwork(buf,data);
         buf.writeInt(inTime);
         buf.writeInt(stayTime);
         buf.writeInt(outTime);

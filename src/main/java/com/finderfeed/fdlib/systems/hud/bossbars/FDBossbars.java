@@ -3,24 +3,26 @@ package com.finderfeed.fdlib.systems.hud.bossbars;
 import com.finderfeed.fdlib.FDLib;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.neoforge.client.event.ClientTickEvent;
-import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE,modid = FDLib.MOD_ID,value = Dist.CLIENT)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,modid = FDLib.MOD_ID,value = Dist.CLIENT)
 public class FDBossbars {
 
     protected static final HashMap<UUID,FDBossBar> BOSS_BARS = new LinkedHashMap<>();
 
 
     @SubscribeEvent
-    public static void tick(ClientTickEvent.Pre event){
+    public static void tick(TickEvent.ClientTickEvent event){
+
+        if (event.phase != TickEvent.Phase.START) return;
+
         if (Minecraft.getInstance().level == null){
             BOSS_BARS.clear();
             return;

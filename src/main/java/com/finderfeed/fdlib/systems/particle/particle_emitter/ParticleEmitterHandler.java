@@ -1,16 +1,15 @@
 package com.finderfeed.fdlib.systems.particle.particle_emitter;
 
 import com.finderfeed.fdlib.FDLib;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.event.tick.LevelTickEvent;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ParticleEmitterHandler {
 
 
@@ -18,8 +17,11 @@ public class ParticleEmitterHandler {
 
 
     @SubscribeEvent
-    public static void tickEmitters(LevelTickEvent.Pre event){
-        if (!event.getLevel().isClientSide) return;
+    public static void tickEmitters(TickEvent.LevelTickEvent event){
+
+        if (event.phase != TickEvent.Phase.START) return;
+
+        if (!event.level.isClientSide) return;
 
         var iterator = activeEmitters.listIterator();
 

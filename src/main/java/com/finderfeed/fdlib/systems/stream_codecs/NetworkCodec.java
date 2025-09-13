@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public abstract class NetworkCodec<K> {
     public abstract void toNetwork(FriendlyByteBuf buf, K object);
 
     public abstract K fromNetwork(FriendlyByteBuf buf);
+
+
 
     public static NetworkCodec<ItemStack> ITEM = new NetworkCodec<ItemStack>() {
         @Override
@@ -188,6 +191,25 @@ public abstract class NetworkCodec<K> {
             buf.writeUUID(uuid);
         }
     };
+
+    public static NetworkCodec<String> STRING = new NetworkCodec<String>() {
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, String object) {
+            buf.writeUtf(object);
+        }
+
+        @Override
+        public String fromNetwork(FriendlyByteBuf buf) {
+            return buf.readUtf();
+        }
+    };
+
+    public static NetworkCodec<Vector3f> VECTOR3F = composite(
+            FLOAT,v->v.x,
+            FLOAT,v->v.y,
+            FLOAT,v->v.z,
+            Vector3f::new
+    );
 
     public static NetworkCodec<Vec3> VEC3 = new NetworkCodec<Vec3>() {
         @Override

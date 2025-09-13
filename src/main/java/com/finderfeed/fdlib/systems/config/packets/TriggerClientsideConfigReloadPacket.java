@@ -11,7 +11,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:trigger_clientside_config_reload")
@@ -35,7 +37,7 @@ public class TriggerClientsideConfigReloadPacket extends FDPacket {
     @Override
     public void clientAction(Supplier<NetworkEvent.Context> context) {
         Player player = FDClientHelpers.getClientPlayer();
-        for (var v : FDRegistries.CONFIGS.entrySet()){
+        for (var v : FDRegistries.CONFIGS.get().getEntries()){
             JsonConfig config = v.getValue();
             if (config.isClientside()) {
                 if (player != null && sendMessages) {

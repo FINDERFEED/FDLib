@@ -231,7 +231,7 @@ public abstract class FDScreen extends Screen {
                 return true;
             }
         }
-        if (component.isMouseOver(mx,my) && component.mouseScrolled(mx,my,xd,yd)){
+        if (component.isMouseOver(mx,my) && component.mouseScrolled(mx,my,yd)){
             return true;
         }else{
             return false;

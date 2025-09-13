@@ -81,11 +81,6 @@ public class ClientCameraEntity extends LivingEntity {
     }
 
     @Override
-    public void push(Vec3 p_347665_) {
-
-    }
-
-    @Override
     public void push(Entity p_21294_) {
 
     }

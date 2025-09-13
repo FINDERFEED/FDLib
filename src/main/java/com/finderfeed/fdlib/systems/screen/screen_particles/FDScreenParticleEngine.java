@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.screen.screen_particles;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
@@ -10,21 +11,20 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.neoforge.client.event.ClientTickEvent;
-import net.minecraftforge.neoforge.client.event.RenderGuiEvent;
-import net.minecraftforge.neoforge.client.event.ScreenEvent;
-import net.minecraftforge.neoforge.client.gui.GuiLayerManager;
-import net.minecraftforge.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT)
 public class FDScreenParticleEngine {
 
     private static HashMap<ParticleRenderType, List<FDScreenParticle>> SCREEN_PARTICLES = new HashMap<>();
@@ -32,26 +32,26 @@ public class FDScreenParticleEngine {
 
     @SubscribeEvent
     public static void renderScreenEvent(ScreenEvent.Render.Post event){
-        if (NeoForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Screen()).isCanceled()) return;
+        if (MinecraftForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Screen())) return;
         render(SCREEN_PARTICLES,event.getGuiGraphics(),event.getPartialTick());
     }
 
     @SubscribeEvent
     public static void onGuiRender(RenderGuiEvent.Post event){
 
-        if (NeoForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Gui()).isCanceled()) return;
+        if (MinecraftForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Gui())) return;
 
         GuiGraphics graphics = event.getGuiGraphics();
-        int layerCount = Minecraft.getInstance().gui.getLayerCount();
         graphics.pose().pushPose();
-        graphics.pose().translate(0,0, GuiLayerManager.Z_SEPARATION * layerCount);
-        render(OVERLAY_PARTICLES,graphics,event.getPartialTick().getGameTimeDeltaPartialTick(true));
+        graphics.pose().translate(0,0, 100);
+        render(OVERLAY_PARTICLES,graphics,event.getPartialTick());
         graphics.pose().popPose();
     }
 
 
     @SubscribeEvent
-    public static void clientTickEvent(ClientTickEvent.Pre event){
+    public static void clientTickEvent(TickEvent.ClientTickEvent event){
+        if (event.phase != TickEvent.Phase.START) return;
         tickParticles(OVERLAY_PARTICLES);
         tickParticles(SCREEN_PARTICLES);
     }
@@ -82,13 +82,15 @@ public class FDScreenParticleEngine {
             ParticleRenderType renderType = entry.getKey();
 
 
-            var builder = renderType.begin(tesselator,manager);
+            BufferBuilder builder = Tesselator.getInstance().getBuilder();
+
+            renderType.begin(builder,manager);
 
             for (FDScreenParticle particle : list){
                 particle.render(graphics,builder,partialTicks);
             }
 
-            BufferUploader.drawWithShader(builder.build());
+            BufferUploader.drawWithShader(builder.end());
 
             if (renderType instanceof FDParticleRenderType fdParticleRenderType){
                 fdParticleRenderType.end();
