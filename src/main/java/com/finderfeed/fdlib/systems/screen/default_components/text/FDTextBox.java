@@ -453,7 +453,7 @@ public abstract class FDTextBox<T> extends ValueComponent<T> {
             case GLFW.GLFW_KEY_A -> {
                 if (Screen.hasControlDown()){
                     isSelecting = true;
-                    this.cursor = this.lines.getLast().end;
+                    this.cursor = this.lines.get(lines.size() - 1).end;
                     this.selectionCursor = 0;
                     return true;
                 }
@@ -490,7 +490,7 @@ public abstract class FDTextBox<T> extends ValueComponent<T> {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mx, double my, double scrollY) {
         int scroll = (int)scrollY;
         return this.scroll(-scroll);
     }

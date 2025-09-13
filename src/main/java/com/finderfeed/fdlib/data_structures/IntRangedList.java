@@ -42,11 +42,11 @@ public class IntRangedList<T> implements Iterable<T> {
     public int indexOf(int num){
         if (entries.isEmpty()) return -1;
         if (entries.size() == 1) return 0;
-        var first = entries.getFirst();
+        var first = entries.get(0);
         if (num <= first.num){
             return 0;
         }else{
-            var last = entries.getLast();
+            var last = entries.get(entries.size() - 1);
             if (num >= last.num){
                 return entries.size() - 1;
             }
@@ -133,11 +133,11 @@ public class IntRangedList<T> implements Iterable<T> {
     }
 
     public T getFirst(){
-        return this.entries.getFirst().value;
+        return this.entries.get(0).value;
     }
 
     public T getLast(){
-        return this.entries.getLast().value;
+        return this.entries.get(entries.size() - 1).value;
     }
 
     @NotNull

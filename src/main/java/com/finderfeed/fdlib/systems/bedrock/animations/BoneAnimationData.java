@@ -53,17 +53,17 @@ public class BoneAnimationData {
             if (transitionTo != null && transitionTo.position.isActive()){
                 List<KeyFrame> frames = transitionTo.position.getKeyFrames().getAllValuesAfter(0);
                 if (!transitionToReversed) {
-                    KeyFrame first = frames.getFirst();
+                    KeyFrame first = frames.get(0);
                     if (first.time != 0) {
-                        frames.addFirst(new KeyFrame(v, 0, first.interpolationMode));
+                        frames.add(0,new KeyFrame(v, 0, first.interpolationMode));
                     } else {
                         frames.set(0, new KeyFrame(v, 0, first.interpolationMode));
                     }
                     return frames;
                 }else{
-                    KeyFrame last = frames.getLast();
+                    KeyFrame last = frames.get(frames.size() - 1);
                     if (last.time != next.getAnimTime()) {
-                        frames.addLast(new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                        frames.add(frames.size(),new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
                     } else {
                         frames.set(frames.size() - 1, new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
                     }
@@ -90,17 +90,17 @@ public class BoneAnimationData {
             if (transitionTo != null && transitionTo.rotation.isActive()){
                 List<KeyFrame> frames = transitionTo.rotation.getKeyFrames().getAllValuesAfter(0);
                 if (!transitionToReversed) {
-                    KeyFrame first = frames.getFirst();
+                    KeyFrame first = frames.get(0);
                     if (first.time != 0) {
-                        frames.addFirst(new KeyFrame(v, 0, first.interpolationMode));
+                        frames.add(0,new KeyFrame(v, 0, first.interpolationMode));
                     } else {
                         frames.set(0, new KeyFrame(v, 0, first.interpolationMode));
                     }
                     return frames;
                 }else{
-                    KeyFrame last = frames.getLast();
+                    KeyFrame last = frames.get(frames.size() - 1);
                     if (last.time != next.getAnimTime()) {
-                        frames.addLast(new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                        frames.add(frames.size(), new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
                     } else {
                         frames.set(frames.size() - 1, new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
                     }
@@ -127,17 +127,17 @@ public class BoneAnimationData {
             if (transitionTo != null && transitionTo.scale.isActive()){
                 List<KeyFrame> frames = transitionTo.scale.getKeyFrames().getAllValuesAfter(0);
                 if (!transitionToReversed) {
-                    KeyFrame first = frames.getFirst();
+                    KeyFrame first = frames.get(0);
                     if (first.time != 0) {
-                        frames.addFirst(new KeyFrame(v, 0, first.interpolationMode));
+                        frames.add(0, new KeyFrame(v, 0, first.interpolationMode));
                     } else {
                         frames.set(0, new KeyFrame(v, 0, first.interpolationMode));
                     }
                     return frames;
                 }else{
-                    KeyFrame last = frames.getLast();
+                    KeyFrame last = frames.get(frames.size() - 1);
                     if (last.time != next.getAnimTime()) {
-                        frames.addLast(new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
+                        frames.add(frames.size(), new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
                     } else {
                         frames.set(frames.size() - 1, new KeyFrame(v, next.getAnimTime(), last.interpolationMode));
                     }

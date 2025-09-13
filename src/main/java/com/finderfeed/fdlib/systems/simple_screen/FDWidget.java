@@ -119,7 +119,7 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
 
     public abstract boolean onMouseClick(float mx,float my,int key);
     public abstract boolean onMouseRelease(float mx,float my,int key);
-    public abstract boolean onMouseScroll(float mx,float my, float scrollX,float scrollY);
+    public abstract boolean onMouseScroll(float mx,float my, float scrollY);
     public abstract boolean onCharTyped(char character, int idk);
     public abstract boolean onKeyPress(int keyCode, int scanCode, int modifiers);
     public abstract boolean onKeyRelease(int keyCode, int scanCode, int modifiers);
@@ -263,7 +263,7 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
         return clickedWidget != null;
     }
 
-    private boolean scroll(double mx, double my, double scrollX, double scrollY, ObjectHolder<FDWidget> interactedWidget){
+    private boolean scroll(double mx, double my, double scrollY, ObjectHolder<FDWidget> interactedWidget){
 
         if (!isActive()) return false;
 
@@ -271,13 +271,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
 
         if (FDRenderUtil.isMouseInBounds((float)mx,(float)my,this.x,this.y,this.width,this.height)){
             for (FDWidget widget : this.children.values()){
-                if (widget.scroll(mx,my,scrollX,scrollY,interactedWidget)){
+                if (widget.scroll(mx,my,scrollY,interactedWidget)){
                     childWasScrolled = true;
                     break;
                 }
             }
             if (!childWasScrolled){
-                boolean result = this.onMouseScroll((float) mx,(float) my, (float) scrollX,(float) scrollY);
+                boolean result = this.onMouseScroll((float) mx,(float) my, (float) scrollY);
                 if (result){
                     interactedWidget.setValue(this);
                 }
@@ -288,13 +288,13 @@ public abstract class FDWidget implements GuiEventListener, Renderable, Narratab
     }
 
     @Override
-    public final boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+    public final boolean mouseScrolled(double mx, double my,  double scrollY) {
 
         if (!isActive()) return false;
 
         ObjectHolder<FDWidget> result = new ObjectHolder<>(null);
 
-        this.scroll(mx,my,scrollX,scrollY,result);
+        this.scroll(mx,my, scrollY,result);
 
         FDWidget scrolledWidget = result.getValue();
         if (scrolledWidget != null) {

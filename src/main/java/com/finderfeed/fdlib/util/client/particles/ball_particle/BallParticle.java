@@ -116,12 +116,12 @@ public class BallParticle extends TextureSheetParticle {
         return RENDER_TYPE;
     }
 
-    public static final ParticleRenderType RENDER_TYPE = new FDParticleRenderType() {
+    public static final ParticleRenderType RENDER_TYPE = new ParticleRenderType() {
 
 
         @Nullable
         @Override
-        public BufferBuilder begin(Tesselator bufferBuilder, TextureManager textureManager) {
+        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -129,18 +129,15 @@ public class BallParticle extends TextureSheetParticle {
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
             Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true,true);
-            return bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
         @Override
-        public void end() {
+        public void end(Tesselator tesselator) {
+            tesselator.end();
             Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap();
         }
 
-        @Override
-        public boolean isTranslucent() {
-            return true;
-        }
 
         @Override
         public String toString() {

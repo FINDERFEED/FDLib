@@ -34,7 +34,7 @@ public class TestButtonWidget extends FDWidget {
     }
 
     @Override
-    public boolean onMouseScroll(float mx, float my, float scrollX, float scrollY) {
+    public boolean onMouseScroll(float mx, float my, float scrollY) {
 
         for (var child : children.values()){
             child.setY(child.getY() + scrollY);

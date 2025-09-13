@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,7 @@ public class EntityBaseAttributeValueProcessor extends TextBlockProcessor {
         String entityType = arguments.get("type");
 
         EntityType<? extends LivingEntity> type = (EntityType<? extends LivingEntity>) BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(entityType));
-        Holder<Attribute> attribute = BuiltInRegistries.ATTRIBUTE.getHolderOrThrow(ResourceKey.create(Registries.ATTRIBUTE,ResourceLocation.parse(attributeId)));
+        Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attributeId));
 
         float value = (float) DefaultAttributes.getSupplier(type).getBaseValue(attribute);
 

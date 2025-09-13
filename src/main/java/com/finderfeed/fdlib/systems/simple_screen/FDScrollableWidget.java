@@ -18,7 +18,7 @@ public abstract class FDScrollableWidget extends FDWidget {
     public abstract float scrollAmount();
 
     @Override
-    public boolean onMouseScroll(float mx, float my, float scrollX, float scrollY) {
+    public boolean onMouseScroll(float mx, float my, float scrollY) {
 
         float scrollO = this.scroll;
         this.scroll = Mth.clamp(scroll - scrollY * scrollAmount(),0,this.getMaxScroll());

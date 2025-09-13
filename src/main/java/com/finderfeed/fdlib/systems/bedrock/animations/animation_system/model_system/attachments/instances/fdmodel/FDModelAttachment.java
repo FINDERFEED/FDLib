@@ -51,15 +51,15 @@ public class FDModelAttachment implements ModelAttachment<FDModelAttachment, FDM
     }
 
     @Override
-    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
+    public @UnknownNullability CompoundTag serializeNBT() {
 
         CompoundTag tag = new CompoundTag();
 
-        ResourceLocation id = FDRegistries.MODELS.getKey(data.getFdModelInfo());
+        ResourceLocation id = FDRegistries.MODELS.get().getKey(data.getFdModelInfo());
         tag.putString("modelInfo",id.toString());
-        tag.put("data",data.getBaseModelAttachmentData().serializeNBT(provider));
+        tag.put("data",data.getBaseModelAttachmentData().serializeNBT());
 
-        ResourceLocation rtid = FDRegistries.RENDER_TYPE.getKey(this.data.getRenderType());
+        ResourceLocation rtid = FDRegistries.RENDER_TYPE.get().getKey(this.data.getRenderType());
         tag.putString("renderType",rtid.toString());
         tag.putString("texture", this.data.getTexture().toString());
 
@@ -70,14 +70,14 @@ public class FDModelAttachment implements ModelAttachment<FDModelAttachment, FDM
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         ResourceLocation location = ResourceLocation.parse(nbt.getString("modelInfo"));
-        FDModelInfo info = FDRegistries.MODELS.get(location);
-        BaseModelAttachmentData baseModelAttachmentData = new BaseModelAttachmentData(); baseModelAttachmentData.deserializeNBT(provider, nbt.getCompound("data"));
+        FDModelInfo info = FDRegistries.MODELS.get().getValue(location);
+        BaseModelAttachmentData baseModelAttachmentData = new BaseModelAttachmentData(); baseModelAttachmentData.deserializeNBT(nbt.getCompound("data"));
         ResourceLocation texture = ResourceLocation.parse(nbt.getString("texture"));
 
         ResourceLocation renderTypeLocation = ResourceLocation.parse(nbt.getString("renderType"));
-        FDRenderType fdRenderType = FDRegistries.RENDER_TYPE.get(renderTypeLocation);
+        FDRenderType fdRenderType = FDRegistries.RENDER_TYPE.get().getValue(renderTypeLocation);
 
         FDColor color = FDColor.decode(nbt.getInt("color"));
 

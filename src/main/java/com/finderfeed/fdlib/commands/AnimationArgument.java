@@ -19,7 +19,7 @@ public class AnimationArgument implements ArgumentType<String> {
 
     public AnimationArgument(){
         if (locations == null){
-            locations = FDRegistries.ANIMATIONS.keySet().stream().map(ResourceLocation::toString).toList();
+            locations = FDRegistries.ANIMATIONS.get().getKeys().stream().map(ResourceLocation::toString).toList();
         }
     }
 

@@ -123,7 +123,7 @@ public class FDCommandsRegistry {
 
     public static void reloadAnimations(CommandContext<CommandSourceStack> ctx){
         CommandSourceStack stack = ctx.getSource();
-        if (SharedConstants.IS_RUNNING_IN_IDE){
+        if (SharedConstants.IS_RUNNING_IN_IDE || true){
             stack.sendSystemMessage(Component.literal("Reloading animations..."));
             FDModEvents.loadAnimations();
 
@@ -139,7 +139,7 @@ public class FDCommandsRegistry {
 
     public static void reloadModels(CommandContext<CommandSourceStack> ctx){
         CommandSourceStack stack = ctx.getSource();
-        if (SharedConstants.IS_RUNNING_IN_IDE){
+        if (SharedConstants.IS_RUNNING_IN_IDE || true){
             stack.sendSystemMessage(Component.literal("Reloading models..."));
             FDModEvents.loadModels();
             FDPacketHandler.INSTANCE.send(PacketDistributor.ALL.with(()->{

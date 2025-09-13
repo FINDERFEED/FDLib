@@ -6,7 +6,9 @@ import com.finderfeed.fdlib.init.*;
 
 import com.finderfeed.fdlib.network.FDPacketHandler;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -25,7 +27,8 @@ public class FDLib {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID,loc);
     }
 
-    public FDLib(IEventBus bus, ModContainer modContainer) {
+    public FDLib() {
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();;
         FDItems.ITEMS.register(bus);
         FDBlocks.BLOCKS.register(bus);
         FDModels.MODELS.register(bus);

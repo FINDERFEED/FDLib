@@ -28,7 +28,7 @@ public class CutsceneCameraHandler {
     private static CutsceneExecutor cutsceneExecutor;
 
     @SubscribeEvent
-    private static void onLogoff(ClientPlayerNetworkEvent.LoggingOut out){
+    public static void onLogoff(ClientPlayerNetworkEvent.LoggingOut out){
         clientCameraEntity = null;
         cutsceneExecutor = null;
     }

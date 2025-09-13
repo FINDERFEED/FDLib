@@ -117,7 +117,7 @@ public class SimpleTextEntry implements TextBlockEntry {
         if (!last) {
             cursor.nextLine(-lineHeight);
         }
-        cursor.addX(font.width(sequences.getLast()) * scale - 3 * scale);
+        cursor.addX(font.width(sequences.get(sequences.size() - 1)) * scale - 3 * scale);
     }
 
     public static Pair<FormattedText,FormattedText> splitOneTime(FormattedText text, int pixels){

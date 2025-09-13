@@ -165,7 +165,8 @@ public class FDEntityRenderer<T extends Entity & AnimatedObject> extends EntityR
 
                 layer1.matrixTransform().apply(entity,matrices,partialTicks);
 
-                matrices.mulPose(transform);
+                matrices.mulPoseMatrix(transform);
+
 
 
                 for (var pair : layerAttachments.getAllBoneAttachments(bone)){

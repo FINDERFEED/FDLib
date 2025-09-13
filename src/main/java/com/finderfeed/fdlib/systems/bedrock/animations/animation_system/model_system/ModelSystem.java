@@ -87,7 +87,7 @@ public abstract class ModelSystem {
             CompoundTag layerAttachmentsData = new CompoundTag();
             int layerId = entry.getKey();
             LayerAttachments layerAttachments = entry.getValue();
-            CompoundTag clayer = layerAttachments.serializeNBT(provider);
+            CompoundTag clayer = layerAttachments.serializeNBT();
 
             layerAttachmentsData.putInt("layerId",layerId);
             layerAttachmentsData.put("layerAttachments",clayer);
@@ -110,7 +110,7 @@ public abstract class ModelSystem {
 
             int layerId = attachments.getInt("layerId");
             LayerAttachments layerAttachments = new LayerAttachments();
-            layerAttachments.deserializeNBT(provider, attachments.getCompound("layerAttachments"));
+            layerAttachments.deserializeNBT(attachments.getCompound("layerAttachments"));
 
             this.layerBoneModelMap.put(layerId, layerAttachments);
 

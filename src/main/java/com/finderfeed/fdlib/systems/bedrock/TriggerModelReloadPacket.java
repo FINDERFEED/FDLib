@@ -30,7 +30,7 @@ public class TriggerModelReloadPacket extends FDPacket {
 
     @Override
     public void clientAction(Supplier<NetworkEvent.Context> context) {
-        if (SharedConstants.IS_RUNNING_IN_IDE){ // no need to reload on production
+        if (SharedConstants.IS_RUNNING_IN_IDE || true){ // no need to reload on production
             FDModEvents.loadModels();
         }
     }

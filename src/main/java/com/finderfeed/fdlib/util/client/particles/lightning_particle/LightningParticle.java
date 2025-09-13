@@ -208,7 +208,7 @@ public class LightningParticle extends Particle {
 
         @Override
         public void end(Tesselator tesselator) {
-
+            tesselator.end();
         }
 
         @Override

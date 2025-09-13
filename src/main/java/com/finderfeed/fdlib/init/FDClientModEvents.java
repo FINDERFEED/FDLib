@@ -79,6 +79,7 @@ public class FDClientModEvents {
 
                             .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
 
+
                                 VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 //                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 

@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "com.finderfeed.fdlib.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "fdlib.refmap.json",
   "mixins": [
     "KeyboardInputMixin"

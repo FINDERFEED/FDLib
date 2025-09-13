@@ -154,13 +154,13 @@ public class TextBlockWidget extends FDScrollableWidget {
     }
 
     @Override
-    public boolean onMouseScroll(float mx, float my, float scrollX, float scrollY) {
+    public boolean onMouseScroll(float mx, float my,float scrollY) {
         InteractionBox box = this.getScrollInteractionBoxUnderMouse((float)mx,(float)my);
         if (box != null){
-            box.interaction.getOnScroll().scroll(this,(float)mx,(float)my,(float)scrollX,(float)scrollY);
+            box.interaction.getOnScroll().scroll(this,(float)mx,(float)my, (float)scrollY);
             return true;
         }else{
-            return super.onMouseScroll(mx,my,scrollX,scrollY);
+            return super.onMouseScroll(mx,my,scrollY);
         }
     }
 

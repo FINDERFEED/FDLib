@@ -20,8 +20,8 @@ public class FDHuds {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event){
 
-        event.registerAboveAll(FDLib.location("boss_bars").toString(),new FDBossBarsOverlay());
-        event.registerAboveAll(FDLib.location("screen_effect").toString(),SCREEN_EFFECT_OVERLAY);
+        event.registerAboveAll("boss_bars",new FDBossBarsOverlay());
+        event.registerAboveAll("screen_effect",SCREEN_EFFECT_OVERLAY);
 
     }
 

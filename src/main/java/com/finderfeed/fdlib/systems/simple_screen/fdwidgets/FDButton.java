@@ -108,7 +108,7 @@ public class FDButton extends FDWidget {
     }
 
     @Override
-    public boolean onMouseScroll(float mx, float my, float scrollX, float scrollY) {
+    public boolean onMouseScroll(float mx, float my, float scrollY) {
         return false;
     }
 

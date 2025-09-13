@@ -1,9 +1,11 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.head;
 
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.HashMap;
 
@@ -45,7 +47,7 @@ public class HeadControllerContainer<T extends Mob & AnimatedObject & IHasHead<T
             Mode old = this.mode;
             this.mode = mode;
             if (!entity.level().isClientSide){
-                PacketDistributor.sendToPlayersTrackingEntity(entity,new ChangeHeadControllerModePacket<>(entity, mode));
+                FDPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(()->entity),new ChangeHeadControllerModePacket<>(entity, mode));
                 return;
             }
             for (var entry : headControllers.entrySet()) {
@@ -58,7 +60,8 @@ public class HeadControllerContainer<T extends Mob & AnimatedObject & IHasHead<T
     @Override
     public void setLookAt(double x, double y, double z, float p_24954_, float p_24955_) {
         if (!entity.level().isClientSide){
-            PacketDistributor.sendToPlayersTrackingEntity(entity, new WantedLookCoordinatesPacket(entity,x,y,z));
+
+            FDPacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(()->entity),new WantedLookCoordinatesPacket(entity,x,y,z));
         }
         super.setLookAt(x, y, z, p_24954_, p_24955_);
     }

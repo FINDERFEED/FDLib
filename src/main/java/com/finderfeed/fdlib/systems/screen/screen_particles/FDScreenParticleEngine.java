@@ -90,7 +90,7 @@ public class FDScreenParticleEngine {
                 particle.render(graphics,builder,partialTicks);
             }
 
-            BufferUploader.drawWithShader(builder.end());
+//            BufferUploader.drawWithShader(builder.end());
 
             if (renderType instanceof FDParticleRenderType fdParticleRenderType){
                 fdParticleRenderType.end();

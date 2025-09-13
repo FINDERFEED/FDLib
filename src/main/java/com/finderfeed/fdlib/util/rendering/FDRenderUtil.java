@@ -496,12 +496,14 @@ public class FDRenderUtil {
 
             @Override
             public void end(Tesselator tesselator) {
+                tesselator.end();
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
                 }
                 RenderSystem.disableBlend();
                 RenderSystem.depthMask(true);
+
             }
 
             @Override
@@ -513,6 +515,7 @@ public class FDRenderUtil {
         public static final ParticleRenderType NORMAL_TRANSLUCENT = new ParticleRenderType() {
             @Override
             public void end(Tesselator tesselator) {
+                tesselator.end();
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
@@ -547,6 +550,7 @@ public class FDRenderUtil {
             return new ParticleRenderType() {
                 @Override
                 public void end(Tesselator tesselator) {
+                    tesselator.end();
                     RenderSystem.disableBlend();
                     RenderSystem.defaultBlendFunc();
                     Minecraft.getInstance().getTextureManager().getTexture(location).restoreLastBlurMipmap();
@@ -573,6 +577,7 @@ public class FDRenderUtil {
             return new ParticleRenderType() {
                 @Override
                 public void end(Tesselator tesselator) {
+                    tesselator.end();
                     RenderSystem.disableBlend();
                     RenderSystem.defaultBlendFunc();
                 }

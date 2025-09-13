@@ -27,21 +27,18 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
     private IBERenderOffScreen<T> renderOffScreen;
     private List<FDBlockEntityRenderLayer<T>> layers;
     private FDFreeBERenderer<T> freeRender;
-    private RenderFunction<BlockEntity, AABB> renderBox;
 
     public FDBlockEntityRenderer(BlockEntityRendererProvider.Context ctx,
                                  IShouldBERender<T> shouldBERender,
                                  IBERenderOffScreen<T> shouldRenderOffScreen,
                                  List<FDBlockRenderLayerOptions<T>> layers,
-                                 FDFreeBERenderer<T> freeRender,
-                                 RenderFunction<BlockEntity, AABB> renderBox
+                                 FDFreeBERenderer<T> freeRender
     ){
 
         this.freeRender = freeRender;
         this.shouldBERender = shouldBERender;
         this.renderOffScreen = shouldRenderOffScreen;
         this.layers = new ArrayList<>();
-        this.renderBox = renderBox;
         for (FDBlockRenderLayerOptions<T> layer : layers){
             FDModel model = new FDModel(layer.layerModel.get());
             FDBlockEntityRenderLayer<T> l = new FDBlockEntityRenderLayer<>(model,layer.renderType,layer.renderCondition,layer.transform,layer.layerColor, layer.boneControllers, layer.light);
@@ -115,14 +112,6 @@ public class FDBlockEntityRenderer<T extends BlockEntity & AnimatedObject> imple
         }
     }
 
-    @Override
-    public AABB getRenderBoundingBox(T blockEntity) {
-        if (renderBox == null) {
-            return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
-        }else{
-            return renderBox.getValue(blockEntity, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
-        }
-    }
 
     @Override
     public boolean shouldRender(T blockEntity, Vec3 idk) {

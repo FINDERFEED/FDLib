@@ -34,7 +34,7 @@ public abstract class FDScrollableComponent extends FDScreenComponent {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
+    public boolean mouseScrolled(double mx, double my, double dy) {
         if (Screen.hasShiftDown()){
             float prev = this.scrollX;
             float maxScroll =  this.getMaxScrollX();
