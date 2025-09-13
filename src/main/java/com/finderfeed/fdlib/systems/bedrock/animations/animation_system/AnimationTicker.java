@@ -4,12 +4,8 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.AnimationContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.TransitionAnimation;
-import com.finderfeed.fdlib.util.NetworkCodec;
-import com.finderfeed.fdlib.util.FDCodecs;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -24,12 +20,12 @@ public class AnimationTicker {
             NetworkCodec.FLOAT,ticker->ticker.speedModifier,
             NetworkCodec.INT,ticker->ticker.toNullTransitionTime,
             NetworkCodec.BOOL,ticker->ticker.reversed,
-            NetworkCodec.STRING_UTF8,ticker->ticker.loopMode.name(),
-            NetworkCodec.STRING_UTF8,ticker->ticker.animation.getName().toString(),
+            NetworkCodec.STRING,ticker->ticker.loopMode.name(),
+            NetworkCodec.STRING,ticker->ticker.animation.getName().toString(),
             NetworkCodec.BOOL,v->v.important,
             (elapsedTime,speedModifier,toNull,reversed,loopModeName,animationName,important)->{
                 ResourceLocation location = ResourceLocation.tryParse(animationName);
-                Animation animation = FDRegistries.ANIMATIONS.get(location);
+                Animation animation = FDRegistries.ANIMATIONS.get().getValue(location);
                 if (animation == null){
                     throw new RuntimeException("Unknown animation received from server: " + animationName);
                 }
@@ -46,25 +42,25 @@ public class AnimationTicker {
 
     public static final NetworkCodec<AnimationTicker> NETWORK_CODEC = new NetworkCodec<AnimationTicker>() {
         @Override
-        public AnimationTicker decode(FriendlyByteBuf buf) {
+        public AnimationTicker fromNetwork(FriendlyByteBuf buf) {
             boolean hasNext = buf.readBoolean();
             AnimationTicker next = null;
             if (hasNext){
-                next = NETWORK_CODEC.decode(buf);
+                next = NETWORK_CODEC.fromNetwork(buf);
             }
-            AnimationTicker thisTicker = NO_NEXT_NETWORK_CODEC.decode(buf);
+            AnimationTicker thisTicker = NO_NEXT_NETWORK_CODEC.fromNetwork(buf);
             thisTicker.next = next;
             return thisTicker;
         }
 
         @Override
-        public void encode(FriendlyByteBuf buf, AnimationTicker ticker) {
+        public void toNetwork(FriendlyByteBuf buf, AnimationTicker ticker) {
             AnimationTicker next = ticker.next;
             buf.writeBoolean(next != null);
             if (next != null){
-                NETWORK_CODEC.encode(buf,next);
+                NETWORK_CODEC.toNetwork(buf,next);
             }
-            NO_NEXT_NETWORK_CODEC.encode(buf, ticker);
+            NO_NEXT_NETWORK_CODEC.toNetwork(buf, ticker);
         }
     };
 

@@ -2,12 +2,15 @@ package com.finderfeed.fdlib.systems.shake;
 
 import com.finderfeed.fdlib.ClientMixinHandler;
 import com.finderfeed.fdlib.network.FDPacket;
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.neoforge.network.PacketDistributor;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:default_shake")
@@ -40,7 +43,7 @@ public class DefaultShakePacket extends FDPacket {
     }
 
     public static void send(ServerLevel level, Vec3 pos,double radius,FDShakeData data){
-        PacketDistributor.sendToPlayersNear(level,null,pos.x,pos.y,pos.z,radius,new DefaultShakePacket(data));
+        FDPacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.x,pos.y,pos.z,radius,level.dimension())), new DefaultShakePacket(data));
     }
 
 }

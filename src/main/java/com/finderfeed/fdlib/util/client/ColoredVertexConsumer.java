@@ -20,35 +20,63 @@ public class ColoredVertexConsumer implements VertexConsumer {
         this.a = a;
     }
 
+
+
     @Override
-    public VertexConsumer addVertex(float px, float py, float pz) {
+    public VertexConsumer vertex(double px, double py, double pz) {
         return original.vertex(px,py,pz);
     }
 
     @Override
-    public VertexConsumer setColor(int r, int g, int b, int a) {
+    public VertexConsumer color(int r, int g, int b, int a) {
         return original.color(this.r,this.g,this.b,this.a);
     }
 
     @Override
-    public VertexConsumer setUv(float u, float v) {
+    public VertexConsumer uv(float u, float v) {
         return original.uv(u,v);
     }
 
     @Override
-    public VertexConsumer setUv1(int u, int v) {
-        return original.uv1(u,v);
+    public VertexConsumer overlayCoords(int i, int i1) {
+        return original.overlayCoords(i,i1);
     }
 
     @Override
-    public VertexConsumer setUv2(int u, int v) {
-        return original.uv2(u,v);
+    public VertexConsumer overlayCoords(int p_86009_) {
+        return original.overlayCoords(p_86009_);
     }
 
     @Override
-    public VertexConsumer setNormal(float px, float py, float pz) {
-        return original.normal(px,py,pz);
+    public VertexConsumer normal(float v, float v1, float v2) {
+        return original.normal(v,v1,v2);
     }
+
+    @Override
+    public void endVertex() {
+        original.endVertex();
+    }
+
+    @Override
+    public void defaultColor(int i, int i1, int i2, int i3) {
+        original.defaultColor(i,i1,i2,i3);
+    }
+
+    @Override
+    public void unsetDefaultColor() {
+        original.unsetDefaultColor();
+    }
+
+    @Override
+    public VertexConsumer uv2(int p_85970_) {
+        return original.uv2(p_85970_);
+    }
+
+    @Override
+    public VertexConsumer uv2(int i, int i1) {
+        return original.uv2(i,i1);
+    }
+
 
     public static MultiBufferSource wrapBufferSource(MultiBufferSource source, int r, int g, int b, int a){
         return renderType->{

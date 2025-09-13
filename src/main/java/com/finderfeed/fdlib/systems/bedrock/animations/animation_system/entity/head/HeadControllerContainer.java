@@ -4,7 +4,6 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animated
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraftforge.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 

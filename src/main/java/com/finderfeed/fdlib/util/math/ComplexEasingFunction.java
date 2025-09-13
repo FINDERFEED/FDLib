@@ -55,7 +55,7 @@ public class ComplexEasingFunction implements Function<Float,Float> {
             return value;
         }
         value = Mth.clamp(value,0,length);
-        EasingArea lastArea = areas.getFirst();
+        EasingArea lastArea = areas.get(0);
         float accumulatedLength = 0;
         int idx = 1;
         while (true){

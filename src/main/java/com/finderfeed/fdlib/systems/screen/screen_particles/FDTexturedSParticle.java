@@ -86,10 +86,10 @@ public class FDTexturedSParticle extends FDScreenParticle<FDTexturedSParticle>{
 
         Matrix4f m = matrices.last().pose();
 
-        vertex.vertex(m,-halfQuadSize,-halfQuadSize,0).uv(this.getU0(),this.getV0()).color(getR(),getG(),getB(),getA());
-        vertex.vertex(m,-halfQuadSize,halfQuadSize,0).uv(this.getU0(),this.getV1()).color(getR(),getG(),getB(),getA());
-        vertex.vertex(m,halfQuadSize,halfQuadSize,0).uv(this.getU1(),this.getV1()).color(getR(),getG(),getB(),getA());
-        vertex.vertex(m,halfQuadSize,-halfQuadSize,0).uv(this.getU1(),this.getV0()).color(getR(),getG(),getB(),getA());
+        vertex.vertex(m,-halfQuadSize,-halfQuadSize,0).uv(this.getU0(),this.getV0()).color(getR(),getG(),getB(),getA()).endVertex();
+        vertex.vertex(m,-halfQuadSize,halfQuadSize,0).uv(this.getU0(),this.getV1()).color(getR(),getG(),getB(),getA()).endVertex();
+        vertex.vertex(m,halfQuadSize,halfQuadSize,0).uv(this.getU1(),this.getV1()).color(getR(),getG(),getB(),getA()).endVertex();
+        vertex.vertex(m,halfQuadSize,-halfQuadSize,0).uv(this.getU1(),this.getV0()).color(getR(),getG(),getB(),getA()).endVertex();
 
 
 

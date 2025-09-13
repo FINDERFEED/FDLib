@@ -10,11 +10,13 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:sync_entity_animations")
 public class SyncEntityAnimationsPacket extends FDPacket {
@@ -45,7 +47,7 @@ public class SyncEntityAnimationsPacket extends FDPacket {
         for (int i = 0; i < length;i++){
             tickers.add(new TickerSyncInstance(
                 buf.readUtf(),
-                AnimationTicker.NETWORK_CODEC.decode(buf)
+                AnimationTicker.NETWORK_CODEC.fromNetwork(buf)
             ));
         }
     }
@@ -56,7 +58,7 @@ public class SyncEntityAnimationsPacket extends FDPacket {
         buf.writeInt(tickers.size());
         for (TickerSyncInstance instance : tickers){
             buf.writeUtf(instance.tickerName());
-            AnimationTicker.NETWORK_CODEC.encode(buf,instance.ticker());
+            AnimationTicker.NETWORK_CODEC.toNetwork(buf,instance.ticker());
         }
     }
 

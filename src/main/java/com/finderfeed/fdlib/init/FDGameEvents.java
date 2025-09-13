@@ -8,29 +8,12 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
 import com.finderfeed.fdlib.systems.config.packets.TriggerClientsideConfigReloadPacket;
-import com.finderfeed.fdlib.systems.cutscenes.CameraPos;
-import com.finderfeed.fdlib.systems.cutscenes.CutsceneCameraHandler;
-import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
-import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
-import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesHandler;
-import com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas.ScreenColorData;
-import com.finderfeed.fdlib.util.client.particles.lightning_particle.LightningParticleOptions;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.InputEvent;
-import net.minecraftforge.neoforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.neoforge.event.server.ServerStartedEvent;
-import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
-import net.minecraftforge.neoforge.network.PacketDistributor;
 import net.minecraftforge.network.NetworkDirection;
-import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FDGameEvents {

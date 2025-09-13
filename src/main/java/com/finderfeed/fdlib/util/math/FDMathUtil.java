@@ -329,9 +329,9 @@ public class FDMathUtil {
 
     public static Vec3 linear(List<Vec3> points,float p){
         if (p < 0){
-            return points.getFirst();
+            return points.get(0);
         }else if (p >= 1){
-            return points.getLast();
+            return points.get(points.size() - 1);
         }
         float glP = p * (points.size() - 1);
         int id1 = (int)glP;

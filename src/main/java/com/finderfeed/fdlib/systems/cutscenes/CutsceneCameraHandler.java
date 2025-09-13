@@ -17,10 +17,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.client.event.*;
-import net.minecraftforge.neoforge.event.tick.PlayerTickEvent;
 
 @Mod.EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CutsceneCameraHandler {
@@ -49,7 +48,10 @@ public class CutsceneCameraHandler {
     }
 
     @SubscribeEvent
-    public static void tickEvent(ClientTickEvent.Pre event){
+    public static void tickEvent(TickEvent.ClientTickEvent event){
+
+        if (event.phase != TickEvent.Phase.START) return;
+
         LocalPlayer player = Minecraft.getInstance().player;
 
         if (Minecraft.getInstance().isPaused()) return;

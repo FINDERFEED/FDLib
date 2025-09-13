@@ -7,6 +7,9 @@ import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:entity_start_animation_packet")
@@ -28,14 +31,14 @@ public class EntityStartAnimationPacket extends FDPacket {
     public EntityStartAnimationPacket(FriendlyByteBuf buf){
         this.entityId = buf.readInt();
         this.tickerName = buf.readUtf();
-        this.ticker = AnimationTicker.NETWORK_CODEC.decode(buf);
+        this.ticker = AnimationTicker.NETWORK_CODEC.fromNetwork(buf);
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
         buf.writeUtf(tickerName);
-        AnimationTicker.NETWORK_CODEC.encode(buf,ticker);
+        AnimationTicker.NETWORK_CODEC.toNetwork(buf,ticker);
     }
 
     @Override

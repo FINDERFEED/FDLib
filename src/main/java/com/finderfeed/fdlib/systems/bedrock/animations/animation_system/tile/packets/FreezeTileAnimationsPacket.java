@@ -6,6 +6,9 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:freeze_tile_animations_packet")

@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.neoforge.network.PacketDistributor;
 import net.minecraftforge.network.NetworkDirection;
 
 import java.util.ArrayList;

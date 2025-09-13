@@ -6,6 +6,9 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Mob;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:head_controller_change_mode")
@@ -31,7 +34,7 @@ public class ChangeHeadControllerModePacket<T extends Mob & AnimatedObject  & IH
     }
 
     @Override
-    public void clientAction(Supplier<NetworkEvent.Context> Supplier<NetworkEvent.Context>) {
+    public void clientAction(Supplier<NetworkEvent.Context> ctx) {
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof Mob mob){
             T e = (T) mob;
             e.getHeadControllerContainer().setControllersMode(mode);
@@ -39,7 +42,7 @@ public class ChangeHeadControllerModePacket<T extends Mob & AnimatedObject  & IH
     }
 
     @Override
-    public void serverAction(Supplier<NetworkEvent.Context> Supplier<NetworkEvent.Context>) {
+    public void serverAction(Supplier<NetworkEvent.Context> ctx) {
 
     }
 }

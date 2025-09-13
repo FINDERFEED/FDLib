@@ -6,9 +6,11 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.network.NetworkEvent;
 
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:remove_entity_attachment")
 public class RemoveEntityAttachmentPacket extends FDPacket {

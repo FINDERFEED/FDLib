@@ -50,7 +50,7 @@ public class InvisibleParticle extends TextureSheetParticle {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel world, double x, double y, double z, double xv, double yv, double zv) {
             InvisibleParticle particle = new InvisibleParticle(world,x,y,z,xv,yv,zv);
-            particle.color(1,1,1);
+            particle.setColor(1,1,1);
             particle.pickSprite(this.spriteSetl);
             return particle;
         }

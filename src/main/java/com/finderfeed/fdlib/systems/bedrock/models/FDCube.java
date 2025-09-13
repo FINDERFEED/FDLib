@@ -71,6 +71,7 @@ public class FDCube {
                 vertex.overlayCoords(overlay);
                 vertex.uv2(light);
                 vertex.normal(normal.x, normal.y, normal.z);
+                vertex.endVertex();
             }
         }
 

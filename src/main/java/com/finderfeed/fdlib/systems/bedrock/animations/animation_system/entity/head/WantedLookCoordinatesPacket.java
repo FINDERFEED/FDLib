@@ -6,6 +6,9 @@ import com.finderfeed.fdlib.network.RegisterFDPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:wanted_look_coords_packet")
@@ -39,7 +42,7 @@ public class WantedLookCoordinatesPacket extends FDPacket {
     }
 
     @Override
-    public void clientAction(Supplier<NetworkEvent.Context> Supplier<NetworkEvent.Context>) {
+    public void clientAction(Supplier<NetworkEvent.Context> ctx) {
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof Mob mob){
             LookControl lookControl = mob.getLookControl();
             lookControl.setLookAt(x,y,z);
@@ -47,7 +50,7 @@ public class WantedLookCoordinatesPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(Supplier<NetworkEvent.Context> Supplier<NetworkEvent.Context>) {
+    public void serverAction(Supplier<NetworkEvent.Context> ctx) {
 
     }
 }

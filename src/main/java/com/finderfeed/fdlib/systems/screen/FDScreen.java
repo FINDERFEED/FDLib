@@ -211,23 +211,23 @@ public abstract class FDScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double xd, double yd) {
+    public boolean mouseScrolled(double mx, double my, double yd) {
         for (FDScreenComponent component : screenLayers) {
-            if (scrollRecursively(component, (float) mx, (float) my, (float) xd, (float) yd)) {
+            if (scrollRecursively(component, (float) mx, (float) my, (float) yd)) {
                 return true;
             }
         }
         return false;
     }
 
-    protected boolean scrollRecursively(FDScreenComponent component,float mx,float my,float xd,float yd){
+    protected boolean scrollRecursively(FDScreenComponent component,float mx,float my, float yd){
         for (FDScreenComponent child : component.getChildren()){
             Anchor anchor = child.getAnchor();
             float chx = anchor.xTransform.apply(component,child.getX());
             float chy = anchor.yTransform.apply(component,child.getY());
             float cmx = mx - chx;
             float cmy = my - chy;
-            if (scrollRecursively(child,cmx,cmy,xd,yd)){
+            if (scrollRecursively(child,cmx,cmy,yd)){
                 return true;
             }
         }

@@ -129,10 +129,10 @@ public class LightningParticle extends Particle {
         float widthStart = lightningWidth / sin1;
         float widthEnd = lightningWidth / sin2;
 
-        vertex.vertex(transform, node.start.x - prev.x * widthStart * whiteWidthMult, node.start.y - prev.y * widthStart * whiteWidthMult,zOffset).color(r,g,b,a);
-        vertex.vertex(transform, node.end.x - currentBetween.x * widthEnd * whiteWidthMult, node.end.y - currentBetween.y * widthEnd * whiteWidthMult,zOffset).color(r,g,b,a);
-        vertex.vertex(transform, node.end.x + currentBetween.x * widthEnd * whiteWidthMult, node.end.y + currentBetween.y * widthEnd * whiteWidthMult,zOffset).color(r,g,b,a);
-        vertex.vertex(transform, node.start.x + prev.x * widthStart * whiteWidthMult, node.start.y + prev.y * widthStart * whiteWidthMult,zOffset).color(r,g,b,a);
+        vertex.vertex(transform, node.start.x - prev.x * widthStart * whiteWidthMult, node.start.y - prev.y * widthStart * whiteWidthMult,zOffset).color(r,g,b,a).endVertex();
+        vertex.vertex(transform, node.end.x - currentBetween.x * widthEnd * whiteWidthMult, node.end.y - currentBetween.y * widthEnd * whiteWidthMult,zOffset).color(r,g,b,a).endVertex();
+        vertex.vertex(transform, node.end.x + currentBetween.x * widthEnd * whiteWidthMult, node.end.y + currentBetween.y * widthEnd * whiteWidthMult,zOffset).color(r,g,b,a).endVertex();
+        vertex.vertex(transform, node.start.x + prev.x * widthStart * whiteWidthMult, node.start.y + prev.y * widthStart * whiteWidthMult,zOffset).color(r,g,b,a).endVertex();
 
         for (int  i = 0; i < node.branches.size();i++){
             this.renderLightningNode(transform, node.branches.get(i), vertex, lightningWidth,r,g,b,a,zOffset);
@@ -194,20 +194,21 @@ public class LightningParticle extends Particle {
 
 
     public static final ParticleRenderType RENDER_TYPE = new ParticleRenderType() {
+
         @Nullable
         @Override
-        public BufferBuilder begin(Tesselator tesselator, TextureManager manager) {
+        public void begin(BufferBuilder tesselator, TextureManager manager) {
             RenderSystem.depthMask(true);
             RenderSystem.enableBlend();
             RenderSystem.disableCull();
             RenderSystem.setShader(GameRenderer::getRendertypeLightningShader);
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
-            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         }
 
         @Override
-        public boolean isTranslucent() {
-            return true;
+        public void end(Tesselator tesselator) {
+
         }
 
         @Override

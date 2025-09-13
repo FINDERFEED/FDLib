@@ -5,7 +5,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_sy
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.neoforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
 
@@ -58,7 +58,7 @@ public class LayerAttachments implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+    public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
         int id = 0;
         for (var entry : layerAttachments.entrySet()){
@@ -66,7 +66,7 @@ public class LayerAttachments implements INBTSerializable<CompoundTag> {
             CompoundTag boneAttachment = new CompoundTag();
             boneAttachment.putString("bone", entry.getKey());
 
-            var boneAttachments = entry.getValue().serializeNBT(provider);
+            var boneAttachments = entry.getValue().serializeNBT();
             boneAttachment.put("attachment",boneAttachments);
 
             tag.put("attachment_"+id++, boneAttachment);
@@ -75,7 +75,7 @@ public class LayerAttachments implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
+    public void deserializeNBT(CompoundTag tag) {
 
         this.layerAttachments = new HashMap<>();
 
@@ -84,7 +84,7 @@ public class LayerAttachments implements INBTSerializable<CompoundTag> {
             CompoundTag t = tag.getCompound("attachment_"+id);
 
             BoneAttachments boneAttachments = new BoneAttachments();
-            boneAttachments.deserializeNBT(provider, t.getCompound("attachment"));
+            boneAttachments.deserializeNBT(t.getCompound("attachment"));
             String bone = t.getString("bone");
 
             this.layerAttachments.put(bone, boneAttachments);

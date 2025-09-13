@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.commands;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.FDLibCalls;
 import com.finderfeed.fdlib.init.FDModEvents;
+import com.finderfeed.fdlib.network.FDPacketHandler;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.TriggerAnimationReloadPacket;
 import com.finderfeed.fdlib.systems.bedrock.TriggerModelReloadPacket;
@@ -27,12 +28,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.neoforge.event.RegisterCommandsEvent;
-import net.minecraftforge.neoforge.network.PacketDistributor;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.PacketDistributor;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FDCommandsRegistry {
 
 
@@ -124,7 +126,11 @@ public class FDCommandsRegistry {
         if (SharedConstants.IS_RUNNING_IN_IDE){
             stack.sendSystemMessage(Component.literal("Reloading animations..."));
             FDModEvents.loadAnimations();
-            PacketDistributor.sendToAllPlayers(new TriggerAnimationReloadPacket());
+
+            FDPacketHandler.INSTANCE.send(PacketDistributor.ALL.with(()->{
+                return null;
+            }),new TriggerAnimationReloadPacket());
+
             stack.sendSystemMessage(Component.literal("Reload complete!"));
         }else{
             stack.sendFailure(Component.literal("Can only be used in dev environment."));
@@ -136,7 +142,9 @@ public class FDCommandsRegistry {
         if (SharedConstants.IS_RUNNING_IN_IDE){
             stack.sendSystemMessage(Component.literal("Reloading models..."));
             FDModEvents.loadModels();
-            PacketDistributor.sendToAllPlayers(new TriggerModelReloadPacket());
+            FDPacketHandler.INSTANCE.send(PacketDistributor.ALL.with(()->{
+                return null;
+            }),new TriggerModelReloadPacket());
             stack.sendSystemMessage(Component.literal("Reload complete!"));
         }else{
             stack.sendFailure(Component.literal("Can only be used in dev environment."));
@@ -145,23 +153,25 @@ public class FDCommandsRegistry {
 
     public static void reloadConfigs(CommandContext<CommandSourceStack> ctx){
         CommandSourceStack stack = ctx.getSource();
-        for (JsonConfig config : FDRegistries.CONFIGS) {
+        for (JsonConfig config : FDRegistries.CONFIGS.get()) {
             if (!config.isClientside()) {
                 stack.sendSystemMessage(Component.literal("Loading config: " + config.getName()));
                 config.loadFromDisk();
                 stack.sendSystemMessage(Component.literal("Loaded config: " + config.getName()).withStyle(ChatFormatting.GREEN));
             }
         }
-        PacketDistributor.sendToAllPlayers(new JsonConfigSyncPacket());
+        FDPacketHandler.INSTANCE.send(PacketDistributor.ALL.with(()->{
+            return null;
+        }),new JsonConfigSyncPacket());
     }
 
     public static void reloadClientConfigs(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        PacketDistributor.sendToPlayer(ctx.getSource().getPlayerOrException(),new TriggerClientsideConfigReloadPacket(true));
+        FDPacketHandler.INSTANCE.sendTo(new TriggerClientsideConfigReloadPacket(true),ctx.getSource().getPlayerOrException().connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static void executeEntityAnimation(CommandContext<CommandSourceStack> ctx, String animname, String tickerName, Entity entity) throws CommandSyntaxException {
         CommandSourceStack sourceStack = ctx.getSource();
-        Animation animation = FDRegistries.ANIMATIONS.get(ResourceLocation.parse(animname));
+        Animation animation = FDRegistries.ANIMATIONS.get().getValue(ResourceLocation.parse(animname));
         if (animation == null){
             sourceStack.sendFailure(Component.literal("No such animation found: " + animname));
             return;
@@ -180,7 +190,7 @@ public class FDCommandsRegistry {
     public static void executeTileEntityAnimation(CommandContext<CommandSourceStack> ctx, String animname, String tickerName, BlockPos pos) throws CommandSyntaxException {
         CommandSourceStack sourceStack = ctx.getSource();
         ServerLevel level = ctx.getSource().getLevel();
-        Animation animation = FDRegistries.ANIMATIONS.get(ResourceLocation.parse(animname));
+        Animation animation = FDRegistries.ANIMATIONS.get().getValue(ResourceLocation.parse(animname));
         if (animation == null){
             sourceStack.sendFailure(Component.literal("No such animation found: " + animname));
             return;

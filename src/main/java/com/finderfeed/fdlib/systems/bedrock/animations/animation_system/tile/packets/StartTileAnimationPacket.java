@@ -7,6 +7,9 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 
 @RegisterFDPacket("fdlib:start_tile_animation")
@@ -23,14 +26,14 @@ public class StartTileAnimationPacket extends FDPacket {
     }
 
     public StartTileAnimationPacket(FriendlyByteBuf buf){
-        this.ticker = AnimationTicker.NETWORK_CODEC.decode(buf);
+        this.ticker = AnimationTicker.NETWORK_CODEC.fromNetwork(buf);
         this.layer = buf.readUtf();
         this.pos = buf.readBlockPos();
     }
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        AnimationTicker.NETWORK_CODEC.encode(buf,ticker);
+        AnimationTicker.NETWORK_CODEC.toNetwork(buf,ticker);
         buf.writeUtf(this.layer);
         buf.writeBlockPos(this.pos);
     }

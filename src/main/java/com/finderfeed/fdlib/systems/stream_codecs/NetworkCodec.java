@@ -28,6 +28,18 @@ public abstract class NetworkCodec<K> {
 
     public abstract K fromNetwork(FriendlyByteBuf buf);
 
+    public static <C> NetworkCodec<C> instance(C instance){
+        return new NetworkCodec<C>() {
+            @Override
+            public void toNetwork(FriendlyByteBuf buf, C object) {
+            }
+
+            @Override
+            public C fromNetwork(FriendlyByteBuf buf) {
+                return instance;
+            }
+        };
+    }
 
 
     public static NetworkCodec<ItemStack> ITEM = new NetworkCodec<ItemStack>() {

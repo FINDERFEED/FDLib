@@ -1,9 +1,6 @@
 package com.finderfeed.fdlib.systems.shake;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.NetworkCodec;
-import net.minecraft.network.codec.NetworkCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 
 public class FDShakeData {
 

@@ -43,15 +43,15 @@ public class ClientCameraEntity extends LivingEntity {
         super.setPos(p_20210_, p_20211_, p_20212_);
     }
 
-
     @Override
-    public boolean hasEffect(Holder<MobEffect> effect) {
+    public boolean hasEffect(MobEffect effect) {
         return FDClientHelpers.getClientPlayer().hasEffect(effect);
     }
 
+
     @Nullable
     @Override
-    public MobEffectInstance getEffect(Holder<MobEffect> effect) {
+    public MobEffectInstance getEffect(MobEffect effect) {
         return FDClientHelpers.getClientPlayer().getEffect(effect);
     }
 
