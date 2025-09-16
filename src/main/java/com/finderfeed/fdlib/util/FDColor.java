@@ -21,10 +21,10 @@ public class FDColor {
     }
 
     public int encode(){
-        int r = Math.clamp(Math.round(this.r * 255),0,255);
-        int g = Math.clamp(Math.round(this.g * 255),0,255);
-        int b = Math.clamp(Math.round(this.b * 255),0,255);
-        int a = Math.clamp(Math.round(this.a * 255),0,255);
+        int r = FDMathUtil.clamp(Math.round(this.r * 255),0,255);
+        int g = FDMathUtil.clamp(Math.round(this.g * 255),0,255);
+        int b = FDMathUtil.clamp(Math.round(this.b * 255),0,255);
+        int a = FDMathUtil.clamp(Math.round(this.a * 255),0,255);
 
         int color = (a << 24) + (r << 16) + (g << 8) + b;
 

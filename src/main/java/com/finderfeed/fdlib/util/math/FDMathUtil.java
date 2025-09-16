@@ -5,6 +5,7 @@ import com.finderfeed.fdlib.data_structures.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -13,6 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FDMathUtil {
+
+    public static float clamp(float val, float a,float b){
+        return Math.clamp(a,b,val);
+    }
+
+    public static double clamp(double val, double a,double b){
+        return Math.clamp(a,b,val);
+    }
+
+    public static int clamp(int val, int a,int b){
+        return Math.clamp(a,b,val);
+    }
 
     public static final float FPI = (float) Math.PI;
 
@@ -428,8 +441,8 @@ public class FDMathUtil {
     }
 
     public static float bernstein(float x1,float x2,float x3,float x4,float t){
-        float t3 = (float) Math.pow(t,3);
-        float t2 = (float) Math.pow(t,2);
+        float t3 = (float) java.lang.Math.pow(t,3);
+        float t2 = (float) java.lang.Math.pow(t,2);
         return x1 * (-t3 + 3*t2 - 3*t  + 1) +
                 x2 * (3*t3 - 6*t2 + 3*t) +
                 x3 * (-3*t3 + 3*t2) +
@@ -437,7 +450,7 @@ public class FDMathUtil {
     }
 
     public static float bernsteinDerivative(float x1,float x2,float x3,float x4,float t){
-        float t2 = (float) Math.pow(t,2);
+        float t2 = (float) java.lang.Math.pow(t,2);
         return x1 * (-3*t2 + 6*t - 3) +
                 x2 * (9*t2 - 12*t + 3) +
                 x3 * (-9*t2 + 6*t) +
@@ -445,8 +458,8 @@ public class FDMathUtil {
     }
 
     public static double bernstein(double x1,double x2,double x3,double x4,double t){
-        double t3 = Math.pow(t,3);
-        double t2 = Math.pow(t,2);
+        double t3 = java.lang.Math.pow(t,3);
+        double t2 = java.lang.Math.pow(t,2);
         return x1 * (-t3 + 3*t2 - 3*t  + 1) +
                 x2 * (3*t3 - 6*t2 + 3*t) +
                 x3 * (-3*t3 + 3*t2) +
@@ -454,7 +467,7 @@ public class FDMathUtil {
     }
 
     public static double bernsteinDerivative(double x1,double x2,double x3,double x4,double t){
-        float t2 = (float) Math.pow(t,2);
+        float t2 = (float) java.lang.Math.pow(t,2);
         return x1 * (-3*t2 + 6*t - 3) +
                 x2 * (9*t2 - 12*t + 3) +
                 x3 * (-9*t2 + 6*t) +
@@ -464,7 +477,7 @@ public class FDMathUtil {
     // the one that peak goes on y = 1 is o = 0, m = ~0.399
     public static float normalDistribution(float x,float m,float o){
         float fc = 1 / org.joml.Math.sqrt(o * o * FDMathUtil.FPI * 2);
-        float st = (float)Math.pow(x - m,2) / (2 * o * o);
+        float st = (float)java.lang.Math.pow(x - m,2) / (2 * o * o);
         float mt = (float)Math.exp(-st);
         return fc * mt;
 

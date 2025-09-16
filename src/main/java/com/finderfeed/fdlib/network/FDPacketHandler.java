@@ -39,11 +39,14 @@ public class FDPacketHandler {
                 throw new RuntimeException(e);
             }
         },(msg, ctx)->{
-            if (EffectiveSide.get().isClient()){
-                msg.clientAction(ctx);
-            }else{
-                msg.serverAction(ctx);
-            }
+
+            ctx.get().enqueueWork(()->{
+                if (EffectiveSide.get().isClient()){
+                    msg.clientAction(ctx);
+                }else{
+                    msg.serverAction(ctx);
+                }
+            });
 
             ctx.get().setPacketHandled(true);
         });
