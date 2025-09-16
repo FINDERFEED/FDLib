@@ -77,30 +77,30 @@ public class QuadRenderer {
         Matrix4f matrix4f = poseStack.last().pose();
 
         if (!verticalRendering) {
-            vertexConsumer.vertex(matrix4f, -sizeX, 0, sizeY).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-            vertexConsumer.vertex(matrix4f, sizeX, 0, sizeY).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-            vertexConsumer.vertex(matrix4f, sizeX, 0, -sizeY).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-            vertexConsumer.vertex(matrix4f, -sizeX, 0, -sizeY).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, -sizeX, 0, sizeY).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, sizeX, 0, sizeY).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, sizeX, 0, -sizeY).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, -sizeX, 0, -sizeY).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
 
             if (renderBack){
-                vertexConsumer.vertex(matrix4f, -sizeX, 0, -sizeY).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-                vertexConsumer.vertex(matrix4f, sizeX, 0, -sizeY).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-                vertexConsumer.vertex(matrix4f, sizeX, 0, sizeY).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-                vertexConsumer.vertex(matrix4f, -sizeX, 0, sizeY).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, -sizeX, 0, -sizeY).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, sizeX, 0, -sizeY).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, sizeX, 0, sizeY).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, -sizeX, 0, sizeY).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
 
             }
 
         }else{
 
-            vertexConsumer.vertex(matrix4f, -sizeX, sizeY, 0).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-            vertexConsumer.vertex(matrix4f, sizeX, sizeY, 0).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-            vertexConsumer.vertex(matrix4f, sizeX, -sizeY, 0).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-            vertexConsumer.vertex(matrix4f, -sizeX, -sizeY, 0).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, -sizeX, sizeY, 0).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, sizeX, sizeY, 0).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, sizeX, -sizeY, 0).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+            vertexConsumer.vertex(matrix4f, -sizeX, -sizeY, 0).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
             if (renderBack){
-                vertexConsumer.vertex(matrix4f, -sizeX, -sizeY, 0).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-                vertexConsumer.vertex(matrix4f, sizeX, -sizeY, 0).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-                vertexConsumer.vertex(matrix4f, sizeX, sizeY, 0).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
-                vertexConsumer.vertex(matrix4f, -sizeX, sizeY, 0).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).uv2(light).overlayCoords(overlay).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, -sizeX, -sizeY, 0).color(color1.x, color1.y, color1.z, color1.w).uv(u1, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, sizeX, -sizeY, 0).color(color2.x, color2.y, color2.z, color2.w).uv(u2, v1).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, sizeX, sizeY, 0).color(color3.x, color3.y, color3.z, color3.w).uv(u2, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
+                vertexConsumer.vertex(matrix4f, -sizeX, sizeY, 0).color(color4.x, color4.y, color4.z, color4.w).uv(u1, v2).overlayCoords(overlay).uv2(light).normal((float) direction.x, (float) direction.y, (float) direction.z).endVertex();
             }
         }
 
