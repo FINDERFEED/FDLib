@@ -70,7 +70,7 @@ public class FDScreenParticleEngine {
     private static void render(HashMap<ParticleRenderType, List<FDScreenParticle>> particles,GuiGraphics graphics,float partialTicks){
 
 
-        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+        Tesselator tesselator = Tesselator.getInstance();
         TextureManager manager = Minecraft.getInstance().getTextureManager();
 
 
@@ -92,9 +92,8 @@ public class FDScreenParticleEngine {
 
 //            BufferUploader.drawWithShader(builder.end());
 
-            if (renderType instanceof FDParticleRenderType fdParticleRenderType){
-                fdParticleRenderType.end();
-            }
+            renderType.end(tesselator);
+
         }
 
     }
