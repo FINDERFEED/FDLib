@@ -71,12 +71,12 @@ public class FDModelAttachment implements ModelAttachment<FDModelAttachment, FDM
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        ResourceLocation location = ResourceLocation.parse(nbt.getString("modelInfo"));
+        ResourceLocation location = ResourceLocation.tryParse(nbt.getString("modelInfo"));
         FDModelInfo info = FDRegistries.MODELS.get().getValue(location);
         BaseModelAttachmentData baseModelAttachmentData = new BaseModelAttachmentData(); baseModelAttachmentData.deserializeNBT(nbt.getCompound("data"));
-        ResourceLocation texture = ResourceLocation.parse(nbt.getString("texture"));
+        ResourceLocation texture = ResourceLocation.tryParse(nbt.getString("texture"));
 
-        ResourceLocation renderTypeLocation = ResourceLocation.parse(nbt.getString("renderType"));
+        ResourceLocation renderTypeLocation = ResourceLocation.tryParse(nbt.getString("renderType"));
         FDRenderType fdRenderType = FDRegistries.RENDER_TYPE.get().getValue(renderTypeLocation);
 
         FDColor color = FDColor.decode(nbt.getInt("color"));

@@ -25,8 +25,8 @@ public class EntityBaseAttributeValueProcessor extends TextBlockProcessor {
         String attributeId = arguments.get("attribute");
         String entityType = arguments.get("type");
 
-        EntityType<? extends LivingEntity> type = (EntityType<? extends LivingEntity>) BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(entityType));
-        Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attributeId));
+        EntityType<? extends LivingEntity> type = (EntityType<? extends LivingEntity>) BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.tryParse(entityType));
+        Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.tryParse(attributeId));
 
         float value = (float) DefaultAttributes.getSupplier(type).getBaseValue(attribute);
 

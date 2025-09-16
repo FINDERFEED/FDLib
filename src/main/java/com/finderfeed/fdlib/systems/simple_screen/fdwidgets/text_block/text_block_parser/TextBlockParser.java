@@ -136,7 +136,7 @@ public class TextBlockParser {
         String processorId = builder.toString();
         ResourceLocation id;
         try{
-            id = ResourceLocation.parse(processorId);
+            id = ResourceLocation.tryParse(processorId);
         }catch (ResourceLocationException e){
             throw new RuntimeException("Couldn't parse processor id! String: " + s,e);
         }

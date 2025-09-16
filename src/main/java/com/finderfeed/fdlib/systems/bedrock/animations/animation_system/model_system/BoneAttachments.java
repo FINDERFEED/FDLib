@@ -94,7 +94,7 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
             var uuid = attachment.getUUID("uuid");
 
             CompoundTag modelAttachmentTag = attachment.getCompound("attachmentData");
-            var location = ResourceLocation.parse(attachment.getString("attachmentType"));
+            var location = ResourceLocation.tryParse(attachment.getString("attachmentType"));
 
             ModelAttachmentType<?,?> type = FDRegistries.MODEL_ATTACHMENT_TYPES.get().getValue(location);
 

@@ -24,7 +24,7 @@ public class FDLib {
 
 
     public static ResourceLocation location(String loc){
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID,loc);
+        return ResourceLocation.tryBuild(MOD_ID,loc);
     }
 
     public FDLib() {

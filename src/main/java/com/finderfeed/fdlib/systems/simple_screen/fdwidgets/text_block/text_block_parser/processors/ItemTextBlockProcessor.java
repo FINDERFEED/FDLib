@@ -21,7 +21,7 @@ public class ItemTextBlockProcessor extends TextBlockProcessor {
         }
 
         String itemId = arguments.get("item");
-        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
 
         ItemStackEntry itemStackEntry = new ItemStackEntry(item.getDefaultInstance(), textScale,
                 TextBlockEntryInteraction.hoverOver(((textBlock, graphics, mx, my) -> {

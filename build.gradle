@@ -1,12 +1,23 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.neoforged.net/releases/' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.neoforged', name: 'NeoGradle', version: '6.0.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+    }
+}
+
+
+
 plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.neoforged.gradle' version '[6.0.13, 6.2)'
 }
-
-version = mod_version + "-" + minecraft_version
-group = mod_group_id
 
 repositories {
     mavenLocal()
@@ -15,10 +26,16 @@ repositories {
     }
 }
 
+version = mod_version + "-" + minecraft_version
+group = mod_group_id
+
+
 base {
     archivesName = mod_id
 }
 
+apply plugin: 'net.neoforged.gradle'
+apply plugin: 'org.spongepowered.mixin'
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -52,11 +69,16 @@ minecraft {
         }
 
         client {
-
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         server {
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
             property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
         }
@@ -85,7 +107,7 @@ repositories {
 
 dependencies {
 
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "net.neoforged:forge:${minecraft_version}-${forge_version}"
 
     implementation fileTree(dir: 'jarmods', include: ['*.jar'])
 
@@ -93,6 +115,8 @@ dependencies {
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
         jarJar.ranged(it, "[0.5.0,)")
     }
+
+    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 
 }
 
@@ -146,4 +170,10 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+mixin {
+    add sourceSets.main, "fdlib.refmap.json"
+
+    config "fdlib.mixins.json"
 }

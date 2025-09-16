@@ -38,7 +38,7 @@ public class FDModelAttachmentData implements ModelAttachmentData<FDModelAttachm
     private FDColor color = new FDColor(1f,1f,1f,1f);
 
     public static FDModelAttachmentData create(BaseModelAttachmentData baseModelAttachmentData, FDModelInfo fdModelInfo){
-        return new FDModelAttachmentData(baseModelAttachmentData, FDRenderTypes.ENTITY_CUTOUT_NO_CULL.get(), fdModelInfo, ResourceLocation.withDefaultNamespace("missingno"), new FDColor(1f,1f,1f,1f));
+        return new FDModelAttachmentData(baseModelAttachmentData, FDRenderTypes.ENTITY_CUTOUT_NO_CULL.get(), fdModelInfo, ResourceLocation.tryBuild("minecraft","missingno"), new FDColor(1f,1f,1f,1f));
     }
 
     public FDModelAttachmentData(BaseModelAttachmentData baseModelAttachmentData, FDRenderType renderType, FDModelInfo fdModelInfo, ResourceLocation texture, FDColor fdColor){

@@ -56,7 +56,7 @@ public class JsonConfigSyncPacket extends FDPacket {
     @Override
     public void clientAction(Supplier<NetworkEvent.Context> context) {
         for (int i = 0; i < names.size();i++){
-            JsonConfig config = FDRegistries.CONFIGS.get().getValue(ResourceLocation.parse(names.get(i)));
+            JsonConfig config = FDRegistries.CONFIGS.get().getValue(ResourceLocation.tryParse(names.get(i)));
             if (!config.isClientside()) {
                 JsonObject object = JsonParser.parseString(configs.get(i)).getAsJsonObject();
                 config.setLoadedJson(object);

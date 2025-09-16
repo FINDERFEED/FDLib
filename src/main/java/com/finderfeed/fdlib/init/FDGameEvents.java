@@ -8,7 +8,12 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
 import com.finderfeed.fdlib.systems.config.packets.TriggerClientsideConfigReloadPacket;
+import com.finderfeed.fdlib.systems.shake.FDShakeData;
+import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -39,13 +44,23 @@ public class FDGameEvents {
         }
     }
 
-//    @SubscribeEvent
-//    public static void testCutscenes(PlayerTickEvent.Pre event){
-//
-//        Player player = event.getEntity();
-//
-//        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()){
-//
+    @SubscribeEvent
+    public static void testCutscenes(TickEvent.PlayerTickEvent event){
+
+        if (event.phase != TickEvent.Phase.START) return;
+
+        Player player = event.player;
+
+        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()){
+
+
+            PositionedScreenShakePacket.send((ServerLevel)player.level(), FDShakeData.builder()
+                            .outTime(10)
+                            .frequency(20)
+                            .amplitude(1)
+                            .stayTime(10)
+                    .build(),player.position(),20);
+
 //            Vec3 pos = serverPlayer.position();
 //
 //            Vec3 previuousEndPos;
@@ -88,11 +103,11 @@ public class FDGameEvents {
 //
 //
 //            FDLibCalls.startCutsceneForPlayer(serverPlayer, data1);
-//
-//
-//        }
-//
-//    }
+
+
+        }
+
+    }
 
 //    @SubscribeEvent
 //    public static void test(InputEvent.Key event){

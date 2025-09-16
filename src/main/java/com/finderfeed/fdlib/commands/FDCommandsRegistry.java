@@ -171,7 +171,7 @@ public class FDCommandsRegistry {
 
     public static void executeEntityAnimation(CommandContext<CommandSourceStack> ctx, String animname, String tickerName, Entity entity) throws CommandSyntaxException {
         CommandSourceStack sourceStack = ctx.getSource();
-        Animation animation = FDRegistries.ANIMATIONS.get().getValue(ResourceLocation.parse(animname));
+        Animation animation = FDRegistries.ANIMATIONS.get().getValue(ResourceLocation.tryParse(animname));
         if (animation == null){
             sourceStack.sendFailure(Component.literal("No such animation found: " + animname));
             return;
@@ -190,7 +190,7 @@ public class FDCommandsRegistry {
     public static void executeTileEntityAnimation(CommandContext<CommandSourceStack> ctx, String animname, String tickerName, BlockPos pos) throws CommandSyntaxException {
         CommandSourceStack sourceStack = ctx.getSource();
         ServerLevel level = ctx.getSource().getLevel();
-        Animation animation = FDRegistries.ANIMATIONS.get().getValue(ResourceLocation.parse(animname));
+        Animation animation = FDRegistries.ANIMATIONS.get().getValue(ResourceLocation.tryParse(animname));
         if (animation == null){
             sourceStack.sendFailure(Component.literal("No such animation found: " + animname));
             return;

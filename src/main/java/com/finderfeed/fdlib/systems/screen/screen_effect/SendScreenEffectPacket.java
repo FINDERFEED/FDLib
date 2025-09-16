@@ -31,7 +31,7 @@ public class SendScreenEffectPacket<D extends ScreenEffectData, T extends Screen
         var registry = FDRegistries.SCREEN_EFFECTS.get();
 
         String location = buf.readUtf();
-        ScreenEffectType<?,?> t = registry.getValue(ResourceLocation.parse(location));
+        ScreenEffectType<?,?> t = registry.getValue(ResourceLocation.tryParse(location));
 
         ScreenEffectData effectData = t.dataCodec.fromNetwork(buf);
         this.data = (D) effectData;

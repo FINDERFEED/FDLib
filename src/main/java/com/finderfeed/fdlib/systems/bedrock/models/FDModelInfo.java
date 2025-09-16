@@ -90,7 +90,7 @@ public class FDModelInfo {
                 NetworkCodec.STRING,inst->inst.location.toString(),
                 NetworkCodec.listOf(FDModelPartDefinition.CODEC),inst->inst.definitions,
                 (str,defs)->{
-                    return new ModelSyncInstance(ResourceLocation.parse(str),defs);
+                    return new ModelSyncInstance(ResourceLocation.tryParse(str),defs);
                 }
         );
 

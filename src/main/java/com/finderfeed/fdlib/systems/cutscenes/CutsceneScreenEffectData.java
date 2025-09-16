@@ -81,7 +81,7 @@ public class CutsceneScreenEffectData {
 
             for (int k = 0; k < pairs; k++){
                 String location = buf.readUtf();
-                ScreenEffectType<?,?> t = registry.getValue(ResourceLocation.parse(location));
+                ScreenEffectType<?,?> t = registry.getValue(ResourceLocation.tryParse(location));
                 ScreenEffectData effectData = t.dataCodec.fromNetwork(buf);
                 var data = effectData;
                 var inTime = buf.readInt();

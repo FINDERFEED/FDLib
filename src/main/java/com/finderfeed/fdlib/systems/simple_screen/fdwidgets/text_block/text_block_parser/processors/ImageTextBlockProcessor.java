@@ -26,7 +26,7 @@ public class ImageTextBlockProcessor extends TextBlockProcessor {
             modid = "minecraft";
         }
 
-        ResourceLocation location = ResourceLocation.parse(
+        ResourceLocation location = ResourceLocation.tryParse(
                 modid + ":textures/gui/" + path + ".png"
         );
 
