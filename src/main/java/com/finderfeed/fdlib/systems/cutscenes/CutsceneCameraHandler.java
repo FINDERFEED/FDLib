@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.data_structures.ObjectHolder;
 import com.finderfeed.fdlib.init.FDClientModEvents;
 import com.finderfeed.fdlib.systems.hud.FDHuds;
 import com.finderfeed.fdlib.systems.screen.screen_particles.ScreenParticlesRenderEvent;
+import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -145,6 +146,9 @@ public class CutsceneCameraHandler {
 
 
         cutsceneExecutor.setCameraRotation((float) event.getPartialTick(), yaw, pitch, roll);
+
+        Camera camera = event.getCamera();
+        camera.setRotation(yaw.getValue(),pitch.getValue());
 
         event.setPitch(pitch.getValue());
         event.setYaw(yaw.getValue());

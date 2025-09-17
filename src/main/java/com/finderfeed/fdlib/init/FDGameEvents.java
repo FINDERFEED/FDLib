@@ -8,6 +8,9 @@ import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
 import com.finderfeed.fdlib.systems.config.packets.TriggerClientsideConfigReloadPacket;
+import com.finderfeed.fdlib.systems.cutscenes.CameraPos;
+import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
+import com.finderfeed.fdlib.systems.screen.screen_effect.instances.datas.ScreenColorData;
 import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.finderfeed.fdlib.systems.shake.PositionedScreenShakePacket;
 import net.minecraft.server.level.ServerLevel;
@@ -54,55 +57,50 @@ public class FDGameEvents {
 //        if (player instanceof ServerPlayer serverPlayer && serverPlayer.isCrouching()){
 //
 //
-//            PositionedScreenShakePacket.send((ServerLevel)player.level(), FDShakeData.builder()
-//                            .outTime(10)
-//                            .frequency(20)
-//                            .amplitude(1)
-//                            .stayTime(10)
-//                    .build(),player.position(),20);
 //
-////            Vec3 pos = serverPlayer.position();
-////
-////            Vec3 previuousEndPos;
-////
-////            CutsceneData data1 = CutsceneData.create()
-////                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
-////                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
-////                    .time(40)
-////                    .addCameraPos(new CameraPos(pos.add(0,0,0),new Vec3(1,0,0)))
-////                    .addCameraPos(new CameraPos(pos.add(10,0,5),new Vec3(1,0,0)))
-////                    .addCameraPos(new CameraPos(previuousEndPos = pos.add(20,0,0),new Vec3(1,0,0)));
-////
-////            CutsceneData data2 = CutsceneData.create()
-////                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
-////                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
-////                    .time(40)
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,0),new Vec3(0,0,1)))
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(-5,0,10),new Vec3(0,0,1)))
-////                    .addCameraPos(new CameraPos(previuousEndPos = previuousEndPos.add(0,0,20),new Vec3(0,0,1)));
-////
-////            CutsceneData data3 = CutsceneData.create()
-////                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
-////                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
-////                    .time(40)
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,0),new Vec3(-1,0,0)))
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(-10,0,-5),new Vec3(-1,0,0)))
-////                    .addCameraPos(new CameraPos(previuousEndPos = previuousEndPos.add(-20,0,0),new Vec3(-1,0,0)));
-////
-////            CutsceneData data4 = CutsceneData.create()
-////                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
-////                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
-////                    .time(40)
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,0),new Vec3(0,0,-1)))
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(5,0,-10),new Vec3(0,0,-1)))
-////                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,-20),new Vec3(0,0,-1)));
-////
-////            data1.nextCutscene(data2);
-////            data2.nextCutscene(data3);
-////            data3.nextCutscene(data4);
-////
-////
-////            FDLibCalls.startCutsceneForPlayer(serverPlayer, data1);
+//
+//            Vec3 pos = serverPlayer.position();
+//
+//            Vec3 previuousEndPos;
+//
+//            CutsceneData data1 = CutsceneData.create()
+//                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
+//                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
+//                    .time(40)
+//                    .addCameraPos(new CameraPos(pos.add(0,0,0),new Vec3(1,0,0)))
+//                    .addCameraPos(new CameraPos(pos.add(10,0,5),new Vec3(1,0,0)))
+//                    .addCameraPos(new CameraPos(previuousEndPos = pos.add(20,0,0),new Vec3(1,0,0)));
+//
+//            CutsceneData data2 = CutsceneData.create()
+//                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
+//                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
+//                    .time(40)
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,0),new Vec3(0,0,1)))
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(-5,0,10),new Vec3(0,0,1)))
+//                    .addCameraPos(new CameraPos(previuousEndPos = previuousEndPos.add(0,0,20),new Vec3(0,0,1)));
+//
+//            CutsceneData data3 = CutsceneData.create()
+//                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
+//                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
+//                    .time(40)
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,0),new Vec3(-1,0,0)))
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(-10,0,-5),new Vec3(-1,0,0)))
+//                    .addCameraPos(new CameraPos(previuousEndPos = previuousEndPos.add(-20,0,0),new Vec3(-1,0,0)));
+//
+//            CutsceneData data4 = CutsceneData.create()
+//                    .addScreenEffect(0, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 0,0,20)
+//                    .addScreenEffect(20, FDScreenEffects.SCREEN_COLOR, new ScreenColorData(0,0,0,1), 20,0,0)
+//                    .time(40)
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,0),new Vec3(0,0,-1)))
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(5,0,-10),new Vec3(0,0,-1)))
+//                    .addCameraPos(new CameraPos(previuousEndPos.add(0,0,-20),new Vec3(0,0,-1)));
+//
+//            data1.nextCutscene(data2);
+//            data2.nextCutscene(data3);
+//            data3.nextCutscene(data4);
+//
+//
+//            FDLibCalls.startCutsceneForPlayer(serverPlayer, data1);
 //
 //
 //        }

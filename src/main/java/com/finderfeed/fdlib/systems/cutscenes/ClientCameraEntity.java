@@ -30,7 +30,16 @@ public class ClientCameraEntity extends LivingEntity {
     @Override
     public void tick() {
         super.tick();
+    }
 
+    @Override
+    public float getViewYRot(float p_21286_) {
+        return super.getViewYRot(p_21286_);
+    }
+
+    @Override
+    public float getViewXRot(float p_20268_) {
+        return super.getViewXRot(p_20268_);
     }
 
     @Override
