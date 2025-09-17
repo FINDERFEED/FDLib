@@ -83,13 +83,13 @@ public class FDRenderUtil {
 
         matrices.scale(-scale,-scale,-scale);
 
-        Lighting.setupForEntityInInventory();
+//        Lighting.setupForEntityInInventory();
 
         model.render(matrices,builder,light, overlay,r,g,b,a);
 
         Minecraft.getInstance().renderBuffers().bufferSource().endLastBatch();
 
-        Lighting.setupFor3DItems();
+//        Lighting.setupFor3DItems();
 
         matrices.popPose();
     }

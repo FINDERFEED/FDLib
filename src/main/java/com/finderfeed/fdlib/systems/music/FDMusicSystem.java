@@ -149,19 +149,23 @@ public class FDMusicSystem {
             if (event.phase != TickEvent.Phase.END) return;
 
 
-            var iterator = sourceToProcessedBufferSecondLength.entrySet().iterator();
-            while (iterator.hasNext()){
-                var pair = iterator.next();
-                int source = pair.getKey();
+            try {
+                var iterator = sourceToProcessedBufferSecondLength.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    var pair = iterator.next();
+                    int source = pair.getKey();
 
-                if (!AL11.alIsSource(source)){
-                    iterator.remove();
-                }else{
-                    if (AL11.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED){
+                    if (!AL11.alIsSource(source)) {
                         iterator.remove();
+                    } else {
+                        if (AL11.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED) {
+                            iterator.remove();
+                        }
                     }
-                }
 
+                }
+            }catch (ConcurrentModificationException e){
+                FDLib.LOGGER.warn("Tried to remove processed buffers but encountered concurrent modification exception, suppressing...");
             }
         }
 
