@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.screen.screen_particles;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -33,7 +34,7 @@ public class FDScreenParticleEngine {
     @SubscribeEvent
     public static void renderScreenEvent(ScreenEvent.Render.Post event){
         if (MinecraftForge.EVENT_BUS.post(new ScreenParticlesRenderEvent.Screen())) return;
-        render(SCREEN_PARTICLES,event.getGuiGraphics(),event.getPartialTick());
+        render(SCREEN_PARTICLES,event.getGuiGraphics(), FDRenderUtil.tryGetPartialTickIgnorePause());
     }
 
     @SubscribeEvent
