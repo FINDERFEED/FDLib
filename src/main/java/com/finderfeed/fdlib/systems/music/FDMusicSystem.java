@@ -18,6 +18,7 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
 public class FDMusicSystem {
@@ -139,7 +140,7 @@ public class FDMusicSystem {
     @EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
     public static class StreamingSourcesBufferLengthCache {
 
-        public static final HashMap<Integer, Float> sourceToProcessedBufferSecondLength = new HashMap<>();
+        public static final ConcurrentHashMap<Integer, Float> sourceToProcessedBufferSecondLength = new ConcurrentHashMap<>();
 
         @SubscribeEvent
         public static void deleteFinishedSources(RenderFrameEvent.Post event){
