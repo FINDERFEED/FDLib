@@ -17,6 +17,7 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
 public class FDMusicSystem {
@@ -141,7 +142,7 @@ public class FDMusicSystem {
     @Mod.EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
     public static class StreamingSourcesBufferLengthCache {
 
-        public static final HashMap<Integer, Float> sourceToProcessedBufferSecondLength = new HashMap<>();
+        public static final ConcurrentHashMap<Integer, Float> sourceToProcessedBufferSecondLength = new ConcurrentHashMap<>();
 
         @SubscribeEvent
         public static void deleteFinishedSources(TickEvent.RenderTickEvent event){
@@ -149,24 +150,22 @@ public class FDMusicSystem {
             if (event.phase != TickEvent.Phase.END) return;
 
 
-            try {
-                var iterator = sourceToProcessedBufferSecondLength.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    var pair = iterator.next();
-                    int source = pair.getKey();
 
-                    if (!AL11.alIsSource(source)) {
+            var iterator = sourceToProcessedBufferSecondLength.entrySet().iterator();
+            while (iterator.hasNext()) {
+                var pair = iterator.next();
+                int source = pair.getKey();
+
+                if (!AL11.alIsSource(source)) {
+                    iterator.remove();
+                } else {
+                    if (AL11.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED) {
                         iterator.remove();
-                    } else {
-                        if (AL11.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED) {
-                            iterator.remove();
-                        }
                     }
-
                 }
-            }catch (ConcurrentModificationException e){
-                FDLib.LOGGER.warn("Tried to remove processed buffers but encountered concurrent modification exception, suppressing...");
+
             }
+
         }
 
         public static void onSoundEngineStop(){
