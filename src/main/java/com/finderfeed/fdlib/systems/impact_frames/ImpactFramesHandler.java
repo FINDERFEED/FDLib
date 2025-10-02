@@ -39,6 +39,8 @@ import java.util.*;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ImpactFramesHandler {
 
+    public static boolean wasImpactFrameShaderActive = false;
+
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();
     private static int width = -1;
     private static int height = -1;
@@ -64,9 +66,12 @@ public class ImpactFramesHandler {
                 activateImpactShader(currentImpactFrame);
                 currentTick = 1;
             }else{
-                currentTick = 0;
-                renderer.postEffect = null;
-                renderer.effectActive = false;
+                if (wasImpactFrameShaderActive) {
+                    currentTick = 0;
+                    renderer.postEffect = null;
+                    renderer.effectActive = false;
+                    wasImpactFrameShaderActive = false;
+                }
             }
         }else{
             if (currentTick >= currentImpactFrame.getDuration()){
@@ -94,11 +99,14 @@ public class ImpactFramesHandler {
 
     private static void activateImpactShader(ImpactFrame frame){
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        impactFrameShader.setUniform("treshhold",frame.getTreshhold());
-        impactFrameShader.setUniform("treshholdLerp",frame.getTreshholdLerp());
-        impactFrameShader.setUniform("invert",frame.isInverted() ? 1 : 0);
-        renderer.postEffect = impactFrameShader;
-        renderer.effectActive = true;
+        if (renderer.postEffect == null || renderer.postEffect.equals(impactFrameShader)) {
+            impactFrameShader.setUniform("treshhold", frame.getTreshhold());
+            impactFrameShader.setUniform("treshholdLerp", frame.getTreshholdLerp());
+            impactFrameShader.setUniform("invert", frame.isInverted() ? 1 : 0);
+            renderer.postEffect = impactFrameShader;
+            renderer.effectActive = true;
+            wasImpactFrameShaderActive = true;
+        }
     }
 
     public static void beforePostEffect(DeltaTracker deltaTracker, boolean idk){
