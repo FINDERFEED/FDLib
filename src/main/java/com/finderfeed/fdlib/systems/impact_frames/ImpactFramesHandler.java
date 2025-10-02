@@ -1,27 +1,43 @@
 package com.finderfeed.fdlib.systems.impact_frames;
 
-import com.finderfeed.fdlib.FDClientHelpers;
+import com.finderfeed.fdlib.ClientMixinHandler;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.init.FDConfigs;
+import com.finderfeed.fdlib.systems.shake.DefaultShake;
+import com.finderfeed.fdlib.systems.shake.FDShakeData;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.core.Holder;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.*;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE,value = Dist.CLIENT,modid = FDLib.MOD_ID)
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ImpactFramesHandler {
-
-    public static boolean wasImpactFrameShaderActive = false;
 
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();
     private static int width = -1;
@@ -32,8 +48,7 @@ public class ImpactFramesHandler {
     public static PostChain impactFrameShader;
 
     @SubscribeEvent
-    public static void tick(TickEvent.ClientTickEvent event){
-        if (event.phase != TickEvent.Phase.START) return;
+    public static void tick(ClientTickEvent.Pre event){
         manageImpactFrames();
     }
 
@@ -49,12 +64,9 @@ public class ImpactFramesHandler {
                 activateImpactShader(currentImpactFrame);
                 currentTick = 1;
             }else{
-                if (wasImpactFrameShaderActive) {
-                    currentTick = 0;
-                    renderer.postEffect = null;
-                    renderer.effectActive = false;
-                    wasImpactFrameShaderActive = false;
-                }
+                currentTick = 0;
+                renderer.postEffect = null;
+                renderer.effectActive = false;
             }
         }else{
             if (currentTick >= currentImpactFrame.getDuration()){
@@ -82,17 +94,14 @@ public class ImpactFramesHandler {
 
     private static void activateImpactShader(ImpactFrame frame){
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        if (renderer.postEffect == null || renderer.postEffect.equals(impactFrameShader)) {
-            FDClientHelpers.setShaderUniform(impactFrameShader, "treshhold", frame.getTreshhold());
-            FDClientHelpers.setShaderUniform(impactFrameShader, "treshholdLerp", frame.getTreshholdLerp());
-            FDClientHelpers.setShaderUniform(impactFrameShader, "invert", frame.isInverted() ? 1 : 0);
-            renderer.postEffect = impactFrameShader;
-            renderer.effectActive = true;
-            wasImpactFrameShaderActive = true;
-        }
+        impactFrameShader.setUniform("treshhold",frame.getTreshhold());
+        impactFrameShader.setUniform("treshholdLerp",frame.getTreshholdLerp());
+        impactFrameShader.setUniform("invert",frame.isInverted() ? 1 : 0);
+        renderer.postEffect = impactFrameShader;
+        renderer.effectActive = true;
     }
 
-    public static void beforePostEffect(float pticks, boolean idk){
+    public static void beforePostEffect(DeltaTracker deltaTracker, boolean idk){
 
         if (isImpactFrameShaderActive()) {
             RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
@@ -132,7 +141,7 @@ public class ImpactFramesHandler {
                 maxGrayscale = Math.max(maxGrayscale, grayscale);
             }
 
-            FDClientHelpers.setShaderUniform(impactFrameShader,"maxEstimatedGrayscale", maxGrayscale);
+            impactFrameShader.setUniform("maxEstimatedGrayscale", maxGrayscale);
         }
 
     }
