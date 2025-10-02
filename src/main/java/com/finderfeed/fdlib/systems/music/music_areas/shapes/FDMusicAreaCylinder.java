@@ -19,7 +19,14 @@ public class FDMusicAreaCylinder extends FDMusicAreaShape {
 
     @Override
     public List<ServerPlayer> getPlayersInside(ServerLevel level, Vec3 position) {
-        return FDTargetFinder.getEntitiesInCylinder(ServerPlayer.class, level, position, height, radius);
+
+        var playerList = level.getServer().getPlayerList();
+
+        var players = playerList.getPlayers().stream().filter(player->{
+            return FDTargetFinder.isPointInCylinder(player.position(), position, height, radius) && player.level().dimension().equals(level.dimension());
+        }).toList();
+
+        return players;
     }
 
 }
