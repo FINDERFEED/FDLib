@@ -96,48 +96,27 @@ public class FDClientModEvents {
                                 float percent = (float) Math.sin(time / 50) / 2f + 0.5f;
                                 float percent2 = (float) Math.sin(time / 50 - FDMathUtil.FPI / 8) / 2f + 0.5f;
 
-                                if (false) {
-                                    ShapeOnCurveRenderer.start(vertexConsumer)
-                                            .scalingFunction(v -> {
-                                                return (float) Math.sin(v * FDMathUtil.FPI * 2 * 10 + time / 20f) / 4 + 1f;
-                                            })
-                                            .uModifier(10)
-                                            .vModifier(2)
-                                            .shape(shape)
-                                            .lod(50)
-                                            .color(new FDColor(1, 0, 0, 0.25f))
-                                            .curvePositions(
-                                                    new Vector3f(0, 10, 0),
-                                                    new Vector3f(0, 3, 3),
-                                                    new Vector3f(10.1f, -2, 0),
-                                                    new Vector3f(10, -1, 5),
-                                                    new Vector3f(0, 2, 10),
-                                                    new Vector3f(-2, -4, 0)
-                                            )
-                                            .pose(matrices)
-                                            .render();
-                                }
 
-                                for (int i = 0; i < 1;i++){
 
-                                    ShapeOnCurveRenderer.start(vertexConsumer)
-                                            .uModifier(10)
-                                            .vModifier(2)
-                                            .shape(shape)
-                                            .lod(25)
-                                            .startColor(new FDColor(1,0,0,0.25f))
-                                            .endColor(new FDColor(0,1,0,0.25f))
-                                            .curvePositions(
-                                                    new Vector3f(0,10,0),
-                                                    new Vector3f(0,3,3),
-                                                    new Vector3f(10.1f,-2,0),
-                                                    new Vector3f(10,-1,5),
-                                                    new Vector3f(0,2,10),
-                                                    new Vector3f(-2,-4,0)
-                                            )
-                                            .pose(matrices)
-                                            .render();
-                                }
+
+                                ShapeOnCurveRenderer.start(vertexConsumer)
+                                        .uModifier(10)
+                                        .vModifier(2)
+                                        .shape(shape)
+                                        .lod(100)
+                                        .startColor(new FDColor(1,0,0,0.25f))
+                                        .endColor(new FDColor(0,1,0,0.25f))
+                                        .curvePositions(
+                                                new Vector3f(10,10,0),
+                                                new Vector3f(0,3,3),
+                                                new Vector3f(10.1f,-2,0),
+                                                new Vector3f(10,-1,5),
+                                                new Vector3f(0,2,10),
+                                                new Vector3f(-0.001f,0.0001f,0.0001f)
+                                        )
+                                        .pose(matrices)
+                                        .trailScalingFunction()
+                                        .render();
 
 //                                Vector3f dir1 = new Vector3f(0.5f,0.5f,0);
 //                                Vector3f dir2 = new Vector3f(-0.25f,0.5f,0);
