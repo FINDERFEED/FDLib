@@ -9,6 +9,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.joml.AxisAngle4d;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -100,6 +102,11 @@ public class ShapeOnCurveRenderer {
         return this;
     }
 
+    public ShapeOnCurveRenderer curvePositionsVec3(List<Vec3> curvePositions){
+        this.splinePoints = curvePositions.stream().map(Vec3::toVector3f).toList();
+        return this;
+    }
+
     public ShapeOnCurveRenderer shape(FD2DShape shape){
         this.shape = shape;
         return this;
@@ -133,6 +140,13 @@ public class ShapeOnCurveRenderer {
     public ShapeOnCurveRenderer trailScalingFunction(){
         this.scaleCoefficient = v->{
             return v;
+        };
+        return this;
+    }
+
+    public ShapeOnCurveRenderer reversedTrailScalingFunction(){
+        this.scaleCoefficient = v->{
+            return Mth.clamp(1 - v,0,1);
         };
         return this;
     }
@@ -204,7 +218,7 @@ public class ShapeOnCurveRenderer {
             float scalePrev = this.scaleCoefficient.apply(p2prev);
 
 
-            var pair = catmullRomAndDerivativePrecomputedLengths(splinePoints, p2, precomputedLengths);
+            var pair = catmullRomAndDerivativePrecomputedLengths(splinePoints, p2 * 0.999999f, precomputedLengths);
 
             Vector3f point2 = pair.first;
             Vector3f directionNew = pair.second;
