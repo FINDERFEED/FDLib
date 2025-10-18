@@ -19,6 +19,10 @@ import java.util.stream.Stream;
 
 public class FDByteBufCodecs {
 
+    public static final StreamCodec<? super FriendlyByteBuf,ResourceLocation> RESOURCE_LOCATION = StreamCodec.of(
+            FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::readResourceLocation
+    );
+
     public static final StreamCodec<RegistryFriendlyByteBuf, UUID> UUID = new StreamCodec<RegistryFriendlyByteBuf, java.util.UUID>() {
         @Override
         public java.util.UUID decode(RegistryFriendlyByteBuf buf) {
