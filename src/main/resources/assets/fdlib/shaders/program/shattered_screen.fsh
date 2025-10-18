@@ -29,19 +29,11 @@ void main(){
 
     if (samplerColor != vec4(0)){
 
-        if (samplerColor.g == 0){
+        float rotationAngle = samplerColor.r * 3.14 * 2;
+        mat2 rotation = rotationMatrix(rotationAngle);
 
-            float rotationAngle = samplerColor.r * 3.14 * 2;
-
-            mat2 rotation = rotationMatrix(rotationAngle);
-
-
-
-            vec2 offset = rotation * vec2(0,0.1);
-
-            result = texture(DiffuseSampler, texCoord - offset);
-
-        }
+        vec2 offset = rotation * vec2(0,maxOffset * samplerColor.g);
+        result = texture(DiffuseSampler, texCoord - offset);
 
     }else{
         result = texture(DiffuseSampler, texCoord);

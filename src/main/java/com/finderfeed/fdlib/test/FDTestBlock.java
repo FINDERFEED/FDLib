@@ -1,8 +1,11 @@
 package com.finderfeed.fdlib.test;
 
+import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.init.FDBlockEntities;
 import com.finderfeed.fdlib.init.FDSounds;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
+import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenEffectHandler;
+import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenSettings;
 import com.finderfeed.fdlib.systems.music.FDMusic;
 import com.finderfeed.fdlib.systems.music.FDMusicSystem;
 import com.finderfeed.fdlib.systems.music.data.FDMusicData;
@@ -76,6 +79,15 @@ public class FDTestBlock extends FDEntityBlock {
 //                   testBoolean = !testBoolean;
 //               }
 //           }
+       }else{
+           ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
+                   FDLib.location("textures/gui/effects/test_broken_screen.png"),
+                   FDLib.location("textures/gui/effects/test_broken_screen_up.png"),
+                   1,
+                   100,
+                   20,
+                   0.2f
+           ));
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
     }

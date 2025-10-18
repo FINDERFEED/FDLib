@@ -37,11 +37,13 @@ public class FDPostShadersReloadableResourceListener extends SimplePreparableRel
 
             FDPostShaderInitializeEvent event = new FDPostShaderInitializeEvent();
             NeoForge.EVENT_BUS.post(event);
+
+
             var registry = event.getPostChainRegistry();
 
             for (var shader : registry) {
                 try {
-                    this.loadPostChain(shader);
+                    loadPostChain(shader);
                 } catch (Exception e){
                     errors.add(e::printStackTrace);
                 }
@@ -60,7 +62,7 @@ public class FDPostShadersReloadableResourceListener extends SimplePreparableRel
 
     }
 
-    private void loadPostChain(FDPostShaderInitializeEvent.PostChainShaderLoadInstance shader){
+    protected static void loadPostChain(FDPostShaderInitializeEvent.PostChainShaderLoadInstance shader){
         var postChainLoad = shader.postChainLoad();
         PostChain postChain = postChainLoad.loadPostChain(Minecraft.getInstance().getTextureManager(), Minecraft.getInstance().getResourceManager(), Minecraft.getInstance().getMainRenderTarget());
         FDPostShadersHandler.POST_SHADERS.add(postChain);
