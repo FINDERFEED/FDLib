@@ -21,7 +21,7 @@ public class ShatteredScreenEffectInstance {
         this.easing = ComplexEasingFunction.builder()
                 .addArea(settings.inTime, FDEasings::easeOut)
                 .addArea(settings.stayTime, FDEasings::one)
-                .addArea(settings.outTime, FDEasings::reversedLinear)
+                .addArea(settings.outTime, FDEasings::reversedEaseOut)
                 .build();
     }
 
