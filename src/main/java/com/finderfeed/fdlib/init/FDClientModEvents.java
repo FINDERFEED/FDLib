@@ -29,20 +29,20 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.Math;
 
-@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = Mod.EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
+@EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
 public class FDClientModEvents {
 
     public static final String FDLIB_KEY_CATEGORY = "fdlib.key_category";
@@ -78,7 +78,6 @@ public class FDClientModEvents {
             BlockEntityRenderers.register(FDBlockEntities.TEST.get(), FDBlockEntityRendererBuilder.<FDTestBlockEntity>builder()
 
                             .freeRender((blockEntity, pticks, matrices, src, light, overlay) -> {
-
 
                                 VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
 //                                VertexConsumer vertexConsumer = src.getBuffer(RenderType.lightning());
@@ -119,6 +118,51 @@ public class FDClientModEvents {
                                         .trailScalingFunction()
                                         .render();
 
+//                                Vector3f dir1 = new Vector3f(0.5f,0.5f,0);
+//                                Vector3f dir2 = new Vector3f(-0.25f,0.5f,0);
+//
+//                                double angleY = Math.atan2(dir1.x,dir1.z);
+//                                double angleX = Math.atan2(Math.sqrt(dir1.x*dir1.x + dir1.z*dir1.z),dir1.y);
+//
+//                                double angleYd = Math.atan2(dir2.x,dir2.z);
+//                                double angleXd = Math.atan2(Math.sqrt(dir2.x*dir2.x + dir2.z*dir2.z),dir2.y);
+//                                Quaternionf q11 = new Quaternionf(new AxisAngle4d(angleY,0,1,0));
+//                                Quaternionf q12 = new Quaternionf(new AxisAngle4d(angleX,1,0,0));
+//
+//                                Quaternionf q21 = new Quaternionf(new AxisAngle4d(angleYd,0,1,0));
+//                                Quaternionf q22 = new Quaternionf(new AxisAngle4d(angleXd,1,0,0));
+//
+//                                Quaternionf rotation1 = q11.mul(q12,new Quaternionf());
+//
+//                                Quaternionf rotation2 = new Quaternionf().rotationTo(dir1,dir2).mul(rotation1);
+//
+//
+//                                matrices.pushPose();
+//
+//                                Matrix4f m = matrices.last().pose();
+//
+//                                Vector3f v1 = rotatePoint(rotation1, new Vector3f(-1,0,-1));
+//                                Vector3f v2 = rotatePoint(rotation1, new Vector3f(1,0,-1));
+//                                Vector3f v3 = rotatePoint(rotation1, new Vector3f(1,0,1));
+//                                Vector3f v4 = rotatePoint(rotation1, new Vector3f(-1,0,1));
+//
+//                                Vector3f pv1 = rotatePoint(rotation2, new Vector3f(-1,0,-1));
+//                                Vector3f pv2 = rotatePoint(rotation2, new Vector3f(1,0,-1));
+//                                Vector3f pv3 = rotatePoint(rotation2, new Vector3f(1,0,1));
+//                                Vector3f pv4 = rotatePoint(rotation2, new Vector3f(-1,0,1));
+//
+//                                vertexConsumer.addVertex(m, v4.x,v4.y,v4.z).setColor(1,1,1,1f);
+//                                vertexConsumer.addVertex(m, v3.x,v3.y,v3.z).setColor(0,0,1,1f);
+//                                vertexConsumer.addVertex(m, v2.x,v2.y,v2.z).setColor(0,1,0,1f);
+//                                vertexConsumer.addVertex(m, v1.x,v1.y,v1.z).setColor(1,0,0,1f);
+//
+//                                vertexConsumer.addVertex(m, pv4.x,pv4.y + 2, pv4.z).setColor(1,1,1,1f);
+//                                vertexConsumer.addVertex(m, pv3.x,pv3.y + 2, pv3.z).setColor(0,0,1,1f);
+//                                vertexConsumer.addVertex(m, pv2.x,pv2.y + 2, pv2.z).setColor(0,1,0,1f);
+//                                vertexConsumer.addVertex(m, pv1.x,pv1.y + 2, pv1.z).setColor(1,0,0,1f);
+//
+
+//                                matrices.popPose();
                             })
                     .build());
 
