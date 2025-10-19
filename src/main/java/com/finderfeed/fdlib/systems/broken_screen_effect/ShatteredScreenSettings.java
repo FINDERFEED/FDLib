@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.broken_screen_effect;
 
+import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.util.FDByteBufCodecs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -18,6 +19,8 @@ import net.minecraft.resources.ResourceLocation;
  *
  */
 public class ShatteredScreenSettings {
+
+    public static final ResourceLocation NULL_LOCATION = FDLib.location("null");
 
     public static StreamCodec<FriendlyByteBuf, ShatteredScreenSettings> STREAM_CODEC = StreamCodec.composite(
             FDByteBufCodecs.RESOURCE_LOCATION, v->v.shatteredScreenDataTexture,
@@ -38,6 +41,15 @@ public class ShatteredScreenSettings {
 
     public ShatteredScreenSettings(ResourceLocation shatteredScreenDataTexture, ResourceLocation shatteredScreenTexture, int inTime, int stayTime, int outTime, float maxOffset){
         this.shatteredScreenTexture = shatteredScreenTexture;
+        this.shatteredScreenDataTexture = shatteredScreenDataTexture;
+        this.inTime = inTime;
+        this.outTime = outTime;
+        this.maxOffset = maxOffset;
+        this.stayTime = stayTime;
+    }
+
+    public ShatteredScreenSettings(ResourceLocation shatteredScreenDataTexture, int inTime, int stayTime, int outTime, float maxOffset){
+        this.shatteredScreenTexture = NULL_LOCATION;
         this.shatteredScreenDataTexture = shatteredScreenDataTexture;
         this.inTime = inTime;
         this.outTime = outTime;

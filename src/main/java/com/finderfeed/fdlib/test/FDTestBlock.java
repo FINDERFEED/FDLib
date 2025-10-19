@@ -81,12 +81,12 @@ public class FDTestBlock extends FDEntityBlock {
 //           }
        }else{
            ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
-                   FDLib.location("textures/gui/effects/broken_screen_2_data.png"),
-                   FDLib.location("textures/gui/effects/broken_screen_2.png"),
+                   FDLib.location("textures/gui/effects/broken_screen_1_data.png"),
+                   FDLib.location("textures/gui/effects/broken_screen_1.png"),
                    2,
                    60,
                    20,
-                   1f
+                   0.25f
            ));
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);

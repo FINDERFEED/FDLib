@@ -41,6 +41,11 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
         var settings = currentEffect.settings;
         var texture = settings.shatteredScreenTexture;
+
+        if (texture.equals(ShatteredScreenSettings.NULL_LOCATION)){
+            return;
+        }
+
         FDRenderUtil.bindTexture(texture);
 
         float alpha = currentEffect.getCurrentPercent(tracker.getGameTimeDeltaPartialTick(false));
