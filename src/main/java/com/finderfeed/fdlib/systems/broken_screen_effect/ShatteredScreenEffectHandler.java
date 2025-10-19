@@ -49,7 +49,7 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
         float width = window.getGuiScaledWidth();
         float height = window.getGuiScaledHeight();
 
-        FDRenderUtil.blitWithBlend(graphics.pose(),0,0,width,height,0,0,1,1,1,1,0,alpha * 0.5f);
+        FDRenderUtil.blitWithBlend(graphics.pose(),0,0,width,height,0,0,1,1,1,1,0,alpha);
     }
 
     public static void setCurrentEffect(ShatteredScreenSettings settings){
