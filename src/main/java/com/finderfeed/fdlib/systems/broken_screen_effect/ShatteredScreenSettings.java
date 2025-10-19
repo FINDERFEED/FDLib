@@ -13,6 +13,8 @@ import net.minecraft.resources.ResourceLocation;
  * Red corresponds to rotation angle (0-255 -> 0-360) of a (0,1) vector (up). This vector denotes in which direction the screen will be shifted in this pixel.
  * <p>
  * Green corresponds to strength by how much the screen will be shifted (0-255 -> 0-1)
+ * <p>
+ * Blue - less than 128 tilt to the left, more than 128 - tilt to the right
  *
  */
 public class ShatteredScreenSettings {
