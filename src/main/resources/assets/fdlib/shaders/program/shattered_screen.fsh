@@ -34,12 +34,15 @@ void main(){
 
         float blueRotationAngle = (samplerColor.b - 0.5) / 0.5; blueRotationAngle *= -3.14;
 
-
         mat2 rotation2 = rotationMatrix(blueRotationAngle * maxOffset);
 
         vec2 offset = rotation * vec2(0,maxOffset * samplerColor.g);
 
-        vec2 coords = rotation2 * texCoord;
+        vec2 coord = texCoord - 0.5;
+
+        vec2 coords = rotation2 * coord;
+
+        coords += 0.5;
 
         result = texture(DiffuseSampler, coords - offset);
 
