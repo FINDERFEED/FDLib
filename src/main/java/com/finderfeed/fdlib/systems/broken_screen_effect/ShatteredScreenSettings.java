@@ -21,6 +21,11 @@ import net.minecraft.resources.ResourceLocation;
 public class ShatteredScreenSettings {
 
     public static final ResourceLocation NULL_LOCATION = FDLib.location("null");
+    public static final ResourceLocation DATA_1_1 = FDLib.location("textures/gui/effects/broken_screen_1_data.png");
+    public static final ResourceLocation DATA_1_GLASSY = FDLib.location("textures/gui/effects/broken_screen_1_data_2.png");
+    public static final ResourceLocation DATA_2 = FDLib.location("textures/gui/effects/broken_screen_1_data_2.png");
+    public static final ResourceLocation SCREEN_1 = FDLib.location("textures/gui/effects/broken_screen_1.png");
+    public static final ResourceLocation SCREEN_2 = FDLib.location("textures/gui/effects/broken_screen_2.png");
 
     public static StreamCodec<FriendlyByteBuf, ShatteredScreenSettings> STREAM_CODEC = StreamCodec.composite(
             FDByteBufCodecs.RESOURCE_LOCATION, v->v.shatteredScreenDataTexture,

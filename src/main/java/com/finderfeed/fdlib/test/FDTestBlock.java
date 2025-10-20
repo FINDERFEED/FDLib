@@ -1,21 +1,10 @@
 package com.finderfeed.fdlib.test;
 
-import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.init.FDBlockEntities;
-import com.finderfeed.fdlib.init.FDSounds;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
 import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenEffectHandler;
 import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenSettings;
-import com.finderfeed.fdlib.systems.music.FDMusic;
-import com.finderfeed.fdlib.systems.music.FDMusicSystem;
-import com.finderfeed.fdlib.systems.music.data.FDMusicData;
-import com.finderfeed.fdlib.systems.music.data.FDMusicPartData;
-import com.finderfeed.fdlib.systems.music.music_areas.FDMusicArea;
-import com.finderfeed.fdlib.systems.music.music_areas.FDMusicAreasHandler;
-import com.finderfeed.fdlib.systems.music.music_areas.shapes.FDMusicAreaCylinder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -81,12 +70,11 @@ public class FDTestBlock extends FDEntityBlock {
 //           }
        }else{
            ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
-                   FDLib.location("textures/gui/effects/broken_screen_1_data.png"),
-                   FDLib.location("textures/gui/effects/broken_screen_1.png"),
-                   2,
-                   60,
-                   20,
-                   0.25f
+                   ShatteredScreenSettings.DATA_1_GLASSY,
+                   1,
+                   10,
+                   50,
+                   1f
            ));
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
