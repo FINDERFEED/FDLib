@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.broken_screen_effect;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.post_shaders.FDPostShaderInitializeEvent;
+import com.finderfeed.fdlib.systems.post_shaders.FDRenderPostShaderEvent;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -61,6 +62,40 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
         currentEffect = new ShatteredScreenEffectInstance(settings);
     }
 
+
+
+    @SubscribeEvent
+    public static void renderShatteredScreen(FDRenderPostShaderEvent.Screen event){
+
+        if (currentEffect == null || shatteredScreenShader == null) return;
+
+        if (currentEffect.settings.onScreen) {
+            float currentStrength = currentEffect.getCurrentPercent(event.getDeltaTracker().getGameTimeDeltaPartialTick(false)) * currentEffect.settings.maxOffset;
+
+            shatteredScreenShader.setUniform("maxOffset", currentStrength);
+
+            shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        }
+
+    }
+
+
+    @SubscribeEvent
+    public static void renderLevelShatteredScreen(FDRenderPostShaderEvent.Level event){
+
+        if (currentEffect == null || shatteredScreenShader == null) return;
+
+        if (!currentEffect.settings.onScreen) {
+
+            float currentStrength = currentEffect.getCurrentPercent(event.getDeltaTracker().getGameTimeDeltaPartialTick(false)) * currentEffect.settings.maxOffset;
+
+            shatteredScreenShader.setUniform("maxOffset", currentStrength);
+
+            shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+
+        }
+    }
+
     @SubscribeEvent
     public static void clientTick(ClientTickEvent.Pre event){
 
@@ -79,32 +114,9 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
         if (currentEffect != null){
             currentEffect.tick();
-        }else{
-            if (gameRenderer.postEffect == shatteredScreenShader){
-                gameRenderer.postEffect = null;
-                gameRenderer.effectActive = false;
-            }
         }
 
     }
-
-    @SubscribeEvent
-    public static void setupAndRenderShatteredScreen(RenderFrameEvent.Pre event){
-
-        if (currentEffect == null || shatteredScreenShader == null) return;
-
-
-        float currentStrength = currentEffect.getCurrentPercent(event.getPartialTick().getGameTimeDeltaPartialTick(false)) * currentEffect.settings.maxOffset;
-
-        shatteredScreenShader.setUniform("maxOffset", currentStrength);
-
-        GameRenderer gameRenderer = Minecraft.getInstance().gameRenderer;
-        gameRenderer.postEffect = shatteredScreenShader;
-        gameRenderer.effectActive = true;
-
-
-    }
-
 
     @SubscribeEvent
     public static void onLogoff(ClientPlayerNetworkEvent.LoggingOut event){

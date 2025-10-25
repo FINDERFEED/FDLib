@@ -48,20 +48,6 @@ public class FDClientModEvents {
     }
 
     @SubscribeEvent
-    public static void test(PlayerTickEvent.Pre event){
-        var entity = event.getEntity();
-        var level = entity.level();
-        if (level.isClientSide && entity.isCrouching()){
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(2));
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame(true).setDuration(2));
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(2));
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame(true).setDuration(2));
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(2));
-            ImpactFramesHandler.addImpactFrame(new ImpactFrame(true).setDuration(2));
-        }
-    }
-
-    @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event){
         event.registerReloadListener(new FDPostShadersReloadableResourceListener());
     }

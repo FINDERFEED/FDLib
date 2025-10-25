@@ -74,7 +74,8 @@ public class FDTestBlock extends FDEntityBlock {
                    1,
                    10,
                    50,
-                   1f
+                   0.1f,
+                   true
            ));
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
