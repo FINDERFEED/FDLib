@@ -74,8 +74,6 @@ dependencies {
 
     implementation fileTree(dir: 'jarmods', include: ['*.jar'])
 
-    print("Something")
-
 //    implementation "curse.maven:sodium-394468:6000085"
 //    implementation "curse.maven:irisshaders-455508:6117625"
 

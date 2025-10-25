@@ -17,7 +17,9 @@ import java.util.List;
 @EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
 public class FDPostShadersHandler {
 
-    protected static final List<PostChain> POST_SHADERS = new ArrayList<>();
+    public static boolean WAS_LOADED_ONCE = false;
+
+    public static final List<PostChain> POST_SHADERS = new ArrayList<>();
 
     private static int width;
     private static int height;
@@ -42,37 +44,6 @@ public class FDPostShadersHandler {
             FDPostShadersHandler.height = height;
         }
 
-    }
-
-    @SubscribeEvent
-    public static void loggingIn(ClientPlayerNetworkEvent.LoggingIn loggingIn){
-
-        for (var shader : FDPostShadersHandler.POST_SHADERS){
-            shader.close();
-        }
-
-        POST_SHADERS.clear();
-
-        FDPostShaderInitializeEvent event = new FDPostShaderInitializeEvent();
-        NeoForge.EVENT_BUS.post(event);
-
-        List<Runnable> errors = new ArrayList<>();
-        var registry = event.getPostChainRegistry();
-
-        for (var shader : registry) {
-            try {
-                FDPostShadersReloadableResourceListener.loadPostChain(shader);
-            } catch (Exception e){
-                errors.add(e::printStackTrace);
-            }
-        }
-
-        if (!errors.isEmpty()){
-            for (var error : errors){
-                error.run();
-            }
-            throw new RuntimeException("Failed to load shaders");
-        }
     }
 
 }

@@ -2,6 +2,8 @@ package com.finderfeed.fdlib.init;
 
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.renderer.FDBlockEntityRendererBuilder;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesHandler;
 import com.finderfeed.fdlib.systems.post_shaders.FDPostShadersReloadableResourceListener;
 import com.finderfeed.fdlib.systems.shapes.FD2DShape;
 import com.finderfeed.fdlib.test.FDTestBlockEntity;
@@ -19,6 +21,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -26,12 +29,13 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.Math;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID,bus = EventBusSubscriber.Bus.MOD,value = Dist.CLIENT)
+@EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT)
 public class FDClientModEvents {
 
     public static final String FDLIB_KEY_CATEGORY = "fdlib.key_category";
@@ -41,6 +45,20 @@ public class FDClientModEvents {
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event){
         event.register(END_CUTSCENE);
+    }
+
+    @SubscribeEvent
+    public static void test(PlayerTickEvent.Pre event){
+        var entity = event.getEntity();
+        var level = entity.level();
+        if (level.isClientSide && entity.isCrouching()){
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(2));
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame(true).setDuration(2));
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(2));
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame(true).setDuration(2));
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(2));
+            ImpactFramesHandler.addImpactFrame(new ImpactFrame(true).setDuration(2));
+        }
     }
 
     @SubscribeEvent

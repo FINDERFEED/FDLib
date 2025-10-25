@@ -1,115 +1,104 @@
 package com.finderfeed.fdlib.systems.impact_frames;
 
-import com.finderfeed.fdlib.ClientMixinHandler;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.init.FDConfigs;
-import com.finderfeed.fdlib.systems.shake.DefaultShake;
-import com.finderfeed.fdlib.systems.shake.FDShakeData;
+import com.finderfeed.fdlib.systems.post_shaders.FDPostShaderInitializeEvent;
+import com.finderfeed.fdlib.systems.post_shaders.FDRenderPostShaderEvent;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.core.Holder;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
-import java.nio.IntBuffer;
 import java.util.*;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME,value = Dist.CLIENT,modid = FDLib.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT,modid = FDLib.MOD_ID)
 public class ImpactFramesHandler {
 
-    public static boolean wasImpactFrameShaderActive = false;
-
     private static final Queue<ImpactFrame> impactFrames = new ArrayDeque<>();
-    private static int width = -1;
-    private static int height = -1;
     private static ImpactFrame currentImpactFrame = null;
     private static int currentTick = 0;
 
     public static PostChain impactFrameShader;
 
     @SubscribeEvent
+    public static void registerShader(FDPostShaderInitializeEvent event){
+        event.registerPostChain(((textureManager, resourceProvider, renderTarget) -> {
+            try {
+                return new PostChain(textureManager,resourceProvider,renderTarget,FDLib.location("shaders/post/impact_frame.json"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }),chain -> impactFrameShader = chain);
+    }
+
+    @SubscribeEvent
     public static void tick(ClientTickEvent.Pre event){
         manageImpactFrames();
     }
 
-    private static void manageImpactFrames(){
-        if (impactFrameShader == null) return;
+    @SubscribeEvent
+    public static void renderImpactFrameShader(FDRenderPostShaderEvent.Level event){
 
-        resizeImpactShaderIfNeeded();
-        GameRenderer renderer = Minecraft.getInstance().gameRenderer;
+
+        if (isImpactFrameShaderActive()){
+            beforePostEffect();
+            event.doDefaultShaderBeforeShaderStuff();
+            impactFrameShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        }
+
+    }
+
+    private static void manageImpactFrames(){
+
+        if (impactFrameShader == null) return;
 
         if (currentImpactFrame == null){
             if (!impactFrames.isEmpty()){
                 currentImpactFrame = impactFrames.poll();
-                activateImpactShader(currentImpactFrame);
+                manageImpactFrameShaderUniforms(currentImpactFrame);
                 currentTick = 1;
             }else{
-                if (wasImpactFrameShaderActive) {
-                    currentTick = 0;
-                    renderer.postEffect = null;
-                    renderer.effectActive = false;
-                    wasImpactFrameShaderActive = false;
-                }
+                currentTick = 0;
             }
         }else{
             if (currentTick >= currentImpactFrame.getDuration()){
                 if (!impactFrames.isEmpty()){
                     currentImpactFrame = impactFrames.poll();
-                    activateImpactShader(currentImpactFrame);
+                    manageImpactFrameShaderUniforms(currentImpactFrame);
                     currentTick = 1;
                 }else{
                     currentImpactFrame = null;
                     currentTick = 0;
-                    renderer.postEffect = null;
-                    renderer.effectActive = false;
                 }
             }else{
-                activateImpactShader(currentImpactFrame);
+                manageImpactFrameShaderUniforms(currentImpactFrame);
                 currentTick++;
             }
         }
 
-
-
-
-
     }
 
-    private static void activateImpactShader(ImpactFrame frame){
-        GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        if (renderer.postEffect == null || renderer.postEffect.equals(impactFrameShader)) {
-            impactFrameShader.setUniform("treshhold", frame.getTreshhold());
-            impactFrameShader.setUniform("treshholdLerp", frame.getTreshholdLerp());
-            impactFrameShader.setUniform("invert", frame.isInverted() ? 1 : 0);
-            renderer.postEffect = impactFrameShader;
-            renderer.effectActive = true;
-            wasImpactFrameShaderActive = true;
+    public static void addImpactFrame(ImpactFrame frame){
+        if (FDConfigs.CLIENTSIDE_CONFIG.get().impactFramesEnabled) {
+            impactFrames.offer(frame);
         }
     }
 
-    public static void beforePostEffect(DeltaTracker deltaTracker, boolean idk){
+    private static void manageImpactFrameShaderUniforms(ImpactFrame frame){
+        impactFrameShader.setUniform("treshhold", frame.getTreshhold());
+        impactFrameShader.setUniform("treshholdLerp", frame.getTreshholdLerp());
+        impactFrameShader.setUniform("invert", frame.isInverted() ? 1 : 0);
+    }
+
+    public static void beforePostEffect(){
 
         if (isImpactFrameShaderActive()) {
             RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
@@ -154,47 +143,8 @@ public class ImpactFramesHandler {
 
     }
 
-
     public static boolean isImpactFrameShaderActive(){
-        GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        return renderer.postEffect != null && renderer.postEffect.getName().equals(impactFrameShader.getName());
+        return currentImpactFrame != null;
     }
-
-    public static void addImpactFrame(ImpactFrame frame){
-        if (FDConfigs.CLIENTSIDE_CONFIG.get().impactFramesEnabled) {
-            impactFrames.offer(frame);
-        }
-    }
-
-
-    private static void resizeImpactShaderIfNeeded(){
-        Window window = Minecraft.getInstance().getWindow();
-
-        if (width != window.getWidth() || height != window.getHeight()){
-            impactFrameShader.resize(window.getWidth(),window.getHeight());
-            width = window.getWidth();
-            height = window.getHeight();
-        }
-    }
-
-
-    public static void initializeImpactShaderOrResizeIfNeeded(boolean forceReload) throws IOException {
-        if (impactFrameShader == null || forceReload) {
-            if (impactFrameShader != null){
-                impactFrameShader.close();
-            }
-            impactFrameShader = new PostChain(Minecraft.getInstance().getTextureManager(), Minecraft.getInstance().getResourceManager(), Minecraft.getInstance().getMainRenderTarget(),
-                    FDLib.location("shaders/post/impact_frame.json"));
-        }
-
-        Window window = Minecraft.getInstance().getWindow();
-
-        if (width != window.getWidth() || height != window.getHeight() || forceReload){
-            impactFrameShader.resize(window.getWidth(),window.getHeight());
-            width = window.getWidth();
-            height = window.getHeight();
-        }
-    }
-
 
 }

@@ -20,7 +20,7 @@ public class FDPostShaderInitializeEvent extends Event {
         this.postChainRegistry.add(new PostChainShaderLoadInstance(load,onLoad));
     }
 
-    protected List<PostChainShaderLoadInstance> getPostChainRegistry() {
+    public List<PostChainShaderLoadInstance> getPostChainRegistry() {
         return postChainRegistry;
     }
 

@@ -12,6 +12,7 @@
     "ChannelMixin",
     "GameRendererMixin",
     "LocalPlayerMixin",
+    "MinecraftMixin",
     "MouseHandlerMixin",
     "ParticleEngineMixin",
     "SoundEngineMixin"
