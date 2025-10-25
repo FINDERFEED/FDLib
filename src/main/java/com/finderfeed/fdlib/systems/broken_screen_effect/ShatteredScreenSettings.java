@@ -27,13 +27,14 @@ public class ShatteredScreenSettings {
     public static final ResourceLocation SCREEN_1 = FDLib.location("textures/gui/effects/broken_screen_1.png");
     public static final ResourceLocation SCREEN_2 = FDLib.location("textures/gui/effects/broken_screen_2.png");
 
-    public static StreamCodec<FriendlyByteBuf, ShatteredScreenSettings> STREAM_CODEC = StreamCodec.composite(
+    public static StreamCodec<FriendlyByteBuf, ShatteredScreenSettings> STREAM_CODEC = FDByteBufCodecs.composite(
             FDByteBufCodecs.RESOURCE_LOCATION, v->v.shatteredScreenDataTexture,
             FDByteBufCodecs.RESOURCE_LOCATION, v->v.shatteredScreenTexture,
             ByteBufCodecs.INT, v->v.inTime,
             ByteBufCodecs.INT, v->v.stayTime,
             ByteBufCodecs.INT, v->v.outTime,
             ByteBufCodecs.FLOAT, v->v.maxOffset,
+            ByteBufCodecs.BOOL, v->v.onScreen,
             ShatteredScreenSettings::new
     );
 
@@ -43,23 +44,80 @@ public class ShatteredScreenSettings {
     public int inTime;
     public int outTime;
     public float maxOffset;
+    public boolean onScreen;
 
-    public ShatteredScreenSettings(ResourceLocation shatteredScreenDataTexture, ResourceLocation shatteredScreenTexture, int inTime, int stayTime, int outTime, float maxOffset){
+    public ShatteredScreenSettings(ResourceLocation shatteredScreenDataTexture, ResourceLocation shatteredScreenTexture, int inTime, int stayTime, int outTime, float maxOffset, boolean onScreen){
         this.shatteredScreenTexture = shatteredScreenTexture;
         this.shatteredScreenDataTexture = shatteredScreenDataTexture;
         this.inTime = inTime;
         this.outTime = outTime;
         this.maxOffset = maxOffset;
         this.stayTime = stayTime;
+        this.onScreen = onScreen;
     }
 
-    public ShatteredScreenSettings(ResourceLocation shatteredScreenDataTexture, int inTime, int stayTime, int outTime, float maxOffset){
+    public ShatteredScreenSettings(ResourceLocation shatteredScreenDataTexture, int inTime, int stayTime, int outTime, float maxOffset, boolean onScreen){
         this.shatteredScreenTexture = NULL_LOCATION;
         this.shatteredScreenDataTexture = shatteredScreenDataTexture;
         this.inTime = inTime;
         this.outTime = outTime;
         this.maxOffset = maxOffset;
         this.stayTime = stayTime;
+        this.onScreen = onScreen;
     }
+
+    public ShatteredScreenSettings(){
+        this.shatteredScreenDataTexture = DATA_1_GLASSY;
+        this.shatteredScreenTexture = null;
+        this.stayTime = 0;
+        this.inTime = 0;
+        this.outTime = 20;
+        this.maxOffset = 0.1f;
+        this.onScreen = true;
+    }
+
+    public static Builder builder(){
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private ShatteredScreenSettings settings = new ShatteredScreenSettings();
+
+        public Builder(){}
+
+        public Builder setDataTexture(ResourceLocation resourceLocation){
+            settings.shatteredScreenDataTexture = resourceLocation;
+            return this;
+        }
+
+        public Builder setOverlayTexture(ResourceLocation resourceLocation){
+            settings.shatteredScreenTexture = resourceLocation;
+            return this;
+        }
+
+        public Builder time(int inTime, int stayTime, int outTime){
+            settings.inTime = inTime;
+            settings.stayTime = stayTime;
+            settings.outTime = outTime;
+            return this;
+        }
+
+        public Builder setMaxOffset(float maxOffset){
+            settings.maxOffset = maxOffset;
+            return this;
+        }
+
+        public Builder onScreen(boolean onScreen){
+            settings.onScreen = onScreen;
+            return this;
+        }
+
+        public ShatteredScreenSettings build(){
+            return settings;
+        }
+
+    }
+
 
 }
