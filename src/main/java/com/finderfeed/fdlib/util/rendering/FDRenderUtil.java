@@ -2,11 +2,15 @@ package com.finderfeed.fdlib.util.rendering;
 
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
+import com.finderfeed.fdlib.systems.shapes.FD2DShape;
+import com.finderfeed.fdlib.util.FDColor;
+import com.finderfeed.fdlib.util.math.FDMathUtil;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.Util;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
@@ -34,9 +39,9 @@ import java.util.function.Function;
 public class FDRenderUtil {
 
     public static void renderCenteredScaledItemStack(GuiGraphics graphics, float x, float y, float scale, ItemStack itemStack){
-        PoseStack stack = RenderSystem.getModelViewStack();
+        Matrix4fStack stack = RenderSystem.getModelViewStack();
 
-        stack.pushPose();
+        stack.pushMatrix();
 
         float mfx = x / scale;
         float mfy = y / scale;
@@ -46,14 +51,14 @@ public class FDRenderUtil {
 
         RenderSystem.applyModelViewMatrix();
         graphics.renderItem(itemStack, 0,0);
-        stack.popPose();
+        stack.popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 
     public static void renderScaledItemStack(GuiGraphics graphics, float x, float y, float scale, ItemStack itemStack){
-        PoseStack stack = RenderSystem.getModelViewStack();
+        Matrix4fStack stack = RenderSystem.getModelViewStack();
 
-        stack.pushPose();
+        stack.pushMatrix();
 
         float mfx = x / scale;
         float mfy = y / scale;
@@ -63,13 +68,17 @@ public class FDRenderUtil {
 
         RenderSystem.applyModelViewMatrix();
         graphics.renderItem(itemStack, 0,0);
-        stack.popPose();
+        stack.popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 
     public static float tryGetPartialTickIgnorePause(){
-        var timer = Minecraft.getInstance().timer;
-        return timer.partialTick;
+        DeltaTracker tracker = Minecraft.getInstance().getTimer();
+        if (tracker instanceof DeltaTracker.Timer timer){
+            return timer.deltaTickResidual;
+        }else{
+            return tracker.getGameTimeDeltaPartialTick(true);
+        }
     }
 
     public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale,int light, int overlay, float r,float g, float b,float a, RenderType renderType){
@@ -83,13 +92,13 @@ public class FDRenderUtil {
 
         matrices.scale(-scale,-scale,-scale);
 
-//        Lighting.setupForEntityInInventory();
+        Lighting.setupForEntityInInventory();
 
         model.render(matrices,builder,light, overlay,r,g,b,a);
 
         Minecraft.getInstance().renderBuffers().bufferSource().endLastBatch();
 
-//        Lighting.setupFor3DItems();
+        Lighting.setupFor3DItems();
 
         matrices.popPose();
     }
@@ -168,20 +177,16 @@ public class FDRenderUtil {
         Tesselator tesselator = RenderSystem.renderThreadTesselator();
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-
-        BufferBuilder builder = tesselator.getBuilder();
-
-        builder.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
         Matrix4f m = matrices.last().pose();
 
-        builder.vertex(m,x,y + yw,0).color(r,g,b,a).endVertex();
-        builder.vertex(m,x + xw,y + yw,0).color(r,g,b,a).endVertex();
-        builder.vertex(m,x + xw,y,0).color(r,g,b,a).endVertex();
-        builder.vertex(m,x,y,0).color(r,g,b,a).endVertex();
+        builder.addVertex(m,x,y + yw,0).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y + yw,0).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y,0).setColor(r,g,b,a);
+        builder.addVertex(m,x,y,0).setColor(r,g,b,a);
 
 
-        BufferUploader.drawWithShader(builder.end());
+        BufferUploader.drawWithShader(builder.build());
     }
 
     public static void fill(PoseStack matrices,float x,float y,float xw,float yw,
@@ -193,26 +198,22 @@ public class FDRenderUtil {
         Tesselator tesselator = RenderSystem.renderThreadTesselator();
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-
-        BufferBuilder builder = tesselator.getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_COLOR);
         Matrix4f m = matrices.last().pose();
 
-        builder.vertex(m,x,y + yw,0).color(r4,g4,b4,a4).endVertex();
-        builder.vertex(m,x + xw,y + yw,0).color(r3,g3,b3,a3).endVertex();
-        builder.vertex(m,x + xw,y,0).color(r2,g2,b2,a2).endVertex();
-        builder.vertex(m,x,y,0).color(r1,g1,b1,a1).endVertex();
+        builder.addVertex(m,x,y + yw,0).setColor(r4,g4,b4,a4);
+        builder.addVertex(m,x + xw,y + yw,0).setColor(r3,g3,b3,a3);
+        builder.addVertex(m,x + xw,y,0).setColor(r2,g2,b2,a2);
+        builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
 
 
-        BufferUploader.drawWithShader(builder.end());
+        BufferUploader.drawWithShader(builder.build());
     }
 
     public static void renderShader(PoseStack matrices,float x,float y,float xw,float yw,float r,float g,float b,float a,float xuvStretch,float yuvStretch){
         Tesselator tesselator = RenderSystem.renderThreadTesselator();
         RenderSystem.enableBlend();
-        BufferBuilder builder = tesselator.getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
+        BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
         Matrix4f m = matrices.last().pose();
 
         float xuvs = 0;
@@ -221,13 +222,13 @@ public class FDRenderUtil {
         float yuvs = 0;
         float yuvend = yuvStretch;
 
-        builder.vertex(m,x,y + yw,0).uv(xuvs,yuvend).color(r,g,b,a).endVertex();
-        builder.vertex(m,x + xw,y + yw,0).uv(xuvend,yuvend).color(r,g,b,a).endVertex();
-        builder.vertex(m,x + xw,y,0).uv(xuvend,yuvs).color(r,g,b,a).endVertex();
-        builder.vertex(m,x,y,0).uv(xuvs,yuvs).color(r,g,b,a).endVertex();
+        builder.addVertex(m,x,y + yw,0).setUv(xuvs,yuvend).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y + yw,0).setUv(xuvend,yuvend).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y,0).setUv(xuvend,yuvs).setColor(r,g,b,a);
+        builder.addVertex(m,x,y,0).setUv(xuvs,yuvs).setColor(r,g,b,a);
 
 
-        BufferUploader.drawWithShader(builder.end());
+        BufferUploader.drawWithShader(builder.build());
     }
 
 
@@ -239,10 +240,10 @@ public class FDRenderUtil {
         VertexConsumer builder = source.getBuffer(type);
         Matrix4f m = matrices.last().pose();
 
-        builder.vertex(m,x,y + yw,0).color(r,g,b,a).endVertex();
-        builder.vertex(m,x + xw,y + yw,0).color(r,g,b,a).endVertex();
-        builder.vertex(m,x + xw,y,0).color(r,g,b,a).endVertex();
-        builder.vertex(m,x,y,0).color(r,g,b,a).endVertex();
+        builder.addVertex(m,x,y + yw,0).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y + yw,0).setColor(r,g,b,a);
+        builder.addVertex(m,x + xw,y,0).setColor(r,g,b,a);
+        builder.addVertex(m,x,y,0).setColor(r,g,b,a);
 
         source.endBatch(type);
     }
@@ -260,10 +261,10 @@ public class FDRenderUtil {
         VertexConsumer builder = source.getBuffer(type);
         Matrix4f m = matrices.last().pose();
 
-        builder.vertex(m,x,y + yw,0).color(r4,g4,b4,a4).endVertex();
-        builder.vertex(m,x + xw,y + yw,0).color(r3,g3,b3,a3).endVertex();
-        builder.vertex(m,x + xw,y,0).color(r2,g2,b2,a2).endVertex();
-        builder.vertex(m,x,y,0).color(r1,g1,b1,a1).endVertex();
+        builder.addVertex(m,x,y + yw,0).setColor(r4,g4,b4,a4);
+        builder.addVertex(m,x + xw,y + yw,0).setColor(r3,g3,b3,a3);
+        builder.addVertex(m,x + xw,y,0).setColor(r2,g2,b2,a2);
+        builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
 
         source.endBatch(type);
     }
@@ -335,15 +336,14 @@ public class FDRenderUtil {
         float v1 = texPosY / (float) texHeight;
         float v2 = (texPosY + renderAmountY) / (float) texHeight;
         Matrix4f m = matrices.last().pose();
-        BufferBuilder vertex = Tesselator.getInstance().getBuilder();
-        vertex.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        vertex.vertex(m, x, y, zOffset).uv(u1, v1).color(1, 1, 1, alpha).endVertex();
-        vertex.vertex(m, x, y + height, zOffset).uv(u1, v2).color(1, 1, 1, alpha).endVertex();
-        vertex.vertex(m, x + width, y + height, zOffset).uv(u2, v2).color(1, 1, 1, alpha).endVertex();
-        vertex.vertex(m, x + width, y, zOffset).uv(u2, v1).color(1, 1, 1, alpha).endVertex();
+        BufferBuilder vertex = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        vertex.addVertex(m, x, y, zOffset).setUv(u1, v1).setColor(1, 1, 1, alpha);
+        vertex.addVertex(m, x, y + height, zOffset).setUv(u1, v2).setColor(1, 1, 1, alpha);
+        vertex.addVertex(m, x + width, y + height, zOffset).setUv(u2, v2).setColor(1, 1, 1, alpha);
+        vertex.addVertex(m, x + width, y, zOffset).setUv(u2, v1).setColor(1, 1, 1, alpha);
 
 
-        BufferUploader.drawWithShader(vertex.end());
+        BufferUploader.drawWithShader(vertex.build());
         RenderSystem.disableBlend();
     }
 
@@ -355,15 +355,14 @@ public class FDRenderUtil {
         float v1 = texPosY / (float) texHeight;
         float v2 = (texPosY + renderAmountY) / (float) texHeight;
         Matrix4f m = matrices.last().pose();
-        BufferBuilder vertex = Tesselator.getInstance().getBuilder();
-        vertex.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        vertex.vertex(m, x - width / 2, y - height / 2, zOffset).uv(u1, v1).color(1, 1, 1, alpha).endVertex();
-        vertex.vertex(m, x - width / 2, y + height / 2, zOffset).uv(u1, v2).color(1, 1, 1, alpha).endVertex();
-        vertex.vertex(m, x + width / 2, y + height / 2, zOffset).uv(u2, v2).color(1, 1, 1, alpha).endVertex();
-        vertex.vertex(m, x + width / 2, y - height / 2, zOffset).uv(u2, v1).color(1, 1, 1, alpha).endVertex();
+        BufferBuilder vertex = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        vertex.addVertex(m, x - width / 2, y - height / 2, zOffset).setUv(u1, v1).setColor(1, 1, 1, alpha);
+        vertex.addVertex(m, x - width / 2, y + height / 2, zOffset).setUv(u1, v2).setColor(1, 1, 1, alpha);
+        vertex.addVertex(m, x + width / 2, y + height / 2, zOffset).setUv(u2, v2).setColor(1, 1, 1, alpha);
+        vertex.addVertex(m, x + width / 2, y - height / 2, zOffset).setUv(u2, v1).setColor(1, 1, 1, alpha);
 
 
-        BufferUploader.drawWithShader(vertex.end());
+        BufferUploader.drawWithShader(vertex.build());
         RenderSystem.disableBlend();
     }
 
@@ -375,15 +374,14 @@ public class FDRenderUtil {
         float v1 = texPosY / (float) texHeight;
         float v2 = (texPosY + renderAmountY) / (float) texHeight;
         Matrix4f m = matrices.last().pose();
-        BufferBuilder vertex = Tesselator.getInstance().getBuilder();
-        vertex.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        vertex.vertex(m, x, y, zOffset).uv(u1, v1).color(r, g, b, alpha).endVertex();
-        vertex.vertex(m, x, y + height, zOffset).uv(u1, v2).color(r, g, b, alpha).endVertex();
-        vertex.vertex(m, x + width, y + height, zOffset).uv(u2, v2).color(r,g ,b , alpha).endVertex();
-        vertex.vertex(m, x + width, y, zOffset).uv(u2, v1).color(r, g, b, alpha).endVertex();
+        BufferBuilder vertex = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        vertex.addVertex(m, x, y, zOffset).setUv(u1, v1).setColor(r, g, b, alpha);
+        vertex.addVertex(m, x, y + height, zOffset).setUv(u1, v2).setColor(r, g, b, alpha);
+        vertex.addVertex(m, x + width, y + height, zOffset).setUv(u2, v2).setColor(r,g ,b , alpha);
+        vertex.addVertex(m, x + width, y, zOffset).setUv(u2, v1).setColor(r, g, b, alpha);
 
 
-        BufferUploader.drawWithShader(vertex.end());
+        BufferUploader.drawWithShader(vertex.build());
         RenderSystem.disableBlend();
     }
 
@@ -477,13 +475,12 @@ public class FDRenderUtil {
     }
 
     public static class ParticleRenderTypes{
-        public static final ParticleRenderType ADDITIVE_TRANSLUCENT = new ParticleRenderType() {
-
+        public static final ParticleRenderType ADDITIVE_TRANSLUCENT = new FDParticleRenderType() {
 
 
             @Nullable
             @Override
-            public void begin(BufferBuilder tesselator, TextureManager textureManager) {
+            public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
                 }
@@ -491,19 +488,17 @@ public class FDRenderUtil {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE);
                 FDRenderUtil.bindTexture(TextureAtlas.LOCATION_PARTICLES);
-                tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
+                return tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
             }
 
             @Override
-            public void end(Tesselator tesselator) {
-                tesselator.end();
+            public void end() {
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
                 }
                 RenderSystem.disableBlend();
                 RenderSystem.depthMask(true);
-
             }
 
             @Override
@@ -512,10 +507,9 @@ public class FDRenderUtil {
             }
         };
 
-        public static final ParticleRenderType NORMAL_TRANSLUCENT = new ParticleRenderType() {
+        public static final ParticleRenderType NORMAL_TRANSLUCENT = new FDParticleRenderType() {
             @Override
-            public void end(Tesselator tesselator) {
-                tesselator.end();
+            public void end() {
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
                     Minecraft.getInstance().levelRenderer.getParticlesTarget().bindWrite(false);
@@ -526,7 +520,7 @@ public class FDRenderUtil {
 
             @Nullable
             @Override
-            public void begin(BufferBuilder tesselator, TextureManager p_107437_) {
+            public BufferBuilder begin(Tesselator tesselator, TextureManager p_107437_) {
 
                 if (Minecraft.useShaderTransparency()){
                     Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
@@ -535,7 +529,7 @@ public class FDRenderUtil {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
                 FDRenderUtil.bindTexture(TextureAtlas.LOCATION_PARTICLES);
-                tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
+                return tesselator.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.PARTICLE);
             }
         };
     }
@@ -546,11 +540,10 @@ public class FDRenderUtil {
     public static class ParticleRenderTypesS {
 
 
-        public static final Function<ResourceLocation, ParticleRenderType> TEXTURES_BLUR_ADDITIVE = Util.memoize((location)->{
-            return new ParticleRenderType() {
+        public static final Function<ResourceLocation, FDParticleRenderType> TEXTURES_BLUR_ADDITIVE = Util.memoize((location)->{
+            return new FDParticleRenderType() {
                 @Override
-                public void end(Tesselator tesselator) {
-                    tesselator.end();
+                public void end() {
                     RenderSystem.disableBlend();
                     RenderSystem.defaultBlendFunc();
                     Minecraft.getInstance().getTextureManager().getTexture(location).restoreLastBlurMipmap();
@@ -558,7 +551,7 @@ public class FDRenderUtil {
 
                 @Nullable
                 @Override
-                public void begin(BufferBuilder tesselator, TextureManager textureManager) {
+                public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
 
 
                     RenderSystem.enableBlend();
@@ -568,28 +561,27 @@ public class FDRenderUtil {
                     RenderSystem.setShaderTexture(0, location);
                     Minecraft.getInstance().getTextureManager().getTexture(location).setBlurMipmap(true,true);
 
-                    tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+                    return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
                 }
             };
         });
 
-        public static final Function<ResourceLocation, ParticleRenderType> TEXTURES_DEFAULT = Util.memoize((location)->{
-            return new ParticleRenderType() {
+        public static final Function<ResourceLocation, FDParticleRenderType> TEXTURES_DEFAULT = Util.memoize((location)->{
+            return new FDParticleRenderType() {
                 @Override
-                public void end(Tesselator tesselator) {
-                    tesselator.end();
+                public void end() {
                     RenderSystem.disableBlend();
                     RenderSystem.defaultBlendFunc();
                 }
 
                 @Nullable
                 @Override
-                public void begin(BufferBuilder tesselator, TextureManager textureManager) {
+                public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
                     RenderSystem.enableBlend();
                     RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                     RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
                     RenderSystem.setShaderTexture(0, location);
-                    tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+                    return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
                 }
             };
         });

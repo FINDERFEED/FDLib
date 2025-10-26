@@ -68,7 +68,7 @@ public class ShatteredScreenSettings {
 
     public ShatteredScreenSettings(){
         this.shatteredScreenDataTexture = DATA_1_GLASSY;
-        this.shatteredScreenTexture = null;
+        this.shatteredScreenTexture = NULL_LOCATION;
         this.stayTime = 0;
         this.inTime = 0;
         this.outTime = 20;

@@ -74,6 +74,8 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
             shatteredScreenShader.setUniform("maxOffset", currentStrength);
 
+
+
             shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
         }
 
