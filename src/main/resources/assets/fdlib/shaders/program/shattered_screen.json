@@ -1,7 +1,7 @@
 {
   "blend": {
     "func": "add",
-    "srcrgb": "srcalpha",
+    "srcrgb": "one",
     "dstrgb": "one"
   },
   "vertex": "blit",

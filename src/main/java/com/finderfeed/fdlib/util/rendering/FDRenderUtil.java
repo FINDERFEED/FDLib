@@ -187,6 +187,7 @@ public class FDRenderUtil {
 
 
         BufferUploader.drawWithShader(builder.build());
+        RenderSystem.disableBlend();
     }
 
     public static void fill(PoseStack matrices,float x,float y,float xw,float yw,
@@ -208,6 +209,7 @@ public class FDRenderUtil {
 
 
         BufferUploader.drawWithShader(builder.build());
+        RenderSystem.disableBlend();
     }
 
     public static void renderShader(PoseStack matrices,float x,float y,float xw,float yw,float r,float g,float b,float a,float xuvStretch,float yuvStretch){
@@ -229,6 +231,8 @@ public class FDRenderUtil {
 
 
         BufferUploader.drawWithShader(builder.build());
+
+        RenderSystem.disableBlend();
     }
 
 
@@ -246,6 +250,8 @@ public class FDRenderUtil {
         builder.addVertex(m,x,y,0).setColor(r,g,b,a);
 
         source.endBatch(type);
+
+        RenderSystem.disableBlend();
     }
 
 
@@ -267,6 +273,8 @@ public class FDRenderUtil {
         builder.addVertex(m,x,y,0).setColor(r1,g1,b1,a1);
 
         source.endBatch(type);
+
+        RenderSystem.disableBlend();
     }
 
     public static void renderScrollBar(PoseStack matrices,float x,float y,float scrollBarWidth,float scrollBarHeight,float scrollValue,float maxScrollValue,
