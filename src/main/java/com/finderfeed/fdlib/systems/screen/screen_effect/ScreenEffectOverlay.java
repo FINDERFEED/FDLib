@@ -1,7 +1,6 @@
 package com.finderfeed.fdlib.systems.screen.screen_effect;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -26,10 +25,6 @@ public class ScreenEffectOverlay implements LayeredDraw.Layer {
         Window window = Minecraft.getInstance().getWindow();
         float width = window.getGuiScaledWidth();
         float height = window.getGuiScaledHeight();
-
-//        FDRenderUtil.fill(graphics.pose(),0,0,100,100,1f,1f,1f,0.5f);
-        FDRenderUtil.fill(graphics.pose(),0,0,100,100,1f,1f,1f,0.5f);
-
         for (ScreenEffectInstance instance : screenEffects){
             instance.effect.render(graphics,deltaTracker,instance.currentTime,width,height);
         }
