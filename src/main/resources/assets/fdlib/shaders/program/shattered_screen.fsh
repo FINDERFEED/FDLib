@@ -4,6 +4,7 @@ uniform sampler2D DiffuseSampler;
 uniform sampler2D sampler0;
 uniform vec2 ScreenSize;
 uniform float maxOffset;
+uniform float chromaticAbberationStrength;
 
 in vec2 texCoord;
 
@@ -33,19 +34,31 @@ void main(){
         mat2 rotation = rotationMatrix(rotationAngle);
 
         float blueRotationAngle = (samplerColor.b - 0.5) / 0.5; blueRotationAngle *= -3.14;
-
         mat2 rotation2 = rotationMatrix(blueRotationAngle * maxOffset);
-
         vec2 offset = rotation * vec2(0,maxOffset * samplerColor.g);
 
         vec2 coord = texCoord - 0.5;
-
         vec2 coords = rotation2 * coord;
-
         coords += 0.5;
 
-        result = texture(DiffuseSampler, coords - offset);
 
+
+        vec2 redOffset = offset + offset * chromaticAbberationStrength;
+        vec2 blueOffset = offset + rotationMatrix(3.14 / 2) * offset * chromaticAbberationStrength;
+
+
+        vec4 chromaticAbberationColorRed = texture(DiffuseSampler, coords - redOffset);
+        vec4 chromaticAbberationColorGreen = texture(DiffuseSampler, coords - offset);
+        vec4 chromaticAbberationColorBlue = texture(DiffuseSampler, coords - blueOffset);
+
+        vec4 shatteredColor = vec4(
+            chromaticAbberationColorRed.r,
+            chromaticAbberationColorGreen.g,
+            chromaticAbberationColorBlue.b,
+            chromaticAbberationColorGreen.a
+        );
+
+        result = shatteredColor;
 
     }else{
         result = texture(DiffuseSampler, texCoord);

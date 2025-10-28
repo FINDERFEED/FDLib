@@ -74,6 +74,7 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
             shatteredScreenShader.setUniform("maxOffset", currentStrength);
 
+            shatteredScreenShader.setUniform("chromaticAbberationStrength", currentEffect.settings.chromaticAbberationStrength);
 
 
             shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
@@ -92,6 +93,7 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
             float currentStrength = currentEffect.getCurrentPercent(event.getDeltaTracker().getGameTimeDeltaPartialTick(false)) * currentEffect.settings.maxOffset;
 
             shatteredScreenShader.setUniform("maxOffset", currentStrength);
+            shatteredScreenShader.setUniform("chromaticAbberationStrength", currentEffect.settings.chromaticAbberationStrength);
 
             shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
 
