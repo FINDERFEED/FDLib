@@ -72,9 +72,10 @@ public class FDTestBlock extends FDEntityBlock {
            ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
                    ShatteredScreenSettings.DATA_1_GLASSY,
                    1,
-                   200,
-                   1,
+                   20,
+                   100,
                    0.1f,
+                   0.025f,
                    true
            ));
        }
