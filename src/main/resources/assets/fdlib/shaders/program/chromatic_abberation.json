@@ -5,7 +5,7 @@
     "dstrgb": "1-srcalpha"
   },
   "vertex": "blit",
-  "fragment": "fdlib:impact_frame",
+  "fragment": "fdlib:chromatic_abberation",
   "attributes": [ "Position" ],
   "samplers": [
     { "name": "DiffuseSampler" }

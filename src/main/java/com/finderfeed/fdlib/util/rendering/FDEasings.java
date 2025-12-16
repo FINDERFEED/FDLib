@@ -14,6 +14,10 @@ public class FDEasings {
         return 1;
     }
 
+    public static float zero(float p){
+        return 0;
+    }
+
     public static float linear(float p){
         return p;
     }
