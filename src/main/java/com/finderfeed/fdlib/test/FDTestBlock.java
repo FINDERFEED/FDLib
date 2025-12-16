@@ -4,6 +4,11 @@ import com.finderfeed.fdlib.init.FDBlockEntities;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
 import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenEffectHandler;
 import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenSettings;
+import com.finderfeed.fdlib.systems.chromatic_abberation_effect.ChromaticAbberationEffect;
+import com.finderfeed.fdlib.systems.chromatic_abberation_effect.ChromaticAbberationHandler;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectOverlay;
+import com.finderfeed.fdlib.systems.screen.screen_effect.instances.chromatic_abberation.ChromaticAbberationData;
+import com.finderfeed.fdlib.systems.screen.screen_effect.instances.chromatic_abberation.ChromaticAbberationScreenEffect;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -69,15 +74,8 @@ public class FDTestBlock extends FDEntityBlock {
 //               }
 //           }
        }else{
-           ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
-                   ShatteredScreenSettings.DATA_1_GLASSY,
-                   1,
-                   20,
-                   100,
-                   0.1f,
-                   0.025f,
-                   true
-           ));
+//           ChromaticAbberationHandler.setEffect(new ChromaticAbberationEffect(0,40,40,0.05f));
+           ScreenEffectOverlay.addScreenEffect(new ChromaticAbberationScreenEffect(new ChromaticAbberationData(0.05f),0,40,40));
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
     }
