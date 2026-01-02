@@ -10,8 +10,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public class FDServerItemAnimations {
 
-    public static void startItemAnimation(LivingEntity serverPlayer, String layer, AnimationTicker animation, InteractionHand hand){
-        PacketDistributor.sendToPlayersTrackingEntity(serverPlayer, new StartItemAnimationInHandPacket(layer, serverPlayer, animation, hand));
+    public static void startItemAnimation(LivingEntity entity, String layer, AnimationTicker animation, InteractionHand hand){
+        PacketDistributor.sendToPlayersTrackingEntity(entity, new StartItemAnimationInHandPacket(layer, entity, animation, hand));
+        if (entity instanceof ServerPlayer serverPlayer){
+            PacketDistributor.sendToPlayer(serverPlayer, new StartItemAnimationInHandPacket(layer, entity, animation, hand));
+        }
     }
 
 }

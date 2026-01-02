@@ -22,9 +22,12 @@ public class FDItemAnimationHandler {
      * Only for client side
      */
     public static FDItemAnimationSystem getItemAnimationSystem(ItemStack itemStack){
-        tellItemThatItIsAlive(itemStack);
-        AnimatedItem animatedItem = ANIMATED_ITEMS.get(itemStack);
-        return animatedItem.animationSystem;
+        if (ANIMATED_ITEMS.containsKey(itemStack)){
+            AnimatedItem animatedItem = ANIMATED_ITEMS.get(itemStack);
+            return animatedItem.animationSystem;
+        }else{
+            return null;
+        }
     }
 
     public static void tickAnimatedItems(){
@@ -60,8 +63,11 @@ public class FDItemAnimationHandler {
         }
 
         public void tick(){
-            age++;
+            if (itemStack.getItem() instanceof AnimatedItemTickListener animatedItemTickListener){
+                animatedItemTickListener.animatedItemTick(itemStack);
+            }
             animationSystem.tick();
+            age++;
         }
 
         public boolean shouldBeRemoved(){

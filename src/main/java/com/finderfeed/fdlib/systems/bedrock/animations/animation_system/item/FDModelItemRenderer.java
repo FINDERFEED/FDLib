@@ -31,6 +31,7 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack matrices, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
+        FDItemAnimationHandler.tellItemThatItIsAlive(stack);
         var animationSystem = FDItemAnimationHandler.getItemAnimationSystem(stack);
 
         this.initModelsIfNecessary();
