@@ -28,10 +28,12 @@ import java.util.UUID;
 public class FDClientPacketExecutables {
 
     public static void startItemAnimationInHand(int entityId, AnimationTicker animation, InteractionHand hand, String layer){
-        if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof LivingEntity livingEntity){
+        if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof LivingEntity livingEntity) {
             ItemStack itemStack = livingEntity.getItemInHand(hand);
             var animSystem = FDItemAnimationHandler.getItemAnimationSystem(itemStack);
-            animSystem.startAnimation(layer, animation);
+            if (animSystem != null) {
+                animSystem.startAnimation(layer, animation);
+            }
         }
     }
 
