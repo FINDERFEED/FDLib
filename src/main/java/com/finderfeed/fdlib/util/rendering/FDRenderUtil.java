@@ -81,6 +81,11 @@ public class FDRenderUtil {
         }
     }
 
+    public static float getPartialTickWithPause(){
+        DeltaTracker tracker = Minecraft.getInstance().getTimer();
+        return tracker.getGameTimeDeltaPartialTick(true);
+    }
+
     public static void renderFDModelInScreen(PoseStack matrices, FDModel model, float x, float y, float rotX, float rotY, float rotZ, float scale,int light, int overlay, float r,float g, float b,float a, RenderType renderType){
         matrices.pushPose();
 

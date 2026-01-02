@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item;
 
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -29,6 +30,9 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
 
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack matrices, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+
+        var animationSystem = FDItemAnimationHandler.getItemAnimationSystem(stack);
+
         this.initModelsIfNecessary();
         float scale = options.scale.apply(displayContext);
 
@@ -50,6 +54,9 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
 
         for (int i = 0; i < models.size();i++){
             FDModel model = models.get(i);
+
+            model.resetTransformations();
+            animationSystem.applyAnimations(model, FDRenderUtil.getPartialTickWithPause());
 
             VertexConsumer vertex = buffer.getBuffer(options.renderTypes.get(i));
 

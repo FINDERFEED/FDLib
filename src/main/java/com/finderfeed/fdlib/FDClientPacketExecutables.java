@@ -1,9 +1,11 @@
 package com.finderfeed.fdlib;
 
+import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.FDItemAnimationHandler;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
@@ -12,8 +14,11 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,8 +27,12 @@ import java.util.UUID;
 
 public class FDClientPacketExecutables {
 
-    public static void testCameraPacket(){
-//        CutsceneCameraHandler.initiateCamera();
+    public static void startItemAnimationInHand(int entityId, AnimationTicker animation, InteractionHand hand, String layer){
+        if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof LivingEntity livingEntity){
+            ItemStack itemStack = livingEntity.getItemInHand(hand);
+            var animSystem = FDItemAnimationHandler.getItemAnimationSystem(itemStack);
+            animSystem.startAnimation(layer, animation);
+        }
     }
 
     public static void addEntityAttachmentPacket(int entityId, int layer, String bone, UUID uuid, ModelAttachmentData<?> modelInfo){
