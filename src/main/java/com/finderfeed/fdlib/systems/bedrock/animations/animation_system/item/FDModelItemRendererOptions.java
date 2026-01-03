@@ -12,8 +12,8 @@ import java.util.function.Supplier;
 
 public class FDModelItemRendererOptions {
 
-    protected List<Supplier<FDModelInfo>> modelInfos = new ArrayList<>();
-    protected List<RenderType> renderTypes = new ArrayList<>();
+    protected List<FDItemModelOptions> fdItemModelOptions = new ArrayList<>();
+
     protected Function<ItemDisplayContext, Float> rotation = t -> {
         return 0f;
     };
@@ -25,8 +25,15 @@ public class FDModelItemRendererOptions {
     };
 
     public FDModelItemRendererOptions addModel(Supplier<FDModelInfo> info, RenderType renderType){
-        modelInfos.add(info);
-        renderTypes.add(renderType);
+        this.fdItemModelOptions.add(FDItemModelOptions.builder()
+                        .modelInfo(info)
+                        .renderType(renderType)
+                .build());
+        return this;
+    }
+
+    public FDModelItemRendererOptions addModel(FDItemModelOptions options){
+        this.fdItemModelOptions.add(options);
         return this;
     }
 

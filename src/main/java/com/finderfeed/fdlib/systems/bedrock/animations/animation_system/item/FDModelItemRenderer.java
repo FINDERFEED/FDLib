@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item;
 
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
+import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -8,6 +9,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -53,23 +55,30 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
         }
         matrices.scale(scale,scale,scale);
 
+        var fdoptions = this.options.fdItemModelOptions;
+
         for (int i = 0; i < models.size();i++){
             FDModel model = models.get(i);
 
             model.resetTransformations();
             animationSystem.applyAnimations(model, FDRenderUtil.getPartialTickWithPause());
 
-            VertexConsumer vertex = buffer.getBuffer(options.renderTypes.get(i));
+            var option = fdoptions.get(i);
 
-            model.render(matrices,vertex,packedLight,OverlayTexture.NO_OVERLAY,1f,1f,1f,1f);
+            RenderType renderType = option.getRenderType().renderType(displayContext, stack);
+            VertexConsumer vertex = buffer.getBuffer(renderType);
+
+            FDColor color = option.getFdItemColor().color(displayContext, stack);
+
+            model.render(matrices,vertex,packedLight,OverlayTexture.NO_OVERLAY,color.r,color.g,color.b,color.a);
         }
     }
 
     private void initModelsIfNecessary(){
         if (models == null){
             models = new ArrayList<>();
-            for (var sup : this.options.modelInfos){
-                models.add(new FDModel(sup.get()));
+            for (var sup : this.options.fdItemModelOptions){
+                models.add(new FDModel(sup.getModelInfo().get()));
             }
         }
     }
