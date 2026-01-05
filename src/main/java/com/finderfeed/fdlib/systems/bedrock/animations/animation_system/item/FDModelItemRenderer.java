@@ -43,7 +43,13 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
             Vector3f translation = options.translation.apply(displayContext);
             matrices.translate(0.5 + translation.x, 0.25f + translation.y, 0.5 + translation.z);
             matrices.mulPose(Axis.XP.rotationDegrees(35));
-            matrices.mulPose(Axis.YP.rotationDegrees(45 + options.rotation.apply(displayContext)));
+            matrices.mulPose(Axis.YP.rotationDegrees(45));
+
+            Vector3f rotation = options.rotation.apply(displayContext);
+            matrices.mulPose(Axis.ZP.rotationDegrees(rotation.z));
+            matrices.mulPose(Axis.YP.rotationDegrees(rotation.y));
+            matrices.mulPose(Axis.XP.rotationDegrees(rotation.x));
+
         }else {
             Vector3f translation = options.translation.apply(displayContext);
             if (displayContext == ItemDisplayContext.GROUND) {
@@ -51,7 +57,12 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
             }else{
                 matrices.translate(0.5 + translation.z, 0.5 + translation.y, 0.5 + translation.x);
             }
-            matrices.mulPose(Axis.YP.rotationDegrees(options.rotation.apply(displayContext)));
+
+            Vector3f rotation = options.rotation.apply(displayContext);
+            matrices.mulPose(Axis.ZP.rotationDegrees(rotation.z));
+            matrices.mulPose(Axis.YP.rotationDegrees(rotation.y));
+            matrices.mulPose(Axis.XP.rotationDegrees(rotation.x));
+
         }
         matrices.scale(scale,scale,scale);
 
