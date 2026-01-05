@@ -14,8 +14,8 @@ public class FDModelItemRendererOptions {
 
     protected List<FDItemModelOptions> fdItemModelOptions = new ArrayList<>();
 
-    protected Function<ItemDisplayContext, Float> rotation = t -> {
-        return 0f;
+    protected Function<ItemDisplayContext, Vector3f> rotation = t -> {
+        return new Vector3f();
     };
     protected Function<ItemDisplayContext, Float> scale = (t)->{
         return t == ItemDisplayContext.GUI ? 0.6f : 0.35f;
@@ -37,8 +37,20 @@ public class FDModelItemRendererOptions {
         return this;
     }
 
+    public FDModelItemRendererOptions addRotation3(Function<ItemDisplayContext, Vector3f> rotation){
+        this.rotation = rotation;
+        return this;
+    }
+
+    public FDModelItemRendererOptions addRotation3(Vector3f rotation){
+        this.rotation = (ctx) -> rotation;
+        return this;
+    }
+
     public FDModelItemRendererOptions addRotation(Function<ItemDisplayContext, Float> yRotation){
-        this.rotation = yRotation;
+        this.rotation = (ctx) -> {
+            return new Vector3f(0, yRotation.apply(ctx), 0);
+        };
         return this;
     }
 
@@ -53,7 +65,7 @@ public class FDModelItemRendererOptions {
     }
 
     public FDModelItemRendererOptions addRotation(float rotation){
-        this.rotation = t->rotation;
+        this.rotation = t -> new Vector3f(0, rotation, 0);
         return this;
     }
 
