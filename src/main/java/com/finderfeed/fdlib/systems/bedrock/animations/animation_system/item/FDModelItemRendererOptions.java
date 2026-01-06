@@ -23,6 +23,12 @@ public class FDModelItemRendererOptions {
     protected Function<ItemDisplayContext, Vector3f> translation = t -> {
         return new Vector3f();
     };
+    protected FDFreeItemRenderer freeItemRenderer;
+
+    public FDModelItemRendererOptions freeRender(FDFreeItemRenderer renderer){
+        this.freeItemRenderer = renderer;
+        return this;
+    }
 
     public FDModelItemRendererOptions addModel(Supplier<FDModelInfo> info, RenderType renderType){
         this.fdItemModelOptions.add(FDItemModelOptions.builder()

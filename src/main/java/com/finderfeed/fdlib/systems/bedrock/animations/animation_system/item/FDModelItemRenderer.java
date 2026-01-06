@@ -36,6 +36,7 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
         FDItemAnimationHandler.tellItemThatItIsAlive(stack);
         var animationSystem = FDItemAnimationHandler.getItemAnimationSystem(stack);
 
+        matrices.pushPose();
         this.initModelsIfNecessary();
         float scale = options.scale.apply(displayContext);
 
@@ -83,6 +84,12 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
 
             model.render(matrices,vertex,packedLight,OverlayTexture.NO_OVERLAY,color.r,color.g,color.b,color.a);
         }
+        matrices.popPose();
+
+        if (options.freeItemRenderer != null){
+            options.freeItemRenderer.render(stack, displayContext, matrices, buffer, packedLight, packedOverlay);
+        }
+
     }
 
     private void initModelsIfNecessary(){
