@@ -6,6 +6,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.TickerSyncInstance;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.FDItemAnimationHandler;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.animated_item.ItemStackInHandContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
@@ -30,7 +31,7 @@ public class FDClientPacketExecutables {
     public static void startItemAnimationInHand(int entityId, AnimationTicker animation, InteractionHand hand, String layer){
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof LivingEntity livingEntity) {
             ItemStack itemStack = livingEntity.getItemInHand(hand);
-            var animSystem = FDItemAnimationHandler.getItemAnimationSystem(itemStack);
+            var animSystem = FDItemAnimationHandler.getItemAnimationSystem(new ItemStackInHandContext(livingEntity, hand, itemStack));
             if (animSystem != null) {
                 animSystem.startAnimation(layer, animation);
             }
