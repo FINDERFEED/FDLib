@@ -8,9 +8,13 @@
   ],
   "minVersion": "0.8",
   "client": [
+    "AbstractContainerScreenMixin",
     "ChannelAccessMixin",
     "ChannelMixin",
     "GameRendererMixin",
+    "ItemEntityRendererMixin",
+    "ItemInHandLayerMixin",
+    "ItemInHandRendererMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",

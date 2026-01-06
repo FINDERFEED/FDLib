@@ -1,6 +1,7 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item;
 
 import com.finderfeed.fdlib.FDLib;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.animated_item.AnimatedItemStackContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -11,7 +12,9 @@ import java.util.HashMap;
 @EventBusSubscriber(modid = FDLib.MOD_ID)
 public class FDItemAnimationHandler {
 
-    private static final HashMap<ItemStack, AnimatedItem> ANIMATED_ITEMS = new HashMap<>(); // Wtf?
+    public static AnimatedItemStackContext currentRenderedContext = null;
+
+    private static final HashMap<AnimatedItemStackContext, AnimatedItemContainer> ANIMATED_ITEMS = new HashMap<>(); // Wtf?
 
     @SubscribeEvent
     public static void tickItems(ClientTickEvent.Pre event){
@@ -21,9 +24,9 @@ public class FDItemAnimationHandler {
     /**
      * Only for client side
      */
-    public static FDItemAnimationSystem getItemAnimationSystem(ItemStack itemStack){
+    public static FDItemAnimationSystem getItemAnimationSystem(AnimatedItemStackContext itemStack){
         if (ANIMATED_ITEMS.containsKey(itemStack)){
-            AnimatedItem animatedItem = ANIMATED_ITEMS.get(itemStack);
+            AnimatedItemContainer animatedItem = ANIMATED_ITEMS.get(itemStack);
             return animatedItem.animationSystem;
         }else{
             return null;
@@ -34,7 +37,7 @@ public class FDItemAnimationHandler {
         var iterator = ANIMATED_ITEMS.entrySet().iterator();
         while (iterator.hasNext()){
             var item = iterator.next();
-            AnimatedItem animatedItem = item.getValue();
+            AnimatedItemContainer animatedItem = item.getValue();
             animatedItem.tick();
             if (animatedItem.shouldBeRemoved()){
                 iterator.remove();
@@ -42,28 +45,36 @@ public class FDItemAnimationHandler {
         }
     }
 
-    public static void tellItemThatItIsAlive(ItemStack itemStack){
-        if (ANIMATED_ITEMS.containsKey(itemStack)){
-            var item = ANIMATED_ITEMS.get(itemStack);
+    public static void tellIAmCurrentlyRendering(AnimatedItemStackContext ctx, boolean setCurrentRenderingContext){
+        if (ANIMATED_ITEMS.containsKey(ctx)){
+
+            var item = ANIMATED_ITEMS.get(ctx);
             item.tellThatIAmAlive();
+
         }else{
-            ANIMATED_ITEMS.put(itemStack, new AnimatedItem(itemStack));
+            ANIMATED_ITEMS.put(ctx, new AnimatedItemContainer(ctx));
         }
+
+        if (setCurrentRenderingContext){
+            currentRenderedContext = ctx;
+        }
+
     }
 
-    private static class AnimatedItem {
+
+    private static class AnimatedItemContainer {
 
         public FDItemAnimationSystem animationSystem;
-        public ItemStack itemStack;
+        public AnimatedItemStackContext itemStack;
         public int age;
 
-        public AnimatedItem(ItemStack itemStack){
+        public AnimatedItemContainer(AnimatedItemStackContext itemStack){
             this.itemStack = itemStack;
             this.animationSystem = new FDItemAnimationSystem();
         }
 
         public void tick(){
-            if (itemStack.getItem() instanceof AnimatedItemTickListener animatedItemTickListener){
+            if (itemStack.getItemStack().getItem() instanceof AnimatedItem animatedItemTickListener){
                 animatedItemTickListener.animatedItemTick(itemStack);
             }
             animationSystem.tick();
@@ -71,7 +82,7 @@ public class FDItemAnimationHandler {
         }
 
         public boolean shouldBeRemoved(){
-            return age > 400 || itemStack.isEmpty();
+            return age > 200 || itemStack.getItemStack().isEmpty();
         }
 
         public void tellThatIAmAlive(){

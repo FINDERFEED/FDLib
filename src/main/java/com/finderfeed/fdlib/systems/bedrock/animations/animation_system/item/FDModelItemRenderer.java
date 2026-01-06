@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item;
 
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.animated_item.EmptyItemStackContext;
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import com.finderfeed.fdlib.util.FDColor;
 import com.finderfeed.fdlib.util.rendering.FDRenderUtil;
@@ -33,8 +34,19 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack matrices, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        FDItemAnimationHandler.tellItemThatItIsAlive(stack);
-        var animationSystem = FDItemAnimationHandler.getItemAnimationSystem(stack);
+
+        var currentContext = FDItemAnimationHandler.currentRenderedContext;
+
+        FDItemAnimationSystem animationSystem;
+
+        if (currentContext != null){
+            animationSystem = FDItemAnimationHandler.getItemAnimationSystem(currentContext);
+        }else{
+            var emptyContext = new EmptyItemStackContext(stack);
+            FDItemAnimationHandler.tellIAmCurrentlyRendering(emptyContext, false);
+            animationSystem = FDItemAnimationHandler.getItemAnimationSystem(emptyContext);
+        }
+
 
         matrices.pushPose();
         this.initModelsIfNecessary();
@@ -73,7 +85,7 @@ public class FDModelItemRenderer extends BlockEntityWithoutLevelRenderer {
             FDModel model = models.get(i);
 
             model.resetTransformations();
-            animationSystem.applyAnimations(model, FDRenderUtil.getPartialTickWithPause());
+            animationSystem.applyAnimations(model, FDRenderUtil.tryGetPartialTickIgnorePause());
 
             var option = fdoptions.get(i);
 
