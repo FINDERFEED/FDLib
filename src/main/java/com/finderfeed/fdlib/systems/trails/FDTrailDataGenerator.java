@@ -41,7 +41,7 @@ public class FDTrailDataGenerator<T> {
             this.points.add(new FDTrailPoint(currentPos, this.calculatePointAge()));
         }
 
-        FDTrailPoint lastPoint = points.getLast();
+        FDTrailPoint lastPoint = points.get(points.size() - 1);
 
         Vec3 last = lastPoint.getPos();
 
@@ -85,7 +85,7 @@ public class FDTrailDataGenerator<T> {
         List<Vector3f> list = new ArrayList<>();
 
         if (previouslyDeletedPoint != null){
-            var first = this.getPoints().getFirst();
+            var first = this.getPoints().get(0);
             Vec3 firstPos = first.getPos();
 
             Vec3 interpolated = FDMathUtil.interpolateVectors(previouslyDeletedPoint,firstPos,pticks);

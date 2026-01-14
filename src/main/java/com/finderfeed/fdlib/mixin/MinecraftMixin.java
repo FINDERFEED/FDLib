@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 
-    @Inject(method = "onResourceLoadFinished", at = @At("TAIL"))
-    public void init(Minecraft.GameLoadCookie p_299896_, CallbackInfo ci) {
+    @Inject(method = "onGameLoadFinished", at = @At("TAIL"))
+    public void init(CallbackInfo ci) {
         if (!FDPostShadersHandler.WAS_LOADED_ONCE) {
             FDPostShadersReloadableResourceListener.initializeShaders();
             FDPostShadersHandler.WAS_LOADED_ONCE = true;

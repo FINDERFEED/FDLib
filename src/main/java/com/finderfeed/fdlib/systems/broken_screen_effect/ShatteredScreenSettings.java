@@ -1,10 +1,7 @@
 package com.finderfeed.fdlib.systems.broken_screen_effect;
 
 import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.util.FDByteBufCodecs;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import com.finderfeed.fdlib.systems.stream_codecs.NetworkCodec;
 import net.minecraft.resources.ResourceLocation;
 
 
@@ -27,15 +24,15 @@ public class ShatteredScreenSettings {
     public static final ResourceLocation SCREEN_1 = FDLib.location("textures/gui/effects/broken_screen_1.png");
     public static final ResourceLocation SCREEN_2 = FDLib.location("textures/gui/effects/broken_screen_2.png");
 
-    public static StreamCodec<FriendlyByteBuf, ShatteredScreenSettings> STREAM_CODEC = FDByteBufCodecs.composite(
-            FDByteBufCodecs.RESOURCE_LOCATION, v -> v.shatteredScreenDataTexture,
-            FDByteBufCodecs.RESOURCE_LOCATION, v -> v.shatteredScreenTexture,
-            ByteBufCodecs.INT, v -> v.inTime,
-            ByteBufCodecs.INT, v -> v.stayTime,
-            ByteBufCodecs.INT, v -> v.outTime,
-            ByteBufCodecs.FLOAT, v -> v.maxOffset,
-            ByteBufCodecs.FLOAT, v -> v.chromaticAbberationStrength,
-            ByteBufCodecs.BOOL, v -> v.onScreen,
+    public static NetworkCodec<ShatteredScreenSettings> STREAM_CODEC = NetworkCodec.composite(
+            NetworkCodec.RESOURCE_LOCATION, v -> v.shatteredScreenDataTexture,
+            NetworkCodec.RESOURCE_LOCATION, v -> v.shatteredScreenTexture,
+            NetworkCodec.INT, v -> v.inTime,
+            NetworkCodec.INT, v -> v.stayTime,
+            NetworkCodec.INT, v -> v.outTime,
+            NetworkCodec.FLOAT, v -> v.maxOffset,
+            NetworkCodec.FLOAT, v -> v.chromaticAbberationStrength,
+            NetworkCodec.BOOL, v -> v.onScreen,
             ShatteredScreenSettings::new
     );
 

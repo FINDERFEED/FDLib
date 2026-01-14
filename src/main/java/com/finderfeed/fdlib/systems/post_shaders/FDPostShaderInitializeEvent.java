@@ -1,8 +1,7 @@
 package com.finderfeed.fdlib.systems.post_shaders;
 
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 import java.util.ArrayList;
 import java.util.HashMap;

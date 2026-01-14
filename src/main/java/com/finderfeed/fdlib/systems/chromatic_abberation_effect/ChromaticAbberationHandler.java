@@ -1,16 +1,17 @@
 package com.finderfeed.fdlib.systems.chromatic_abberation_effect;
 
+import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.post_shaders.FDPostShaderInitializeEvent;
 import com.finderfeed.fdlib.systems.post_shaders.FDRenderPostShaderEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ChromaticAbberationHandler {
 
     public static PostChain chromaticAbberation;
@@ -36,15 +37,16 @@ public class ChromaticAbberationHandler {
 
         if (chromaticAbberation == null || currentEffect == null) return;
 
-        float strength = currentEffect.getStrength(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
-        chromaticAbberation.setUniform("chromaticAbberationStrength", strength);
-        chromaticAbberation.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        float strength = currentEffect.getStrength(event.getPartialTicks());
+        FDClientHelpers.setShaderUniform(chromaticAbberation, "chromaticAbberationStrength", strength);
+        chromaticAbberation.process(event.getPartialTicks());
 
     }
 
     @SubscribeEvent
-    public static void clientTickEvent(ClientTickEvent.Pre event){
-        if (Minecraft.getInstance().isPaused()) return;
+    public static void clientTickEvent(TickEvent.ClientTickEvent event){
+
+        if (Minecraft.getInstance().isPaused() || event.phase != TickEvent.Phase.START) return;
         if (currentEffect != null){
             if (currentEffect.tick()){
                 currentEffect = null;

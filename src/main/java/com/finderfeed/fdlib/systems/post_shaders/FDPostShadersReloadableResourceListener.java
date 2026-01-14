@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.PostChain;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class FDPostShadersReloadableResourceListener extends SimplePreparableRel
         POST_SHADERS.clear();
 
         FDPostShaderInitializeEvent event = new FDPostShaderInitializeEvent();
-        NeoForge.EVENT_BUS.post(event);
+        MinecraftForge.EVENT_BUS.post(event);
 
         List<Runnable> errors = new ArrayList<>();
         var registry = event.getPostChainRegistry();

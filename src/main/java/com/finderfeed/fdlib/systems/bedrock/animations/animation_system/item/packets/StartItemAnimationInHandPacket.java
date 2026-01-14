@@ -1,19 +1,15 @@
 package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.packets;
 
 import com.finderfeed.fdlib.FDClientPacketExecutables;
-import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
-import com.finderfeed.fdlib.systems.FDRegistries;
-import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.FDItemAnimationHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdbosses:start_item_animation_in_hand_packet")
 public class StartItemAnimationInHandPacket extends FDPacket {
@@ -32,26 +28,27 @@ public class StartItemAnimationInHandPacket extends FDPacket {
 
     public StartItemAnimationInHandPacket(FriendlyByteBuf buf){
         this.hand = InteractionHand.values()[buf.readInt()];
-        this.animation = AnimationTicker.NETWORK_CODEC.decode(buf);
+        this.animation = AnimationTicker.NETWORK_CODEC.fromNetwork(buf);
         this.entityId = buf.readInt();
         this.layer = buf.readUtf();
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(hand.ordinal());
-        AnimationTicker.NETWORK_CODEC.encode(buf, animation);
+        AnimationTicker.NETWORK_CODEC.toNetwork(buf, animation);
         buf.writeInt(entityId);
         buf.writeUtf(layer);
     }
 
     @Override
-    public void clientAction(IPayloadContext context) {
+    public void clientAction(Supplier<NetworkEvent.Context> ctx) {
         FDClientPacketExecutables.startItemAnimationInHand(entityId, animation, hand, layer);
     }
 
     @Override
-    public void serverAction(IPayloadContext context) {
+    public void serverAction(Supplier<NetworkEvent.Context> ctx) {
 
     }
+
 }

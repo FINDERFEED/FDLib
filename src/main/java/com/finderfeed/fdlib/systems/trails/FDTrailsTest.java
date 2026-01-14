@@ -1,18 +1,5 @@
 package com.finderfeed.fdlib.systems.trails;
 
-import com.finderfeed.fdlib.FDLib;
-import com.finderfeed.fdlib.systems.shapes.FD2DShape;
-import com.finderfeed.fdlib.util.FDColor;
-import com.finderfeed.fdlib.util.rendering.renderers.ShapeOnCurveRenderer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import org.joml.Vector3f;
-
 //@EventBusSubscriber(modid = FDLib.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class FDTrailsTest {
 

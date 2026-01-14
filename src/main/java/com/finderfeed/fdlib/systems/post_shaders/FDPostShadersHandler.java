@@ -4,17 +4,15 @@ import com.finderfeed.fdlib.FDLib;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
 public class FDPostShadersHandler {
 
     public static boolean WAS_LOADED_ONCE = false;
@@ -25,7 +23,10 @@ public class FDPostShadersHandler {
     private static int height;
 
     @SubscribeEvent
-    public static void processPostShaders(ClientTickEvent.Pre event){
+    public static void processPostShaders(TickEvent.ClientTickEvent event){
+
+        if (event.phase != TickEvent.Phase.START) return;
+
         resizeAllShadersIfNeeded();
     }
 

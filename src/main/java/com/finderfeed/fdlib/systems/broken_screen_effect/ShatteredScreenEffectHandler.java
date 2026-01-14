@@ -1,5 +1,6 @@
 package com.finderfeed.fdlib.systems.broken_screen_effect;
 
+import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.post_shaders.FDPostShaderInitializeEvent;
 import com.finderfeed.fdlib.systems.post_shaders.FDRenderPostShaderEvent;
@@ -8,36 +9,33 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceProvider;
-import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.io.IOException;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID, value = Dist.CLIENT)
-public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID,bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+public class ShatteredScreenEffectHandler implements IGuiOverlay {
 
     private static PostChain shatteredScreenShader;
 
     private static ShatteredScreenEffectInstance currentEffect;
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker tracker) {
+    public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         if (currentEffect == null) return;
 
         var settings = currentEffect.settings;
@@ -49,13 +47,13 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
         FDRenderUtil.bindTexture(texture);
 
-        float alpha = currentEffect.getCurrentPercent(tracker.getGameTimeDeltaPartialTick(false));
+        float alpha = currentEffect.getCurrentPercent(partialTick);
 
         Window window = Minecraft.getInstance().getWindow();
         float width = window.getGuiScaledWidth();
         float height = window.getGuiScaledHeight();
 
-        FDRenderUtil.blitWithBlend(graphics.pose(),0,0,width,height,0,0,1,1,1,1,0,alpha);
+        FDRenderUtil.blitWithBlend(guiGraphics.pose(),0,0,width,height,0,0,1,1,1,1,0,alpha);
     }
 
     public static void setCurrentEffect(ShatteredScreenSettings settings){
@@ -70,14 +68,12 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
         if (currentEffect == null || shatteredScreenShader == null) return;
 
         if (currentEffect.settings.onScreen) {
-            float currentStrength = currentEffect.getCurrentPercent(event.getDeltaTracker().getGameTimeDeltaPartialTick(false)) * currentEffect.settings.maxOffset;
+            float currentStrength = currentEffect.getCurrentPercent(event.getPartialTicks()) * currentEffect.settings.maxOffset;
 
-            shatteredScreenShader.setUniform("maxOffset", currentStrength);
+            FDClientHelpers.setShaderUniform(shatteredScreenShader, "maxOffset", currentStrength);
+            FDClientHelpers.setShaderUniform(shatteredScreenShader, "chromaticAbberationStrength", currentEffect.settings.chromaticAbberationStrength);
 
-            shatteredScreenShader.setUniform("chromaticAbberationStrength", currentEffect.settings.chromaticAbberationStrength);
-
-
-            shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            shatteredScreenShader.process(event.getPartialTicks());
         }
 
     }
@@ -90,20 +86,20 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
         if (!currentEffect.settings.onScreen) {
 
-            float currentStrength = currentEffect.getCurrentPercent(event.getDeltaTracker().getGameTimeDeltaPartialTick(false)) * currentEffect.settings.maxOffset;
+            float currentStrength = currentEffect.getCurrentPercent(event.getPartialTicks()) * currentEffect.settings.maxOffset;
 
-            shatteredScreenShader.setUniform("maxOffset", currentStrength);
-            shatteredScreenShader.setUniform("chromaticAbberationStrength", currentEffect.settings.chromaticAbberationStrength);
+            FDClientHelpers.setShaderUniform(shatteredScreenShader, "maxOffset", currentStrength);
+            FDClientHelpers.setShaderUniform(shatteredScreenShader, "chromaticAbberationStrength", currentEffect.settings.chromaticAbberationStrength);
 
-            shatteredScreenShader.process(event.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            shatteredScreenShader.process(event.getPartialTicks());
 
         }
     }
 
     @SubscribeEvent
-    public static void clientTick(ClientTickEvent.Pre event){
+    public static void clientTick(TickEvent.ClientTickEvent event){
 
-        if (shatteredScreenShader == null) return;
+        if (shatteredScreenShader == null || event.phase != TickEvent.Phase.START) return;
 
         if (!Minecraft.getInstance().isPaused()){
             tickCurrentEffect();
@@ -141,7 +137,7 @@ public class ShatteredScreenEffectHandler implements LayeredDraw.Layer {
 
     public static class BrokenScreenPostChain extends PostChain{
 
-        public BrokenScreenPostChain(TextureManager p_110018_, ResourceProvider p_330592_, RenderTarget p_110020_, ResourceLocation p_110021_) throws IOException, JsonSyntaxException {
+        public BrokenScreenPostChain(TextureManager p_110018_, ResourceManager p_330592_, RenderTarget p_110020_, ResourceLocation p_110021_) throws IOException, JsonSyntaxException {
             super(p_110018_, p_330592_, p_110020_, p_110021_);
         }
 

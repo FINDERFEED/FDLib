@@ -3,13 +3,14 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item;
 import com.finderfeed.fdlib.FDLib;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.animated_item.AnimatedItemStackContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashMap;
 
-@EventBusSubscriber(modid = FDLib.MOD_ID)
+@Mod.EventBusSubscriber(modid = FDLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class FDItemAnimationHandler {
 
     public static AnimatedItemStackContext currentRenderedContext = null;
@@ -17,7 +18,8 @@ public class FDItemAnimationHandler {
     private static final HashMap<AnimatedItemStackContext, AnimatedItemContainer> ANIMATED_ITEMS = new HashMap<>(); // Wtf?
 
     @SubscribeEvent
-    public static void tickItems(ClientTickEvent.Pre event){
+    public static void tickItems(TickEvent.ClientTickEvent event){
+        if (event.phase != TickEvent.Phase.START) return;
         tickAnimatedItems();
     }
 

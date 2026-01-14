@@ -1,18 +1,9 @@
 package com.finderfeed.fdlib.test;
 
 import com.finderfeed.fdlib.init.FDBlockEntities;
-import com.finderfeed.fdlib.init.FDSounds;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
-import com.finderfeed.fdlib.systems.music.FDMusic;
-import com.finderfeed.fdlib.systems.music.FDMusicSystem;
-import com.finderfeed.fdlib.systems.music.data.FDMusicData;
-import com.finderfeed.fdlib.systems.music.data.FDMusicPartData;
-import com.finderfeed.fdlib.systems.music.music_areas.FDMusicArea;
-import com.finderfeed.fdlib.systems.music.music_areas.FDMusicAreasHandler;
-import com.finderfeed.fdlib.systems.music.music_areas.shapes.FDMusicAreaCylinder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -21,8 +12,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
 
 public class FDTestBlock extends FDEntityBlock {
 
@@ -39,9 +28,14 @@ public class FDTestBlock extends FDEntityBlock {
     private static boolean testBoolean = true;
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
-       if (!level.isClientSide){
-           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f3");
+    public InteractionResult use(BlockState p_60503_, Level p_60504_, BlockPos p_60505_, Player p_60506_, InteractionHand p_60507_, BlockHitResult p_60508_) {
+        return super.use(p_60503_, p_60504_, p_60505_, p_60506_, p_60507_, p_60508_);
+    }
+
+//    @Override
+//    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
+//       if (!level.isClientSide){
+//           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f3");
 //
 //           if (!player.isCrouching()){
 //               FDMusicData fdMusicData = new FDMusicData(uuid,
@@ -54,8 +48,8 @@ public class FDTestBlock extends FDEntityBlock {
 //           }else{
 //               FDMusicAreasHandler.removeArea(((ServerLevel)level).getServer(),uuid);
 //           }
-
-
+//
+//
 //           if (!player.isCrouching()) {
 //               FDMusicData fdMusicData = new FDMusicData(uuid,
 //                       new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f))
@@ -76,12 +70,12 @@ public class FDTestBlock extends FDEntityBlock {
 //                   testBoolean = !testBoolean;
 //               }
 //           }
-       }
-        return super.useWithoutItem(state, level, pos, player, p_60508_);
-    }
+//       }
+//        return super.useWithoutItem(state, level, pos, player, p_60508_);
+//    }
 
     @Override
-    protected RenderShape getRenderShape(BlockState p_60550_) {
+    public RenderShape getRenderShape(BlockState p_60550_) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 }
