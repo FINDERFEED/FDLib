@@ -2,9 +2,11 @@ package com.finderfeed.fdlib.mixin;
 
 import com.finderfeed.fdlib.ClientMixinHandler;
 import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesHandler;
+import com.finderfeed.fdlib.systems.post_shaders.FDRenderPostShaderEvent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraftforge.common.MinecraftForge;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,10 +33,16 @@ public class GameRendererMixin {
         ClientMixinHandler.beforeLevel();
     }
 
-    @Inject(method = "render",at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/PostChain;process(F)V",shift = At.Shift.BEFORE))
-    public void beforePostEffect(float p_109094_, long p_109095_, boolean p_109096_, CallbackInfo ci){
-        ImpactFramesHandler.beforePostEffect();
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V", shift = At.Shift.BEFORE))
+    public void levelPostShaders(float pticks, long p_109095_, boolean p_109096_, CallbackInfo ci){
+        MinecraftForge.EVENT_BUS.post(new FDRenderPostShaderEvent.Level(pticks));
     }
+
+    @Inject(method = "render", at = @At("TAIL"))
+    public void screenPostShaders(float pticks, long p_109095_, boolean p_109096_, CallbackInfo ci){
+        MinecraftForge.EVENT_BUS.post(new FDRenderPostShaderEvent.Screen(pticks));
+    }
+
 
 
 }

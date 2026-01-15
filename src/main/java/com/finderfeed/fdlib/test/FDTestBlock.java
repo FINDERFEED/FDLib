@@ -2,7 +2,10 @@ package com.finderfeed.fdlib.test;
 
 import com.finderfeed.fdlib.init.FDBlockEntities;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
+import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenEffectHandler;
+import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenSettings;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,8 +31,19 @@ public class FDTestBlock extends FDEntityBlock {
     private static boolean testBoolean = true;
 
     @Override
-    public InteractionResult use(BlockState p_60503_, Level p_60504_, BlockPos p_60505_, Player p_60506_, InteractionHand p_60507_, BlockHitResult p_60508_) {
-        return super.use(p_60503_, p_60504_, p_60505_, p_60506_, p_60507_, p_60508_);
+    public InteractionResult use(BlockState p_60503_, Level level, BlockPos p_60505_, Player player, InteractionHand hand, BlockHitResult p_60508_) {
+
+        if (level.isClientSide){
+            ResourceLocation data = ShatteredScreenSettings.DATA_1_GLASSY;
+
+            ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
+                    data,
+                    0,0,40,0.1f,0.05f,true
+            ));
+        }
+
+
+        return super.use(p_60503_, level, p_60505_, player, hand, p_60508_);
     }
 
 //    @Override

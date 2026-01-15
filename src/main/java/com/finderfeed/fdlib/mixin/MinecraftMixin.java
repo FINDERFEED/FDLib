@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 
-    @Inject(method = "onGameLoadFinished", at = @At("TAIL"))
-    public void init(CallbackInfo ci) {
+    @Inject(method = "shouldShowBanNotice", at = @At("HEAD"))
+    public void init(CallbackInfoReturnable<Boolean> cir) {
         if (!FDPostShadersHandler.WAS_LOADED_ONCE) {
             FDPostShadersReloadableResourceListener.initializeShaders();
             FDPostShadersHandler.WAS_LOADED_ONCE = true;
