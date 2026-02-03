@@ -26,7 +26,7 @@ public class HeadController<T extends Mob & IHasHead<T> & AnimatedObject> {
     private float oldHeadRotationX = 0;
     private float oldHeadRotationY = 0;
 
-
+    private boolean isHeadReversed = false;
 
     public HeadController(HeadControllerContainer<T> container, FDModel model, String headBone, T entity){
         this.entity = entity;
@@ -107,9 +107,24 @@ public class HeadController<T extends Mob & IHasHead<T> & AnimatedObject> {
 
         Vector3d vec = this.fromOtherBasisToEuclidian(axisX,axisY,axisZ,between);
 
-        float verticalAngle = 180 + (float)Math.toDegrees(Math.atan2(vec.x,vec.z));
-        double a = Math.sqrt(vec.z * vec.z + vec.x * vec.x);
-        float horizontalAngle =  (float) Math.toDegrees(Math.atan2(vec.y,a));
+
+
+
+        float verticalAngle;
+        double a;
+        float horizontalAngle;
+
+        if (!this.isHeadReversed()){
+            verticalAngle = (float)Math.toDegrees(Math.atan2(vec.x,vec.z));
+            a = Math.sqrt(vec.z * vec.z + vec.x * vec.x);
+            horizontalAngle =  -(float) Math.toDegrees(Math.atan2(vec.y,a));
+
+        }else{
+            verticalAngle = 180 + (float)Math.toDegrees(Math.atan2(vec.x,vec.z));
+            a = Math.sqrt(vec.z * vec.z + vec.x * vec.x);
+            horizontalAngle =  (float) Math.toDegrees(Math.atan2(vec.y,a));
+
+        }
 
         return new Vector2f(horizontalAngle,verticalAngle);
     }
@@ -182,6 +197,14 @@ public class HeadController<T extends Mob & IHasHead<T> & AnimatedObject> {
                 FDMathUtil.lerpAround(oldHeadRotationX,currentHeadRotationX,-180,180,pticks),
                 FDMathUtil.lerpAround(oldHeadRotationY,currentHeadRotationY,-180,180,pticks)
         );
+    }
+
+    public boolean isHeadReversed() {
+        return isHeadReversed;
+    }
+
+    public void setHeadReversed(boolean headReversed) {
+        isHeadReversed = headReversed;
     }
 
     //TO FDMATHHELPER
