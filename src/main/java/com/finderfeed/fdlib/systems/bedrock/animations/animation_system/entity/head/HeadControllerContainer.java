@@ -22,7 +22,12 @@ public class HeadControllerContainer<T extends Mob & AnimatedObject & IHasHead<T
     }
 
     public HeadControllerContainer<T> addHeadController(FDModel model, String headBone){
-        this.headControllers.put(headBone, new HeadController<>(this, model,headBone,entity));
+        return this.addHeadController(model, headBone, false);
+    }
+    public HeadControllerContainer<T> addHeadController(FDModel model, String headBone, boolean headReversed){
+        var controller = new HeadController<>(this, model,headBone,entity);
+        controller.setHeadReversed(headReversed);
+        this.headControllers.put(headBone, controller);
         return this;
     }
 
