@@ -9,6 +9,7 @@ import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public abstract class AnimationSystem {
 
@@ -17,6 +18,8 @@ public abstract class AnimationSystem {
     private HashMap<String,Float> variables = new HashMap<>();
 
     private boolean isFrozen;
+
+    private BiConsumer<FDModel, Float> animationsApplyListener;
 
     public void tick(){
         if (this.isFrozen()) return;
@@ -73,6 +76,9 @@ public abstract class AnimationSystem {
 
     public void applyAnimations(FDModel model,float partialTicks){
         model.resetTransformations();
+        if (animationsApplyListener != null){
+            animationsApplyListener.accept(model, partialTicks);
+        }
         for (var entry : tickers.values()){
             Animation animation = entry.getAnimation();
             AnimationContext context = new AnimationContext(animation, entry.getLoopMode());
@@ -82,6 +88,9 @@ public abstract class AnimationSystem {
         }
     }
 
+    public void setAnimationsApplyListener(BiConsumer<FDModel, Float> animationsApplyListener) {
+        this.animationsApplyListener = animationsApplyListener;
+    }
 
     public void setFrozen(boolean frozen) {
         isFrozen = frozen;
