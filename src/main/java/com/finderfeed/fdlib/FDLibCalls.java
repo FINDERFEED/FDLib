@@ -1,6 +1,8 @@
 package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.network.lib_packets.PlayerMovePacket;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.SpawnParticleAtAttachmentBlockEntityPacket;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.SpawnParticleAtAttachmentEntityPacket;
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import com.finderfeed.fdlib.systems.cutscenes.packets.MoveCutsceneCameraPacket;
 import com.finderfeed.fdlib.systems.cutscenes.packets.StartCutscenePacket;
@@ -17,20 +19,32 @@ import com.finderfeed.fdlib.systems.screen.screen_effect.SendScreenEffectPacket;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class FDLibCalls {
 
     public static final TargetingConditions ALL = TargetingConditions.forNonCombat().selector(p->true).ignoreLineOfSight().ignoreInvisibilityTesting();
+
+    public static void spawnParticleAtEntityParticleAttachment(ParticleOptions particleOptions, Entity entity, int layerId, String bone, UUID attachmentUUID){
+        PacketDistributor.sendToPlayersTrackingEntity(entity, new SpawnParticleAtAttachmentEntityPacket(particleOptions, layerId, bone, attachmentUUID, entity.getId()));
+    }
+
+    public static void spawnParticleAtBlockEntityParticleAttachment(ParticleOptions particleOptions, BlockEntity entity, int layerId, String bone, UUID attachmentUUID){
+        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) entity.getLevel(), new ChunkPos(entity.getBlockPos()), new SpawnParticleAtAttachmentBlockEntityPacket(particleOptions, layerId, bone, attachmentUUID, entity.getBlockPos()));
+    }
 
     public static void startCutsceneForPlayer(ServerPlayer player, CutsceneData data){
         PacketDistributor.sendToPlayer(player,new StartCutscenePacket(data));
