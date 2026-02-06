@@ -3,6 +3,7 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_s
 import com.finderfeed.fdlib.data_structures.Pair;
 import com.finderfeed.fdlib.systems.FDRegistries;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachment;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -19,6 +20,15 @@ public class BoneAttachments implements INBTSerializable<CompoundTag> {
 
     public boolean hasAttachment(UUID attachmentUUID){
         return this.listContainsAttachmentWithUUID(boneAttachments,attachmentUUID);
+    }
+
+    public <M extends ModelAttachment<M,T>, T extends ModelAttachmentData<M>> ModelAttachment<M,T> getAttachment(UUID uuid){
+        for (var pair : boneAttachments){
+            if (uuid.equals(pair.first)){
+                return (ModelAttachment<M, T>) pair.second;
+            }
+        }
+        return null;
     }
 
     protected boolean removeAttachment(UUID uuid){

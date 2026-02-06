@@ -10,6 +10,10 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_sy
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.item_stack.ItemStackAttachmentData;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.item_stack.ItemStackAttachmentType;
 import net.minecraftforge.registries.DeferredRegister;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.FDParticleAttachment;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.FDParticleAttachmentData;
+import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.FDParticleAttachmentType;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
@@ -19,5 +23,6 @@ public class FDModelAttachmentTypes {
 
     public static final Supplier<ModelAttachmentType<ItemStackAttachment, ItemStackAttachmentData>> ITEM_STACK_MODEL_ATTACHMENT = MODEL_ATTACHMENT_TYPES.register("item_stack", ItemStackAttachmentType::new);
     public static final Supplier<ModelAttachmentType<FDModelAttachment, FDModelAttachmentData>> FDMODEL_ATTACHMENT = MODEL_ATTACHMENT_TYPES.register("fdmodel", FDModelAttachmentType::new);
+    public static final Supplier<ModelAttachmentType<FDParticleAttachment, FDParticleAttachmentData>> PARTICLE_ATTACHMENT = MODEL_ATTACHMENT_TYPES.register("particle", FDParticleAttachmentType::new);
 
 }

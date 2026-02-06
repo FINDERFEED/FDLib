@@ -4,9 +4,12 @@ import com.finderfeed.fdlib.init.FDBlockEntities;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
 import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenEffectHandler;
 import com.finderfeed.fdlib.systems.broken_screen_effect.ShatteredScreenSettings;
+import com.finderfeed.fdlib.systems.chromatic_abberation_effect.ChromaticAbberationEffect;
+import com.finderfeed.fdlib.systems.chromatic_abberation_effect.ChromaticAbberationHandler;
+import com.finderfeed.fdlib.systems.screen.screen_effect.ScreenEffectOverlay;
+import com.finderfeed.fdlib.systems.screen.screen_effect.instances.chromatic_abberation.ChromaticAbberationData;
+import com.finderfeed.fdlib.systems.screen.screen_effect.instances.chromatic_abberation.ChromaticAbberationScreenEffect;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -15,6 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class FDTestBlock extends FDEntityBlock {
 
@@ -31,25 +36,9 @@ public class FDTestBlock extends FDEntityBlock {
     private static boolean testBoolean = true;
 
     @Override
-    public InteractionResult use(BlockState p_60503_, Level level, BlockPos p_60505_, Player player, InteractionHand hand, BlockHitResult p_60508_) {
-
-        if (level.isClientSide){
-            ResourceLocation data = ShatteredScreenSettings.DATA_1_GLASSY;
-
-            ShatteredScreenEffectHandler.setCurrentEffect(new ShatteredScreenSettings(
-                    data,
-                    0,0,40,0.1f,0.05f,true
-            ));
-        }
-
-
-        return super.use(p_60503_, level, p_60505_, player, hand, p_60508_);
-    }
-
-//    @Override
-//    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
-//       if (!level.isClientSide){
-//           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f3");
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult p_60508_) {
+       if (!level.isClientSide){
+           UUID uuid = UUID.fromString("5c6cd8c0-7e3e-44a3-9c2e-2459a61377f3");
 //
 //           if (!player.isCrouching()){
 //               FDMusicData fdMusicData = new FDMusicData(uuid,
@@ -62,8 +51,8 @@ public class FDTestBlock extends FDEntityBlock {
 //           }else{
 //               FDMusicAreasHandler.removeArea(((ServerLevel)level).getServer(),uuid);
 //           }
-//
-//
+
+
 //           if (!player.isCrouching()) {
 //               FDMusicData fdMusicData = new FDMusicData(uuid,
 //                       new FDMusicPartData(FDSounds.MALKUTH_THEME_INTRO_TEST.get(), 14.75f))
@@ -84,12 +73,15 @@ public class FDTestBlock extends FDEntityBlock {
 //                   testBoolean = !testBoolean;
 //               }
 //           }
-//       }
-//        return super.useWithoutItem(state, level, pos, player, p_60508_);
-//    }
+       }else{
+//           ChromaticAbberationHandler.setEffect(new ChromaticAbberationEffect(0,40,40,0.05f));
+           ScreenEffectOverlay.addScreenEffect(new ChromaticAbberationScreenEffect(new ChromaticAbberationData(0.05f),0,40,40));
+       }
+        return super.useWithoutItem(state, level, pos, player, p_60508_);
+    }
 
     @Override
-    public RenderShape getRenderShape(BlockState p_60550_) {
+    protected RenderShape getRenderShape(BlockState p_60550_) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 }
