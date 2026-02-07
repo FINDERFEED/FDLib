@@ -1,8 +1,7 @@
 package com.finderfeed.fdlib;
 
 import com.finderfeed.fdlib.network.lib_packets.PlayerMovePacket;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.SpawnParticleAtAttachmentBlockEntityPacket;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.SpawnParticleAtAttachmentEntityPacket;
+
 import com.finderfeed.fdlib.systems.cutscenes.CutsceneData;
 import com.finderfeed.fdlib.systems.cutscenes.packets.MoveCutsceneCameraPacket;
 import com.finderfeed.fdlib.systems.cutscenes.packets.StartCutscenePacket;
@@ -37,14 +36,6 @@ import java.util.function.Supplier;
 public class FDLibCalls {
 
     public static final TargetingConditions ALL = TargetingConditions.forNonCombat().selector(p->true).ignoreLineOfSight().ignoreInvisibilityTesting();
-
-    public static void spawnParticleAtEntityParticleAttachment(ParticleOptions particleOptions, Entity entity, int layerId, String bone, UUID attachmentUUID){
-        PacketDistributor.sendToPlayersTrackingEntity(entity, new SpawnParticleAtAttachmentEntityPacket(particleOptions, layerId, bone, attachmentUUID, entity.getId()));
-    }
-
-    public static void spawnParticleAtBlockEntityParticleAttachment(ParticleOptions particleOptions, BlockEntity entity, int layerId, String bone, UUID attachmentUUID){
-        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) entity.getLevel(), new ChunkPos(entity.getBlockPos()), new SpawnParticleAtAttachmentBlockEntityPacket(particleOptions, layerId, bone, attachmentUUID, entity.getBlockPos()));
-    }
 
     public static void startCutsceneForPlayer(ServerPlayer player, CutsceneData data){
         PacketDistributor.sendToPlayer(player,new StartCutscenePacket(data));
