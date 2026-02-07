@@ -1,6 +1,5 @@
 package com.finderfeed.fdlib;
 
-import com.finderfeed.fdlib.systems.bedrock.animations.Animation;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimatedObject;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.AnimationTicker;
@@ -9,12 +8,9 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.FDI
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.item.animated_item.ItemStackInHandContext;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.ModelSystem;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.ModelAttachmentData;
-import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.model_system.attachments.instances.particle.FDParticleAttachment;
-import com.finderfeed.fdlib.systems.bedrock.models.FDModelInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -30,42 +26,6 @@ import java.util.UUID;
 
 public class FDClientPacketExecutables {
 
-    public static void spawnParticleAtEntityAttachmentPacket(ParticleOptions particleOptions,int layer,String bone, UUID uuid, int entityId){
-
-        var entity = FDClientHelpers.getClientLevel().getEntity(entityId);
-
-        if (entity instanceof AnimatedObject animatedObject){
-            var modelSystem = animatedObject.getModelSystem();
-            if (modelSystem.hasAttachment(uuid)) {
-                var layerAttachments = modelSystem.getLayerAttachments(layer);
-                var boneAttachments = layerAttachments.getBoneAttachments(bone);
-                var attachment = boneAttachments.getAttachment(uuid);
-                if (attachment instanceof FDParticleAttachment particleAttachment) {
-                    particleAttachment.getParticleContainer().addParticle(particleOptions, entity.position());
-                }
-            }
-        }
-
-    }
-
-    public static void spawnParticleAtBlockEntityAttachmentPacket(ParticleOptions particleOptions,int layer,String bone, UUID uuid, BlockPos blockPos){
-
-        var level = FDClientHelpers.getClientLevel();
-        var blockEntity = level.getBlockEntity(blockPos);
-
-        if (blockEntity instanceof AnimatedObject animatedObject){
-            var modelSystem = animatedObject.getModelSystem();
-            if (modelSystem.hasAttachment(uuid)) {
-                var layerAttachments = modelSystem.getLayerAttachments(layer);
-                var boneAttachments = layerAttachments.getBoneAttachments(bone);
-                var attachment = boneAttachments.getAttachment(uuid);
-                if (attachment instanceof FDParticleAttachment particleAttachment) {
-                    particleAttachment.getParticleContainer().addParticle(particleOptions, blockEntity.getBlockPos().getCenter());
-                }
-            }
-        }
-
-    }
 
     public static void startItemAnimationInHand(int entityId, AnimationTicker animation, InteractionHand hand, String layer){
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof LivingEntity livingEntity) {
