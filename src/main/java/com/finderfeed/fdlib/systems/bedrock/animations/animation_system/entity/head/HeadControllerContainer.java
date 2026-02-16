@@ -4,6 +4,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animated
 import com.finderfeed.fdlib.systems.bedrock.models.FDModel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
@@ -59,6 +60,25 @@ public class HeadControllerContainer<T extends Mob & AnimatedObject & IHasHead<T
                 value.onControllerModeChanged(old, mode);
             }
         }
+    }
+
+    public void tick() {
+        if (this.resetXRotOnTick()) {
+            this.mob.setXRot(0.0F);
+        }
+
+        if (this.lookAtCooldown > 0) {
+            this.lookAtCooldown--;
+            this.getYRotD().ifPresent(p_287447_ -> this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, p_287447_, this.yMaxRotSpeed));
+            this.getXRotD().ifPresent(p_352768_ -> this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), p_352768_, this.xMaxRotAngle)));
+        } else {
+            if (!entity.level().isClientSide){
+                PacketDistributor.sendToPlayersTrackingEntity(entity, new LookStraightPacket(entity));
+            }
+            this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, this.mob.yBodyRot, 10.0F);
+        }
+
+        this.clampHeadRotationToBody();
     }
 
     @Override
