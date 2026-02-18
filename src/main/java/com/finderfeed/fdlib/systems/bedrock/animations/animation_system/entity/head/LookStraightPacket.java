@@ -3,18 +3,20 @@ package com.finderfeed.fdlib.systems.bedrock.animations.animation_system.entity.
 import com.finderfeed.fdlib.FDClientHelpers;
 import com.finderfeed.fdlib.network.FDPacket;
 import com.finderfeed.fdlib.network.RegisterFDPacket;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 @RegisterFDPacket("fdlib:look_straight_packet")
 public class LookStraightPacket extends FDPacket {
 
     private int entityId;
 
-    public LookStraightPacket(RegistryFriendlyByteBuf buf){
+    public LookStraightPacket(FriendlyByteBuf buf){
         this.entityId = buf.readInt();
     }
 
@@ -23,12 +25,12 @@ public class LookStraightPacket extends FDPacket {
     }
 
     @Override
-    public void write(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
+    public void write(FriendlyByteBuf registryFriendlyByteBuf) {
         registryFriendlyByteBuf.writeInt(entityId);
     }
 
     @Override
-    public void clientAction(IPayloadContext iPayloadContext) {
+    public void clientAction(Supplier<NetworkEvent.Context> ctx) {
         if (FDClientHelpers.getClientLevel().getEntity(entityId) instanceof Mob mob){
             LookControl lookControl = mob.getLookControl();
             Vec3 eyePosition = mob.getEyePosition();
@@ -38,7 +40,8 @@ public class LookStraightPacket extends FDPacket {
     }
 
     @Override
-    public void serverAction(IPayloadContext iPayloadContext) {
+    public void serverAction(Supplier<NetworkEvent.Context> ctx) {
 
     }
+
 }
