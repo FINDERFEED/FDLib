@@ -8,12 +8,14 @@ import com.finderfeed.fdlib.systems.post_shaders.FDRenderPostShaderEvent;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 import java.util.*;
@@ -45,15 +47,11 @@ public class ImpactFramesHandler {
     }
 
     @SubscribeEvent
-    public static void renderImpactFrameShader(FDRenderPostShaderEvent.Level event){
-
-
-        if (isImpactFrameShaderActive()){
-            beforePostEffect();
+    public static void renderImpactFrameShader(FDRenderPostShaderEvent.Level event) {
+        if (isImpactFrameShaderActive()) {
             event.doDefaultShaderBeforeShaderStuff();
             impactFrameShader.process(event.getPartialTicks());
         }
-
     }
 
     private static void manageImpactFrames(){
@@ -98,49 +96,43 @@ public class ImpactFramesHandler {
         FDClientHelpers.setShaderUniform(impactFrameShader,"invert", frame.isInverted() ? 1 : 0);
     }
 
-    public static void beforePostEffect(){
+    public static void beforePostEffect() {
+        if (!isImpactFrameShaderActive()) return;
 
-        if (isImpactFrameShaderActive()) {
-            RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-            main.bindRead();
+        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
+        main.bindRead();
 
+        int width = main.width;
+        int height = main.height;
 
-            int width = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-            int height = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
-
-            float[] pixel = new float[3];
-
-            int hhalfW = width / 4;
-            int hhalfH = height / 4;
-
-            Vector2i[] samplePoints = new Vector2i[]{
-                    //line on bottom
-                    new Vector2i(hhalfW, hhalfH),
-                    new Vector2i(hhalfW * 2, hhalfH),
-                    new Vector2i(hhalfW * 3, hhalfH),
-                    //line on center
-                    new Vector2i(hhalfW, hhalfH * 2),
-                    new Vector2i(hhalfW * 2, hhalfH * 2),
-                    new Vector2i(hhalfW * 3, hhalfH * 2),
-                    //line on top
-                    new Vector2i(hhalfW, hhalfH * 3),
-                    new Vector2i(hhalfW * 2, hhalfH * 3),
-                    new Vector2i(hhalfW * 3, hhalfH * 3),
-            };
-
-            float maxGrayscale = 0.0f;
-
-            for (Vector2i point : samplePoints) {
-
-                GL11.glReadPixels(point.x, point.y, 1, 1, GL11.GL_RGB, GL11.GL_FLOAT, pixel);
-
-                float grayscale = Math.max(pixel[0], Math.max(pixel[1], pixel[2]));
-                maxGrayscale = Math.max(maxGrayscale, grayscale);
-            }
-
-            FDClientHelpers.setShaderUniform(impactFrameShader, "maxEstimatedGrayscale", maxGrayscale);
+        if (width <= 0 || height <= 0) {
+            FDLib.LOGGER.info("invalid size: {}x{}", width, height);
+            return;
         }
 
+        int fbo = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER_BINDING);
+        int status = org.lwjgl.opengl.GL30.glCheckFramebufferStatus(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER);
+        int readBuffer = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL11.GL_READ_BUFFER);
+
+        FDLib.LOGGER.info("FBO: {} | status: {} | readBuffer: {}", fbo, status, readBuffer);
+
+        float[] pixel = new float[3];
+
+        int x = width / 2;
+        int y = height / 2;
+
+        int errBefore = org.lwjgl.opengl.GL11.glGetError();
+
+        org.lwjgl.opengl.GL11.glReadPixels(x, y, 1, 1, org.lwjgl.opengl.GL11.GL_RGB, org.lwjgl.opengl.GL11.GL_FLOAT, pixel);
+
+        int errAfter = org.lwjgl.opengl.GL11.glGetError();
+
+        FDLib.LOGGER.info("read @ ({}, {}) -> {}, {}, {}", x, y, pixel[0], pixel[1], pixel[2]);
+        FDLib.LOGGER.info("GL error before: {} | after: {}", errBefore, errAfter);
+
+        float grayscale = Math.max(pixel[0], Math.max(pixel[1], pixel[2]));
+
+        FDClientHelpers.setShaderUniform(impactFrameShader, "maxEstimatedGrayscale", grayscale);
     }
 
     public static boolean isImpactFrameShaderActive(){

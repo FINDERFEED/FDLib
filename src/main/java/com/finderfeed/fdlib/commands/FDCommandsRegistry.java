@@ -13,6 +13,7 @@ import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.Animatio
 import com.finderfeed.fdlib.systems.config.JsonConfig;
 import com.finderfeed.fdlib.systems.config.packets.JsonConfigSyncPacket;
 import com.finderfeed.fdlib.systems.config.packets.TriggerClientsideConfigReloadPacket;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -109,6 +110,25 @@ public class FDCommandsRegistry {
                                                     return 1;
                                                 })
                                         )
+                                ).then(Commands.literal("impact_test")
+                                        .requires(stack -> stack.hasPermission(2))
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            ServerLevel level = player.serverLevel();
+
+                                            FDLibCalls.sendImpactFrames(
+                                                    level,
+                                                    player.position(),
+                                                    60,
+                                                    new ImpactFrame().setDuration(2),
+                                                    new ImpactFrame().setDuration(1).setInverted(true),
+                                                    new ImpactFrame().setDuration(1),
+                                                    new ImpactFrame().setDuration(1).setInverted(true),
+                                                    new ImpactFrame().setDuration(1)
+                                            );
+
+                                            return 1;
+                                        })
                                 )
 
                 )
