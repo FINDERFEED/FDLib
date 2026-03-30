@@ -100,6 +100,8 @@ public class ImpactFramesHandler {
 
     public static void beforePostEffect(){
 
+        if (true) return;
+
         if (isImpactFrameShaderActive()) {
             RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
             main.bindRead();

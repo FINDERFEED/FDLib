@@ -2,6 +2,8 @@ package com.finderfeed.fdlib.test;
 
 import com.finderfeed.fdlib.init.FDBlockEntities;
 import com.finderfeed.fdlib.systems.bedrock.animations.animation_system.tile.FDEntityBlock;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFrame;
+import com.finderfeed.fdlib.systems.impact_frames.ImpactFramesHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -33,6 +35,7 @@ public class FDTestBlock extends FDEntityBlock {
 
        }else{
 //         ScreenEffectOverlay.addScreenEffect(new ChromaticAbberationScreenEffect(new ChromaticAbberationData(0.05f),0,40,40));
+           ImpactFramesHandler.addImpactFrame(new ImpactFrame().setDuration(200));
        }
         return super.useWithoutItem(state, level, pos, player, p_60508_);
     }
