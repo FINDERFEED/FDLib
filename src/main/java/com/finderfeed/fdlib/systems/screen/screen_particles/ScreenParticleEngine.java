@@ -2,6 +2,7 @@ package com.finderfeed.fdlib.systems.screen.screen_particles;
 
 import com.finderfeed.fdlib.systems.particle.FDParticleRenderType;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
@@ -33,7 +34,8 @@ public class ScreenParticleEngine {
     }
 
     public void render(GuiGraphics graphics, float partialTicks){
-        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+
+        Tesselator tesselator = Tesselator.getInstance();
         TextureManager manager = Minecraft.getInstance().getTextureManager();
 
 
@@ -45,17 +47,15 @@ public class ScreenParticleEngine {
             ParticleRenderType renderType = entry.getKey();
 
 
-            var builder = renderType.begin(tesselator,manager);
+            BufferBuilder builder = Tesselator.getInstance().getBuilder();
+
+            renderType.begin(builder,manager);
 
             for (FDScreenParticle particle : list){
                 particle.render(graphics,builder,partialTicks);
             }
 
-            BufferUploader.drawWithShader(builder.build());
-
-            if (renderType instanceof FDParticleRenderType fdParticleRenderType){
-                fdParticleRenderType.end();
-            }
+            renderType.end(tesselator);
         }
     }
 
